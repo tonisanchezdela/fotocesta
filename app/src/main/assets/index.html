@@ -159,6 +159,30 @@ nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr
 .fab{justify-self:center;width:64px;height:64px;border-radius:50%;border:4px solid var(--bg);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-26px;box-shadow:var(--shadow)}
 .fab svg{width:28px;height:28px}
 
+.av{position:relative;display:inline-grid;place-items:center;width:var(--t);height:var(--t);border-radius:50%;background:var(--c);color:#fff;font:700 calc(var(--t)*.45) var(--f-body);flex:none;box-shadow:0 0 0 2px var(--surface)}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.av .enl{position:absolute;right:-1px;bottom:-1px;width:30%;height:30%;min-width:8px;min-height:8px;border-radius:50%;background:#2fbf5b;box-shadow:0 0 0 2px var(--surface)}
+.famBar{display:flex;align-items:center;gap:10px;margin-top:12px}
+.famAvs{display:flex}
+.famAvs .av+.av{margin-left:-8px}
+.listaSel{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.listaSel span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.listaSel small{color:var(--muted);font-weight:500;flex:none}
+.porq{display:flex;align-items:center;gap:5px;margin-top:3px}
+.lbl{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
+.field.big{font-size:17px;padding:12px}
+.perfil{display:flex;gap:14px;align-items:flex-end;margin:12px 0}
+.pfFoto{border:0;background:none;display:grid;justify-items:center;gap:4px;color:var(--muted);padding:0}
+.pfFoto #pf-prev{width:76px;height:76px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;overflow:hidden}
+.pfFoto #pf-prev img{width:100%;height:100%;object-fit:cover}
+.pfFoto svg{width:30px;height:30px}
+.codigo{font:600 38px/1 var(--f-mono);letter-spacing:.18em;text-align:center;background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:18px 8px;margin:12px 0}
+.miembros{display:grid;gap:10px}
+.mb{display:flex;align-items:center;gap:10px;font-weight:600}
+.lrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}
+.lrow .btn{padding:8px 10px;font-size:13px}
+.lrow.on .opcion{border-color:var(--accent)}
+
 /* hojas y avisos */
 .sheet{position:fixed;inset:0;z-index:10;background:rgba(10,16,12,.45);display:flex;align-items:flex-end;justify-content:center}
 .sheet .body{background:var(--surface);width:100%;max-width:560px;max-height:86%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
@@ -198,6 +222,7 @@ nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr
 <div class="vozTxt" id="vozTxt" hidden></div>
 
 <datalist id="catlist"></datalist>
+<input type="file" id="fotoPerfil" accept="image/*" hidden>
 <input type="file" id="imp" accept="application/json,.json" hidden>
 <div class="sheet" id="sheet" hidden><div class="body" id="sheetBody"></div></div>
 <div class="busy" id="busy" hidden><div class="b"><div class="spin"></div><div id="busyMsg"></div><button class="btn line" data-act="parar">Cancelar</button></div></div>
@@ -219,15 +244,22 @@ const DAY=864e5;
 const dias=f=>Math.round((Date.now()-new Date(f).getTime())/DAY);
 
 /* ---------- datos ---------- */
-const S={productos:{},lista:{},tickets:{},ajustes:{}};
-let db=null;
+const S={productos:{},lista:{},tickets:{},ajustes:{},miembros:{},listas:{}};
 const LS='fotocesta-v1';
-function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d)for(const k in S)S[k]=d[k]||{}}catch{}}
-function saveLocal(){if(db)return;try{localStorage.setItem(LS,JSON.stringify(S))}catch{}}
-const chains={};
-function queue(k,fn){const p=(chains[k]||Promise.resolve()).then(fn).catch(e=>toast('No se ha guardado: '+(e?.code||'error')));chains[k]=p;return p}
-function put(col,id,data){S[col][id]=data;scheduleRender();if(!db){saveLocal();return Promise.resolve()}return queue(col+'/'+id,()=>db.doc(col+'/'+id).set(data))}
-function del(col,id){delete S[col][id];scheduleRender();if(!db){saveLocal();return Promise.resolve()}return queue(col+'/'+id,()=>db.doc(col+'/'+id).delete())}
+const LOCALES=['productos','lista','tickets','ajustes'];
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d)for(const k of LOCALES)S[k]=d[k]||{}}catch{}}
+function saveLocal(){if(FAM)return;try{const o={};for(const k of LOCALES)o[k]=S[k];localStorage.setItem(LS,JSON.stringify(o))}catch{}}
+function avisoError(e){console.warn(e);if(e&&e.code==='permission-denied')toast('Sin permiso para guardar. Revisa que sigues en la familia.')}
+function put(col,id,data){
+  S[col][id]=data;scheduleRender();
+  if(!FAM){saveLocal();return Promise.resolve()}
+  refDoc(col,id).set(data).catch(avisoError);return Promise.resolve();
+}
+function del(col,id){
+  delete S[col][id];scheduleRender();
+  if(!FAM){saveLocal();return Promise.resolve()}
+  refDoc(col,id).delete().catch(avisoError);return Promise.resolve();
+}
 /* ---------- catálogo y precios de referencia ---------- */
 const PRECIOS_FECHA='26/09/2026';
 /* Índice de cada cadena respecto a Mercadona. Mercadona, Alcampo, Dia y Carrefour: cesta básica de RadarSuper (26/09/2026).
@@ -415,7 +447,7 @@ async function anadirALista(entradas,origen){
     if(!(id in antes))antes[id]=S.lista[id]?clone(S.lista[id]):null;
     if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||'Otros',formato:e?.f||'',precios:{},compras:[],creado:hoy()});
     const cur=S.lista[id];
-    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now()});
+    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now(),por:cur?.por||yo?.uid||null});
     nombres.push(nombre+((p.cant||1)>1?' ×'+p.cant:''));
   }
   if(nombres.length)deshacer=antes;
@@ -543,11 +575,12 @@ function renderLista(){
   const pend=all.filter(([,x])=>!x.marcado),hechos=all.filter(([,x])=>x.marcado);
   const sug=sugerencias().slice(0,8);
   const row=([id,x])=>`<li class="row ${x.marcado?'done':''}"><button class="chk" data-act="tog" data-id="${id}" aria-label="Marcar">✓</button>
-    <div class="nm"><b>${esc(x.nombre)}</b><small>${esc(S.productos[id]?.formato||'')}</small></div>
+    <div class="nm"><b>${esc(x.nombre)}</b><small>${esc(S.productos[id]?.formato||'')}</small>${FAM&&miembro(x.por)?`<small class="porq">${avatar(x.por,18)} ${esc(miembro(x.por).nombre)}</small>`:''}</div>
     <div class="qty"><button data-act="dec" data-id="${id}" aria-label="Menos">−</button><span>${x.cant||1}</span><button data-act="inc" data-id="${id}" aria-label="Más">+</button></div>
     <button class="x" data-act="rm" data-id="${id}" aria-label="Quitar">×</button></li>`;
   const grupos=CATS.map(c=>[c,pend.filter(([,x])=>(x.cat||'Otros')===c)]).filter(([,v])=>v.length);
-  el.innerHTML=`
+  const famBar=FAM?`<div class="famBar"><button class="listaSel" data-act="listas"><span>${esc(S.listas[LISTA]?.nombre||'Lista')}</span><small>${Object.keys(S.listas).length>1?Object.keys(S.listas).length+' listas':'Listas'} ▾</small></button><button class="famAvs" data-act="famVer" style="border:0;background:none;padding:0" aria-label="Familia">${Object.keys(S.miembros).slice(0,5).map(u=>avatar(u,32,true)).join('')}</button></div>`:'';
+  el.innerHTML=`${famBar}
   <form class="add" id="addForm"><input id="addTxt" list="catlist" placeholder="Escribe: leche, 2 pan, huevos…" autocomplete="off"><button class="btn">Añadir</button></form>
   ${sug.length?`<h3>Te suele tocar comprar</h3><div class="chips">${sug.map(s=>`<button class="chip" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">+ ${esc(s.nombre)}</button>`).join('')}</div>`:''}
   ${!all.length?`<h2>Tu lista está vacía</h2><div class="empty"><p class="note" style="margin:0">Pulsa <b>Dictar</b> y di por ejemplo «dos leches, pan y detergente», o escríbelo arriba. Si un producto tiene varios modelos te dejo elegir. Cuando termines, pulsa <b>Confirmar lista</b> y verás el presupuesto en cada supermercado.</p></div>`:''}
@@ -580,9 +613,182 @@ function renderHabitos(){
   <div class="card">${top.length?top.map(x=>`<div class="rank"><span>${esc(x.n)}</span><span class="num">${x.v}×</span></div>`).join(''):'<p class="note" style="margin:0">Marca los productos al comprarlos y pulsa «Terminar compra»: la app irá aprendiendo.</p>'}</div>`;
 }
 
+/* ---------- familia: listas compartidas en tiempo real (Firebase) ---------- */
+const FB_CFG={apiKey:"AIzaSyAytDvBEm1EdRHqBioCNkDvDfGON13jZDg",authDomain:"fotocesta-57b4f.firebaseapp.com",projectId:"fotocesta-57b4f",storageBucket:"fotocesta-57b4f.firebasestorage.app",messagingSenderId:"196413559596",appId:"1:196413559596:web:9eb31fca18adbf474a1289"};
+const FB_VER='10.14.1';
+const FAM_KEY='fotocesta-familia',SOLO_KEY='fotocesta-solo';
+let fs=null,yo=null,FAM=null,LISTA=null,unsubs=[],unsubLista=null;
+const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}};
+const lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch{}};
+function cargarJS(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>{s.remove();rej()};document.head.appendChild(s)})}
+async function cargarFirebase(){
+  if(fs)return;
+  if(!window.firebase){
+    for(const f of ['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js']){
+      try{await cargarJS('./'+f)}catch{try{await cargarJS(`https://www.gstatic.com/firebasejs/${FB_VER}/${f}`)}catch{throw{code:'sin_red'}}}
+    }
+  }
+  if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+  fs=firebase.firestore();
+  try{await fs.enablePersistence({synchronizeTabs:true})}catch{}
+  const auth=firebase.auth();
+  let u=await new Promise(r=>{const off=auth.onAuthStateChanged(x=>{off();r(x)})});
+  if(!u){try{u=(await auth.signInAnonymously()).user}catch(e){fs=null;throw{code:e&&e.code==='auth/operation-not-allowed'?'sin_anonimo':'sin_red'}}}
+  yo={uid:u.uid};
+}
+const famRef=()=>fs.collection('familias').doc(FAM);
+function refDoc(col,id){
+  if(col==='lista')return famRef().collection('listas').doc(LISTA).collection('items').doc(id);
+  return famRef().collection(col).doc(id);
+}
+const nuevaId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function genCodigo(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint32Array(6));for(const x of r)s+=a[x%a.length];return s}
+const COLORES=['#2C7A4B','#C8651A','#2F6DB5','#9B3FA8','#B3372B','#0F8A8A','#8A6D0F','#5B5FC7'];
+function colorPara(uid){let h=0;for(const c of String(uid))h=(h*31+c.charCodeAt(0))>>>0;return COLORES[h%COLORES.length]}
+function suscribir(){
+  unsubs.forEach(u=>u());unsubs=[];
+  const on=(col,after)=>unsubs.push(famRef().collection(col).onSnapshot({includeMetadataChanges:false},s=>{const o={};s.forEach(d=>o[d.id]=d.data());S[col]=o;if(after)after(s);scheduleRender()},avisoError));
+  for(const c of ['productos','tickets','ajustes','miembros'])on(c);
+  on('listas',s=>{
+    if(LISTA&&S.listas[LISTA])return;
+    const ids=Object.keys(S.listas).sort((a,b)=>(S.listas[a].creada||0)-(S.listas[b].creada||0));
+    if(ids.length)cambiarLista(ids[0]);
+    else if(!s.metadata.fromCache)crearLista('Compra');
+  });
+  if(LISTA)suscribirLista();
+}
+function suscribirLista(){
+  if(unsubLista)unsubLista();unsubLista=null;S.lista={};
+  if(!LISTA)return;
+  unsubLista=famRef().collection('listas').doc(LISTA).collection('items').onSnapshot(s=>{const o={};s.forEach(d=>o[d.id]=d.data());S.lista=o;scheduleRender()},avisoError);
+}
+function cambiarLista(id){LISTA=id;lsSet(FAM_KEY,{code:FAM,lista:id});suscribirLista();scheduleRender()}
+function crearLista(nombre){
+  const id=nuevaId();S.listas[id]={nombre,creada:Date.now(),por:yo.uid};
+  famRef().collection('listas').doc(id).set(S.listas[id]).catch(avisoError);
+  cambiarLista(id);return id;
+}
+async function borrarLista(id){
+  const items=await famRef().collection('listas').doc(id).collection('items').get();
+  const b=fs.batch();items.forEach(d=>b.delete(d.ref));b.delete(famRef().collection('listas').doc(id));
+  await b.commit().catch(avisoError);
+  if(LISTA===id){LISTA=null;delete S.listas[id];const ids=Object.keys(S.listas);if(ids.length)cambiarLista(ids[0]);else crearLista('Compra')}
+}
+async function escribirLote(ops){
+  for(let i=0;i<ops.length;i+=400){const b=fs.batch();for(const [ref,data] of ops.slice(i,i+400))b.set(ref,data);await b.commit()}
+}
+async function crearFamilia(nombre,foto){
+  await cargarFirebase();
+  let code;for(let i=0;i<6;i++){code=genCodigo();const d=await fs.collection('familias').doc(code).get();if(!d.exists)break}
+  await fs.collection('familias').doc(code).set({creada:Date.now(),por:yo.uid});
+  await fs.collection('familias').doc(code).collection('miembros').doc(yo.uid).set({nombre,foto:foto||'',color:colorPara(yo.uid),unido:Date.now(),visto:firebase.firestore.FieldValue.serverTimestamp()});
+  FAM=code;const lid=nuevaId();LISTA=lid;S.miembros={[yo.uid]:{nombre,foto:foto||'',color:colorPara(yo.uid),visto:{toMillis:()=>Date.now()}}};
+  const ops=[[famRef().collection('listas').doc(lid),{nombre:'Compra',creada:Date.now(),por:yo.uid}]];
+  for(const [id,x] of Object.entries(S.lista))ops.push([famRef().collection('listas').doc(lid).collection('items').doc(id),{...x,por:x.por||yo.uid}]);
+  for(const c of ['productos','tickets','ajustes'])for(const [id,x] of Object.entries(S[c]))ops.push([famRef().collection(c).doc(id),x]);
+  await escribirLote(ops);
+  lsSet(FAM_KEY,{code,lista:lid});lsSet(SOLO_KEY,null);
+  suscribir();
+}
+async function unirseFamilia(code,nombre,foto){
+  await cargarFirebase();
+  code=code.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const d=await fs.collection('familias').doc(code).get();
+  if(!d.exists)throw{code:'no_familia'};
+  await fs.collection('familias').doc(code).collection('miembros').doc(yo.uid).set({nombre,foto:foto||'',color:colorPara(yo.uid),unido:Date.now(),visto:firebase.firestore.FieldValue.serverTimestamp()});
+  FAM=code;LISTA=null;S.lista={};S.miembros={[yo.uid]:{nombre,foto:foto||'',color:colorPara(yo.uid),visto:{toMillis:()=>Date.now()}}};
+  lsSet(FAM_KEY,{code});lsSet(SOLO_KEY,null);
+  suscribir();
+}
+async function salirFamilia(){
+  try{await famRef().collection('miembros').doc(yo.uid).delete()}catch{}
+  unsubs.forEach(u=>u());unsubs=[];if(unsubLista)unsubLista();unsubLista=null;
+  FAM=null;LISTA=null;lsSet(FAM_KEY,null);
+  for(const k in S)S[k]={};loadLocal();render();
+}
+async function arrancarFamilia(){
+  const f=lsGet(FAM_KEY);if(!f||!f.code)return false;
+  FAM=f.code;LISTA=f.lista||null;
+  try{await cargarFirebase();suscribir();latido();return true}
+  catch(e){toast('Sin conexión: no puedo abrir las listas de la familia. Vuelve a intentarlo con internet.');return true}
+}
+function latido(){if(FAM&&yo&&fs&&!document.hidden)famRef().collection('miembros').doc(yo.uid).update({visto:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{})}
+setInterval(latido,60000);document.addEventListener('visibilitychange',latido);
+
+/* avatares */
+function miembro(uid){return S.miembros[uid]}
+function enLinea(m){const v=m&&m.visto&&m.visto.toMillis?m.visto.toMillis():0;return Date.now()-v<150000}
+function avatar(uid,tam=26,conPunto=false){
+  const m=miembro(uid);if(!m)return'';
+  const ini=esc((m.nombre||'?').trim().charAt(0).toUpperCase());
+  const dentro=m.foto?`<img src="${esc(m.foto)}" alt="">`:`<span>${ini}</span>`;
+  return `<span class="av" style="--c:${esc(m.color||'#2C7A4B')};--t:${tam}px" title="${esc(m.nombre||'')}">${dentro}${conPunto&&enLinea(m)?'<i class="enl"></i>':''}</span>`;
+}
+async function fotoAvatar(file){
+  const url=URL.createObjectURL(file);
+  try{const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+    const T=160,c=document.createElement('canvas');c.width=c.height=T;const s=Math.min(im.naturalWidth,im.naturalHeight);
+    c.getContext('2d').drawImage(im,(im.naturalWidth-s)/2,(im.naturalHeight-s)/2,s,s,0,0,T,T);return c.toDataURL('image/jpeg',0.8)}
+  finally{URL.revokeObjectURL(url)}
+}
+
+/* pantallas de familia */
+let perfilFoto='';
+function hojaPerfil(modo){
+  const m=FAM&&yo?miembro(yo.uid):null;
+  perfilFoto=modo==='editar'?(m?.foto||''):'';
+  const tit={crear:'Crear familia',unir:'Unirme a una familia',editar:'Mi perfil'}[modo];
+  openSheet(`<h2>${tit}</h2>
+  ${modo==='unir'?`<label class="lbl" for="pf-code">Código de la familia</label><input class="field big" id="pf-code" autocomplete="off" autocapitalize="characters" maxlength="8" placeholder="Ej. KX7P2M">`:''}
+  <div class="perfil"><button class="pfFoto" data-act="pfElegirFoto" aria-label="Elegir foto"><span id="pf-prev">${perfilFoto?`<img src="${esc(perfilFoto)}" alt="">`:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'}</span><small>Foto</small></button>
+  <div style="flex:1"><label class="lbl" for="pf-nom">Tu nombre</label><input class="field big" id="pf-nom" autocomplete="off" placeholder="Ej. Toni" value="${esc(m?.nombre||'')}"></div></div>
+  <div class="actions"><button class="btn grande" data-act="pfGuardar" data-m="${modo}">${modo==='crear'?'Crear familia':modo==='unir'?'Entrar':'Guardar'}</button></div>
+  <div class="actions"><button class="btn line" data-act="${modo==='editar'?'cerrar':'bienvenida'}">Volver</button></div>`);
+}
+function hojaBienvenida(){
+  openSheet(`<h2>Listas en familia</h2>
+  <p class="note">Crea una familia y comparte el código: todos podréis añadir productos a las mismas listas a la vez, cada uno con su nombre y su foto.</p>
+  <div class="opciones">
+    <button class="opcion" data-act="famCrear"><b>Crear una familia</b><small>Te doy un código para invitar a los demás</small></button>
+    <button class="opcion" data-act="famUnir"><b>Tengo un código</b><small>Entrar en la familia que ha creado otro</small></button>
+    <button class="opcion" data-act="famSolo"><b>Usar solo en este móvil</b><small>Sin compartir. Puedes crear la familia más tarde en Ajustes</small></button>
+  </div>`);
+}
+function errFam(e){return({no_familia:'No existe ninguna familia con ese código. Revísalo.',sin_red:'Necesitas conexión a internet para esto.',sin_anonimo:'Falta activar el acceso «Anónimo» en Firebase (Authentication).','permission-denied':'Firebase ha rechazado el acceso. Revisa que las reglas de seguridad estén publicadas.'})[e?.code]||'No se ha podido completar. Vuelve a intentarlo.'}
+async function guardarPerfil(modo){
+  const nombre=$('#pf-nom').value.trim();if(!nombre){toast('Escribe tu nombre.');return}
+  try{
+    if(modo==='editar'){await famRef().collection('miembros').doc(yo.uid).update({nombre,foto:perfilFoto||''});closeSheet();toast('Perfil guardado.');return}
+    busy(modo==='crear'?'Creando la familia…':'Entrando en la familia…');
+    if(modo==='crear'){await crearFamilia(nombre,perfilFoto);closeSheet();hojaCodigo(true)}
+    else{const code=$('#pf-code').value.trim();if(code.length<4){busy();toast('Escribe el código de la familia.');return}await unirseFamilia(code,nombre,perfilFoto);closeSheet();toast('¡Ya estás en la familia!')}
+    render();
+  }catch(e){toast(errFam(e))}
+  finally{busy()}
+}
+function textoInvitacion(){return `Únete a nuestra lista de la compra en FotoCesta.\n1) Instala la app: https://github.com/tonisanchezdela/fotocesta/releases/latest/download/FotoCesta.apk\n2) Pulsa «Tengo un código» y escribe: ${FAM}`}
+function hojaCodigo(nueva){
+  openSheet(`<h2>${nueva?'¡Familia creada!':'Tu familia'}</h2>
+  <p class="note">Comparte este código con tu familia. Cada uno instala la app, pulsa «Tengo un código» y lo escribe.</p>
+  <div class="codigo num">${esc(FAM)}</div>
+  <div class="actions"><button class="btn" data-act="famCompartir">Enviar invitación</button><button class="btn ghost" data-act="famCopiar">Copiar código</button></div>
+  <h3>Miembros</h3><div class="miembros">${Object.entries(S.miembros).map(([uid,m])=>`<div class="mb">${avatar(uid,40,true)}<span>${esc(m.nombre||'')}${uid===yo?.uid?' (tú)':''}</span></div>`).join('')||'<p class="note">Solo tú, de momento.</p>'}</div>
+  <div class="actions"><button class="btn line" data-act="cerrar">Hecho</button></div>`);
+}
+function hojaListas(){
+  const ids=Object.keys(S.listas).sort((a,b)=>(S.listas[a].creada||0)-(S.listas[b].creada||0));
+  openSheet(`<h2>Listas de la familia</h2>
+  <div class="opciones">${ids.map(id=>`<div class="lrow ${id===LISTA?'on':''}"><button class="opcion" data-act="listaSel" data-l="${id}"><b>${esc(S.listas[id].nombre)}</b><small>${id===LISTA?'Abierta ahora':'Abrir'}</small></button><button class="btn line" data-act="listaRen" data-l="${id}">Renombrar</button><button class="btn line" style="color:var(--danger)" data-act="listaDel" data-l="${id}">Borrar</button></div>`).join('')}</div>
+  <label class="lbl" for="nl-nom" style="margin-top:14px">Nueva lista</label>
+  <div class="add" style="margin-top:6px"><input class="field" id="nl-nom" placeholder="Ej. Cumpleaños de Lucía" autocomplete="off"><button class="btn" data-act="listaNueva">Crear</button></div>
+  <div class="actions"><button class="btn line" data-act="cerrar">Cerrar</button></div>`);
+}
+
 /* ---------- ajustes y copia ---------- */
 function abrirAjustes(){
   openSheet(`<h2>Ajustes</h2>
+  <h3>Familia</h3>
+  ${FAM?`<div class="mb" style="margin-bottom:8px">${avatar(yo?.uid,40)}<span>${esc(miembro(yo?.uid)?.nombre||'')} · familia <b class="num">${esc(FAM)}</b></span></div><div class="actions"><button class="btn ghost" data-act="famVer">Invitar / ver miembros</button><button class="btn ghost" data-act="perfil">Cambiar nombre o foto</button></div><div class="actions"><button class="btn line" style="color:var(--danger)" data-act="famSalir">Salir de la familia</button></div>`:`<p class="note">Comparte las listas con tu familia: todos añadís a la vez.</p><div class="actions"><button class="btn" data-act="famCrear">Crear familia</button><button class="btn ghost" data-act="famUnir">Tengo un código</button></div>`}
   <h3>Copia de seguridad</h3>
   <p class="note">Tus listas, precios y hábitos se guardan en este móvil. Haz una copia para pasarlos a otro móvil o no perderlos si borras el navegador.</p>
   <div class="actions"><button class="btn ghost" data-act="exportar">Descargar copia</button><button class="btn ghost" data-act="importar">Cargar copia</button></div>
@@ -603,6 +809,7 @@ $('#imp').addEventListener('change',async e=>{
 
 
 window.__atras=()=>{
+  if(!$('#busy').hidden)return true;
   if(!$('#sheet').hidden){closeSheet();cola=[];return true}
   if(tab!=='lista'){document.querySelector('[data-tab=lista]').click();return true}
   return false;
@@ -655,11 +862,31 @@ document.addEventListener('click',async e=>{
       <div class="chips">${SUPERS.map(s=>`<button class="chip" data-act="fin" data-s="${s.id}">${s.n}</button>`).join('')}</div>
       <div class="actions"><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break;
     case'fin':terminarCompra(t.dataset.s);break;
+    case'bienvenida':hojaBienvenida();break;
+    case'famCrear':hojaPerfil('crear');break;
+    case'famUnir':hojaPerfil('unir');break;
+    case'famSolo':lsSet(SOLO_KEY,1);closeSheet();break;
+    case'perfil':hojaPerfil('editar');break;
+    case'pfElegirFoto':$('#fotoPerfil').click();break;
+    case'pfGuardar':guardarPerfil(t.dataset.m);break;
+    case'famVer':hojaCodigo(false);break;
+    case'famCopiar':try{await navigator.clipboard.writeText(FAM);toast('Código copiado.')}catch{toast('Código: '+FAM)}break;
+    case'famCompartir':if(NATIVO&&window.Android.compartir)window.Android.compartir(textoInvitacion());else if(navigator.share)navigator.share({text:textoInvitacion()}).catch(()=>{});else{try{await navigator.clipboard.writeText(textoInvitacion());toast('Invitación copiada: pégala en WhatsApp.')}catch{toast('Código: '+FAM)}}break;
+    case'famSalir':if(t.dataset.ok){closeSheet();await salirFamilia();toast('Has salido de la familia.')}else{t.dataset.ok='1';t.textContent='Pulsa otra vez para salir'}break;
+    case'listas':hojaListas();break;
+    case'listaSel':cambiarLista(t.dataset.l);closeSheet();break;
+    case'listaNueva':{const n=$('#nl-nom').value.trim();if(!n){toast('Escribe el nombre de la lista.');break}crearLista(n);closeSheet();toast('Lista «'+n+'» creada.');break}
+    case'listaRen':{const l=t.dataset.l;openSheet(`<h2>Renombrar lista</h2><input class="field big" id="rl-nom" value="${esc(S.listas[l]?.nombre||'')}"><div class="actions"><button class="btn" data-act="listaRenOk" data-l="${l}">Guardar</button><button class="btn line" data-act="listas">Volver</button></div>`);break}
+    case'listaRenOk':{const l=t.dataset.l,n=$('#rl-nom').value.trim();if(!n)break;famRef().collection('listas').doc(l).update({nombre:n}).catch(avisoError);S.listas[l]={...S.listas[l],nombre:n};hojaListas();break}
+    case'listaDel':if(t.dataset.ok){await borrarLista(t.dataset.l);hojaListas();toast('Lista borrada.')}else{t.dataset.ok='1';t.textContent='¿Seguro?'}break;
   }
 });
 
+$('#fotoPerfil').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{perfilFoto=await fotoAvatar(f);const p=$('#pf-prev');if(p)p.innerHTML=`<img src="${perfilFoto}" alt="">`}catch{toast('No he podido abrir esa foto.')}});
 $('#catlist').innerHTML=CATALOGO.map(r=>`<option value="${esc(r[0])}">`).join('');
-loadLocal();render();
-
+(async()=>{
+  if(lsGet(FAM_KEY)){render();await arrancarFamilia()}
+  else{loadLocal();render();if(!lsGet(SOLO_KEY))hojaBienvenida()}
+})();
 </script>
 </body></html>

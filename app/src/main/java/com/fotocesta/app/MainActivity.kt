@@ -156,6 +156,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun compartir(texto: String) {
+            runOnUiThread {
+                val envio = Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_TEXT, texto)
+                try {
+                    startActivity(Intent.createChooser(envio, "Invitar a la familia"))
+                } catch (_: Exception) {
+                }
+            }
+        }
+
+        @JavascriptInterface
         fun guardar(nombre: String, contenido: String) {
             runOnUiThread {
                 guardarContenido = contenido
