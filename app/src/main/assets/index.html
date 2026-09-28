@@ -126,10 +126,22 @@ ul.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px 
 /* barra inferior */
 nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}
-.quick{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 16px 4px}
-.qb{border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);padding:12px 4px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px}
+.quick{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:8px;padding:10px 16px 4px}
+.qb{font-size:17px!important;border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);padding:12px 4px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px}
 .qb svg{width:24px;height:24px;flex:none}
 #qVoz{background:var(--warm)}
+.btn.grande{width:100%;padding:15px;font-size:16px}
+.cantSel{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
+.opciones{display:grid;gap:8px}
+.opcion{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:left;display:grid;gap:2px}
+.opcion b{font-weight:600}
+.opcion small{color:var(--muted);font-size:12.5px}
+.opcion:active{background:var(--accent-soft)}
+.det{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.det summary{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;font-weight:600;list-style:none}
+.det summary::-webkit-details-marker{display:none}
+.det[open] summary{border-bottom:1px solid var(--line)}
+.det .tbl{margin:0 14px 10px;width:calc(100% - 28px)}
 #qVoz.on{animation:pulso 1s ease-in-out infinite}
 @keyframes pulso{50%{transform:scale(1.06);opacity:.85}}
 .cam{position:fixed;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
@@ -176,26 +188,15 @@ nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr
 
 <nav>
 <div class="quick">
-  <button class="qb" id="qProd" data-act="qProducto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Producto</button>
-  <button class="qb" id="qNev" data-act="qNevera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14M9 5v2M9 13v3"/></svg>Nevera</button>
-  <button class="qb" id="qVoz" data-act="qVoz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz</button>
+  <button class="qb" id="qVoz" data-act="qVoz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Dictar productos</button>
 </div>
 <div class="in">
   <button class="tab" data-tab="lista" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Lista</button>
   <button class="tab" data-tab="presu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Presupuesto</button>
   <button class="tab" data-tab="habitos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V10M10 19V5M16 19v-7M22 19H2"/></svg>Hábitos</button>
 </div></nav>
-<div class="cam" id="cam" hidden>
-  <video id="camVid" playsinline muted></video>
-  <div class="camTop"><b id="camTit">Producto</b><button class="camX" data-act="camCerrar" aria-label="Cerrar">×</button></div>
-  <p class="camHint">Apunta a las letras grandes del producto y pulsa</p>
-  <button class="shutter" data-act="disparar" aria-label="Hacer foto"></button>
-</div>
 <div class="vozTxt" id="vozTxt" hidden></div>
 
-<input type="file" id="foto" accept="image/*" multiple hidden>
-<input type="file" id="fotoCam" accept="image/*" capture="environment" hidden>
-<input type="file" id="fotoRapida" accept="image/*" capture="environment" hidden>
 <datalist id="catlist"></datalist>
 <input type="file" id="imp" accept="application/json,.json" hidden>
 <div class="sheet" id="sheet" hidden><div class="body" id="sheetBody"></div></div>
@@ -239,9 +240,14 @@ const CATALOGO=[["Manzanas", "Frutas y verduras", "1 kg", 2.2, "manzana"], ["Man
 ["Energizer pilas", "Limpieza", "4 ud", 6.2, "energizer", "Energizer"], ["Colgate pasta de dientes", "Higiene", "75 ml", 2.3, "colgate", "Colgate"], ["Signal pasta de dientes", "Higiene", "75 ml", 1.9, "signal", "Signal"], ["Sensodyne", "Higiene", "75 ml", 5.2, "sensodyne", "Sensodyne"], ["Oral-B cepillo", "Higiene", "2 ud", 3.5, "oral b|oralb", "Oral-B"], ["Listerine", "Higiene", "500 ml", 5.9, "listerine", "Listerine"], ["Dove gel", "Higiene", "600 ml", 3.6, "dove", "Dove"], ["Sanex gel", "Higiene", "600 ml", 3.5, "sanex", "Sanex"], ["Nivea crema", "Higiene", "150 ml", 4.5, "nivea", "Nivea"], ["H&S champú", "Higiene", "300 ml", 5.2, "head shoulders", "H&S"], ["Pantene champú", "Higiene", "300 ml", 4.2, "pantene", "Pantene"], ["Elvive champú", "Higiene", "370 ml", 4.2, "elvive", "L'Oréal"], ["Garnier Fructis", "Higiene", "300 ml", 3.9, "fructis|garnier", "Garnier"], ["Timotei champú", "Higiene", "400 ml", 2.9, "timotei", "Timotei"], ["Rexona desodorante", "Higiene", "200 ml", 3.2, "rexona", "Rexona"], ["Axe desodorante", "Higiene", "150 ml", 3.9, "axe", "Axe"], ["Gillette maquinillas", "Higiene", "4 ud", 9.9, "gillette", "Gillette"], ["Wilkinson maquinillas", "Higiene", "4 ud", 7.9, "wilkinson", "Wilkinson"], ["Ausonia compresas", "Higiene", "20 ud", 2.9, "ausonia", "Ausonia"], ["Evax compresas", "Higiene", "20 ud", 2.9, "evax", "Evax"], ["Tampax", "Higiene", "18 ud", 4.5, "tampax", "Tampax"], ["Dodot pañales", "Higiene", "40 ud", 14.5, "dodot", "Dodot"], ["Huggies pañales", "Higiene", "40 ud", 13.0, "huggies", "Huggies"], ["Kleenex pañuelos", "Higiene", "10 paquetes", 2.2, "kleenex", "Kleenex"], ["La Toja gel", "Higiene", "600 ml", 3.2, "toja|la toja", "La Toja"], ["Instituto Español gel", "Higiene", "1,25 L", 3.5, "instituto espanol", "Instituto Español"], ["Neutrogena crema de manos", "Higiene", "50 ml", 4.5, "neutrogena", "Neutrogena"], ["Whiskas comida gato", "Mascotas", "1,4 kg", 5.5, "whiskas", "Whiskas"], ["Felix sobres gato", "Mascotas", "12x85 g", 5.5, "felix", "Felix"], ["Friskies comida gato", "Mascotas", "1,5 kg", 5.2, "friskies", "Friskies"], ["Purina One gato", "Mascotas", "1,5 kg", 7.5, "purina", "Purina"], ["Pedigree comida perro", "Mascotas", "4 kg", 8.5, "pedigree", "Pedigree"], ["Dentastix", "Mascotas", "7 ud", 3.9, "dentastix", "Pedigree"], ["Ultima pienso", "Mascotas", "1,5 kg", 9.9, "affinity ultima", "Ultima"]];
 const nrm=s=>' '+String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()+' ';
 const STOP=new Set(['de','del','con','la','el','los','las','en','para','al','a','y','sin_']);
-const sing=w=>w.length>4?w.replace(/(es|s)$/,''):w;
+const RAW=new Set();for(const r of CATALOGO)for(const w of nrm(r[0]+' '+r[4].replace(/\|/g,' ')).trim().split(' '))RAW.add(w);
+const sing=w=>{if(w.length<=3||!w.endsWith('s'))return w;const a=w.slice(0,-1);if(RAW.has(a))return a;if(w.endsWith('es')){const b=w.slice(0,-2);if(RAW.has(b))return b}return w.length>4?w.replace(/(es|s)$/,''):w};
 const toks=s=>nrm(s).trim().split(' ').filter(w=>w&&!STOP.has(w)).map(sing).join(' ');
 const CAT_IDX=CATALOGO.map(([n,c,f,p,kw,m])=>({n,c,f,p,m,kw:kw.split('|').map(toks).filter(Boolean)}));
+/* Tipo de producto de cada marca, para ofrecerla cuando dices el producto genérico ("cerveza" → Mahou, Estrella Damm…) */
+const TIPO_MARCA={"Actimel":"yogur liquido bebible","Activia":"yogur bifidus","Danone":"yogur","Alpro":"bebida vegetal","Puleva":"leche","Central Lechera Asturiana":"leche","Pascual":"leche","Kaiku":"leche","Lauki":"leche","Président":"mantequilla","Philadelphia":"queso untar","García Baquero":"queso","El Caserío":"queso","La Vaca que ríe":"queso","Babybel":"queso","Hochland":"queso","Galbani":"queso","Reina":"postre","Dhul":"postre","Kinder":"chocolate","Milka":"chocolate","Lindt":"chocolate","Valor":"chocolate","Ferrero":"chocolate bombon","Conguitos":"chuche","Lacasa":"chuche","Haribo":"chuche caramelo","Chupa Chups":"caramelo","Bimbo":"pan molde","Panrico":"pan molde","Donuts":"bolleria","Bollycao":"bolleria","Phoskitos":"bolleria","Dulcesol":"bolleria magdalena","La Bella Easo":"bolleria magdalena","Recondo":"tostada","Oreo":"galleta","Príncipe":"galleta","Chips Ahoy":"galleta","Fontaneda":"galleta","Gullón":"galleta","Cuétara":"galleta","Filipinos":"galleta","Kellogg's":"cereal","Cola Cao":"cacao","Nescafé":"cafe","L'Or":"cafe","Starbucks":"cafe","Marcilla":"cafe","Saimaza":"cafe","Bonka":"cafe","Tassimo":"cafe","Hornimans":"infusion te","Pompadour":"infusion te","Lipton":"infusion te","Nocilla":"crema cacao","Nutella":"crema cacao","Gallo":"pasta","Barilla":"pasta","La Fallera":"arroz","SOS":"arroz","Brillante":"arroz","Nomen":"arroz","Orlando":"tomate frito","Solís":"tomate frito","Apis":"tomate frito","Hellmann's":"mayonesa","Heinz":"ketchup","Calvo":"atun","Isabel":"atun","Albo":"atun","Carbonell":"aceite oliva","Coosur":"aceite oliva","La Española":"aceite oliva","Ybarra":"aceite oliva","Koipe":"aceite girasol","Gallina Blanca":"caldo","Knorr":"caldo sopa","Maggi":"caldo","Litoral":"fabada","Cidacos":"conserva","Bonduelle":"conserva maiz","Hero":"mermelada","Royal":"levadura","Maizena":"harina maicena","Azucarera":"azucar","Old El Paso":"tortilla","La Piara":"pate","Lay's":"patatas fritas snack","Ruffles":"patatas fritas snack","Pringles":"patatas fritas snack","Doritos":"snack nachos","Cheetos":"snack aperitivo","Risi":"snack aperitivo","Grefusa":"snack aperitivo pipas","Campofrío":"embutido fiambre","ElPozo":"embutido fiambre","Navidul":"jamon embutido","Oscar Mayer":"salchichas","Revilla":"chorizo embutido","Noel":"embutido fiambre","Pescanova":"pescado congelado","Findus":"verdura congelada","Frudesa":"verdura congelada","La Cocinera":"congelado","Casa Tarradellas":"pizza","Buitoni":"pizza","Dr. Oetker":"pizza","Carte d'Or":"helado","Magnum":"helado","Häagen-Dazs":"helado","Coca-Cola":"refresco","Pepsi":"refresco cola","Fanta":"refresco","Sprite":"refresco","7Up":"refresco","Schweppes":"refresco tonica","Aquarius":"refresco isotonica","Nestea":"refresco te","Red Bull":"bebida energetica","Monster":"bebida energetica","Don Simón":"zumo","Granini":"zumo","Zumosol":"zumo","Font Vella":"agua","Bezoya":"agua","Lanjarón":"agua","Solán de Cabras":"agua","Mahou":"cerveza","Damm":"cerveza","Cruzcampo":"cerveza","San Miguel":"cerveza","Heineken":"cerveza","Amstel":"cerveza","Alhambra":"cerveza","Estrella Galicia":"cerveza","Turia":"cerveza","Corona":"cerveza","Freixenet":"cava","Codorníu":"cava","Barceló":"ron","Bacardí":"ron","Beefeater":"ginebra","Larios":"ginebra","Ballantine's":"whisky","Martini":"vermut","Ariel":"detergente","Skip":"detergente","Dixan":"detergente","Wipp":"detergente","Colón":"detergente","Mimosín":"suavizante","Flor":"suavizante","Vernel":"suavizante","Fairy":"lavavajillas","Mistol":"lavavajillas","Finish":"lavavajillas pastillas","Somat":"lavavajillas pastillas","Calgon":"lavadora antical","Vanish":"quitamanchas","Neutrex":"lejia","Don Limpio":"limpiador","Cillit Bang":"limpiador","KH-7":"limpiador desengrasante","Ajax":"limpiador","Asevi":"limpiador","Sanytol":"limpiador desinfectante","Pato":"limpiador wc","Harpic":"limpiador wc","Cristasol":"limpiacristales","Air Wick":"ambientador","Glade":"ambientador","Raid":"insecticida","Scottex":"papel higienico","Renova":"papel higienico","Colhogar":"papel higienico","Foxy":"papel cocina","Albal":"papel aluminio","Scotch-Brite":"estropajo","Vileda":"fregona bayeta","Duracell":"pilas","Varta":"pilas","Energizer":"pilas","Colgate":"pasta dientes","Signal":"pasta dientes","Sensodyne":"pasta dientes","Oral-B":"cepillo dientes","Listerine":"enjuague bucal","Dove":"gel ducha","Sanex":"gel ducha","La Toja":"gel ducha","Instituto Español":"gel ducha","Nivea":"crema","Neutrogena":"crema","H&S":"champu","Pantene":"champu","L'Oréal":"champu","Garnier":"champu","Timotei":"champu","Rexona":"desodorante","Axe":"desodorante","Gillette":"maquinilla","Wilkinson":"maquinilla","Ausonia":"compresa","Evax":"compresa","Tampax":"tampon","Dodot":"panal","Huggies":"panal","Kleenex":"panuelo","Whiskas":"comida gato","Felix":"comida gato","Friskies":"comida gato","Purina":"comida gato","Pedigree":"comida perro","Ultima":"pienso comida"};
+const TIPO_FILA={"La Lechera condensada":"leche condensada","Nestlé Chocapic":"cereal","Nestlé Fitness":"cereal","Nestlé Golden Grahams":"cereal","Nestlé Extrafino":"chocolate","Nesquik batido":"batido leche","Nesquik cacao":"cacao","Avecrem pastillas":"caldo","Borges frutos secos":"frutos secos","Borges aceite de oliva":"aceite oliva","Dentastix":"perro snack"};
+for(const e of CAT_IDX){const t=TIPO_FILA[e.n]||(e.m&&TIPO_MARCA[e.m])||'';e.t=toks(t)}
 const CAT_NOM=Object.fromEntries(CAT_IDX.map(e=>[toks(e.n),e]));
 function matchCat(nombre){
   const t=' '+toks(nombre)+' ';if(CAT_NOM[t.trim()])return CAT_NOM[t.trim()];let best=null,bestM=null;
@@ -250,90 +256,7 @@ function matchCat(nombre){
   for(const e of CAT_IDX)for(const k of e.kw){if(k.length<3)continue;if(t.includes(' '+k+' ')&&(!best||k.length>best.l||(k.length===best.l&&e.m&&!best.e.m)))best={e,l:k.length}}
   return best?best.e:null;
 }
-const sample=true;
-let cancelado=false,ctl=null;
-function errMsg(e){return({lector:'El lector de texto del móvil no ha podido leer la foto. Prueba otra vez.',net:'Sin conexión a internet. El lector de fotos necesita internet la primera vez.',
-  sin_codigo:'No encuentro el código de barras. Acércate más y que salga nítido y recto.',
-  image_rejected:'No he podido abrir esa foto. Prueba con otra.',
-  modelo:'No se ha podido cargar el reconocedor de imágenes. Revisa la conexión y vuelve a intentarlo.'})[e?.code]||'Algo ha fallado. Vuelve a intentarlo.'}
-function busy(msg){$('#busy').hidden=!msg;$('#busyMsg').textContent=msg||''}
 
-/* ---------- lectura de fotos en el móvil (sin IA) ---------- */
-const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
-const ZX='https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
-function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)&&window._ok?.[src])return res();
-  const s=document.createElement('script');s.src=src;s.onload=()=>{(window._ok=window._ok||{})[src]=1;res()};s.onerror=()=>rej({code:'net'});document.head.appendChild(s)})}
-function loadImg(file){return new Promise((res,rej)=>{const url=URL.createObjectURL(file);const im=new Image();
-  im.onload=()=>{URL.revokeObjectURL(url);res(im)};im.onerror=()=>{URL.revokeObjectURL(url);rej({code:'image_rejected'})};im.src=url})}
-async function prepImg(file,max=2200){
-  const im=await loadImg(file);const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));
-  const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);
-  const g=c.getContext('2d');g.drawImage(im,0,0,c.width,c.height);
-  const d=g.getImageData(0,0,c.width,c.height),a=d.data;
-  for(let i=0;i<a.length;i+=4){let v=0.299*a[i]+0.587*a[i+1]+0.114*a[i+2];v=Math.max(0,Math.min(255,(v-128)*1.5+140));a[i]=a[i+1]=a[i+2]=v}
-  g.putImageData(d,0,0);return c;
-}
-/* ---------- puente con la app Android (lector de Google ML Kit, voz y archivos) ---------- */
-const NATIVO=!!(window.Android&&window.Android.ocr);
-const natCbs={};let natSeq=0;
-window.__nat=(id,res)=>{const cb=natCbs[id];if(cb){delete natCbs[id];cb(res)}};
-function natCall(fn,...args){return new Promise(res=>{const id='n'+(++natSeq);natCbs[id]=res;window.Android[fn](id,...args)})}
-async function fileB64(file,max=2000){
-  const im=await loadImg(file);const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));
-  const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
-  return c.toDataURL('image/jpeg',0.9).split(',')[1];
-}
-async function natOcr(file){
-  const r=await natCall('ocr',await fileB64(file));
-  if(!r||!r.ok)throw{code:'lector'};
-  return r.lines||[];
-}
-/* Reconstruye filas (para tickets: nombre y precio en la misma línea aunque el lector los separe en columnas) */
-function natFilas(lines){
-  const els=[];for(const l of lines)for(const w of (l.w||[]))els.push({...w,cy:w.y+w.h/2});
-  els.sort((a,b)=>a.cy-b.cy);const filas=[];
-  for(const e of els){const f=filas.find(f=>Math.abs(f.cy-e.cy)<Math.max(f.h,e.h)*0.55);if(f){f.els.push(e);f.cy=(f.cy*(f.els.length-1)+e.cy)/f.els.length}else filas.push({cy:e.cy,h:e.h,els:[e]})}
-  return filas.map(f=>f.els.sort((a,b)=>a.x-b.x).map(e=>e.t).join(' ')).join('\n');
-}
-
-async function ocr(file){
-  if(NATIVO){busy('Leyendo…');return natFilas(await natOcr(file))}
-  busy('Preparando el lector de texto…');
-  await loadScript(TESS);
-  const c=await prepImg(file);
-  const r=await Tesseract.recognize(c,'spa',{logger:m=>{if(cancelado)return;
-    if(m.status==='recognizing text')busy('Leyendo el texto… '+Math.round((m.progress||0)*100)+' %');
-    else busy('Preparando el lector de texto… (la 1ª vez tarda más)')}});
-  return r.data.text||'';
-}
-let TW=null,twLog=null;
-async function getWorker(){
-  await loadScript(TESS);
-  if(!TW){TW=await Tesseract.createWorker('spa',1,{logger:m=>{if(twLog)twLog(m)}});await TW.setParameters({tessedit_pageseg_mode:'11'})}
-  return TW;
-}
-/* Versiones de la foto a leer, de la más probable a la menos. Se para en cuanto reconoce un producto. */
-const PASADAS=[
-  {c:[0,.28,1,.72],k:'min'},{c:[0,0,1,1],k:'min'},{c:[0,0,1,1],k:'gris'},{c:[.1,.2,.9,.8],k:'blanco'},
-  {c:[0,.28,1,.72],k:'gris'},{c:[0,0,1,1],k:'sat'},{c:[0,0,1,1],k:'max'}];
-function variante(src,{c:[fx0,fy0,fx1,fy1],k:key}){
-  const sx=src.width*fx0,sy=src.height*fy0,sw=src.width*(fx1-fx0),sh=src.height*(fy1-fy0);
-  const s=Math.min(1100/Math.max(sw,sh),2);
-  const W=Math.round(sw*s),H=Math.round(sh*s);
-  const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(src,sx,sy,sw,sh,0,0,W,H);
-  const d=g.getImageData(0,0,W,H).data,n=W*H,a=new Uint8ClampedArray(n);
-  for(let i=0,j=0;j<n;i+=4,j++){const r=d[i],gg=d[i+1],b=d[i+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);
-    a[j]=key==='gris'?0.299*r+0.587*gg+0.114*b:key==='min'?mn:key==='max'?mx:key==='sat'?mx-mn:(mn>165&&mx-mn<70?255:0)}
-  let thr=128;
-  if(key!=='blanco'){const hist=new Array(256).fill(0);for(let j=0;j<n;j++)hist[a[j]]++;
-    let sum=0;for(let i=0;i<256;i++)sum+=i*hist[i];let sB=0,wB=0,max=0;
-    for(let i=0;i<256;i++){wB+=hist[i];if(!wB)continue;const wF=n-wB;if(!wF)break;sB+=i*hist[i];const mB=sB/wB,mF=(sum-sB)/wF,v=wB*wF*(mB-mF)*(mB-mF);if(v>max){max=v;thr=i}}}
-  const o=document.createElement('canvas');o.width=W;o.height=H;const og=o.getContext('2d');const id=og.createImageData(W,H);
-  let dark=0;for(let j=0;j<n;j++)if(a[j]<=thr)dark++;const inv=dark<n/2;
-  for(let j=0,i=0;j<n;j++,i+=4){let v=a[j]>thr?255:0;if(inv)v=255-v;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255}
-  og.putImageData(id,0,0);return o;
-}
-/* Vocabulario del catálogo para corregir letras mal leídas (Actime/ → actimel, DESNATAD → desnatada) */
 let VOCAB=null;
 function vocab(){
   if(VOCAB)return VOCAB;
@@ -366,125 +289,6 @@ function corrige(w,conf){
       if(best&&bd<=max)r=best}
   }
   corrCache.set(ck,r);return r;
-}
-async function ocrWords(file,rot){
-  if(NATIVO){
-    busy('Leyendo las letras…');const lines=await natOcr(file);const words=new Map(),lineas=[];
-    for(const l of lines){const lt=[];for(const x of (l.w||[])){const raw=limpiaPalabra(x.t);if(!raw)continue;const t=corrige(raw,70);lt.push(t);if(raw.replace(/[0-9]/g,'').length<3)continue;const p=words.get(t);if(!p||x.h>p.h)words.set(t,{t,raw,h:x.h,x:x.x,y:x.y,c:95})}if(lt.length)lineas.push(lt.join(' '))}
-    return{text:lineas.join('\n'),words:[...words.values()]};
-  }
-  busy('Preparando el lector de texto… (la 1ª vez tarda más)');
-  const w=await getWorker();
-  const im=await loadImg(file);
-  let c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);
-  if(rot){const r=document.createElement('canvas');r.width=c.height;r.height=c.width;const g=r.getContext('2d');g.translate(r.width/2,r.height/2);g.rotate(rot*Math.PI/180);g.drawImage(c,-c.width/2,-c.height/2);c=r}
-  const words=new Map(),lineas=[];const V=new Set(vocab());
-  const ok=(raw,conf)=>{const t=corrige(raw,conf);return t&&(conf>=40||(V.has(t)&&(conf>=10||t.length>=5)))?t:null};
-  for(let i=0;i<PASADAS.length;i++){
-    if(cancelado)break;
-    twLog=m=>{if(!cancelado&&m.status==='recognizing text')busy(`Leyendo las letras… ${i+1}/${PASADAS.length} · ${Math.round((m.progress||0)*100)} %`)};
-    const res=await w.recognize(variante(c,PASADAS[i]),{},{text:true,blocks:true});
-    const d=res.data;const ws=[];
-    for(const b of (d.blocks||[]))for(const p of (b.paragraphs||[]))for(const l of (p.lines||[])){
-      const lt=[];for(const x of (l.words||[])){ws.push(x);const t=ok(limpiaPalabra(x.text),x.confidence||0);if(t)lt.push(t)}
-      if(lt.join('').replace(/[^a-z]/g,'').length>=3)lineas.push(lt.join(' '))}
-    if(!ws.length)for(const x of (d.words||[]))ws.push(x);
-    for(const x of ws){
-      const conf=x.confidence||0;const raw=limpiaPalabra(x.text);if(raw.replace(/[0-9]/g,'').length<3)continue;
-      const t=ok(raw,conf);if(!t)continue;const h=(x.bbox?.y1-x.bbox?.y0)||0;
-      const prev=words.get(t);if(!prev||h*conf>prev.h*prev.c)words.set(t,{t,raw,h,x:x.bbox?.x0||0,y:x.bbox?.y0||0,c:conf});
-    }
-    const o={text:lineas.join('\n'),words:[...words.values()]};
-    const hits=productosDeTexto(o,3);
-    if(i>=1&&hits.length&&(hits[0].marca||hits.some(h=>h.e&&String(h.leido).replace(/[^a-z]/gi,'').length>=5)))break;
-  }
-  twLog=null;
-  return{text:lineas.join('\n'),words:[...words.values()]};
-}
-function palabrasGrandes(o,n=10){return [...o.words].sort((a,b)=>b.h-a.h).map(w=>w.t).slice(0,n).map(t=>t.charAt(0).toUpperCase()+t.slice(1))}
-/* Marcas: si en la foto pone una marca (Actimel, Puleva, Fairy…) devuelve sus artículos, el más parecido primero */
-function marcasDeTexto(o){
-  const full=' '+o.text.split('\n').join(' | ')+' '+[...o.words].map(w=>w.t).join(' ')+' ';
-  const found=new Map();
-  for(const e of CAT_IDX){if(!e.m)continue;
-    for(const k of e.kw){if(k.length<3)continue;if(full.includes(' '+k+' ')){const cur=found.get(e.m)||{m:e.m,best:null,bl:0};if(k.length>cur.bl){cur.best=e;cur.bl=k.length}found.set(e.m,cur)}}}
-  const alto=m=>{let h=0;for(const e of CAT_IDX)if(e.m===m)for(const k of e.kw)for(const t of k.split(' ')){const w=o.words.find(x=>x.t===t);if(w&&w.h>h)h=w.h}return h};
-  const out=[];
-  for(const {m,best} of [...found.values()].sort((a,b)=>alto(b.m)-alto(a.m))){
-    const arts=CAT_IDX.filter(e=>e.m===m);arts.sort((a,b)=>(b===best)-(a===best));
-    arts.slice(0,6).forEach((e,i)=>out.push({e,leido:m,marca:m,principal:i===0}));
-  }
-  return out;
-}
-/* Busca en el catálogo a partir de las letras más grandes (lo más evidente) y después del resto del texto */
-function productosDeTexto(o,max=3){
-  const out=[],vistos=new Set();
-  const add=(e,leido,extra)=>{if(e&&!vistos.has(e.n)){vistos.add(e.n);out.push({e,leido,...extra})}};
-  for(const x of marcasDeTexto(o))add(x.e,x.leido,{marca:x.marca,principal:x.principal});
-  const nMarca=out.length;
-  const grandes=[...o.words].sort((a,b)=>b.h-a.h);
-  const top=grandes.slice(0,6).sort((a,b)=>a.y-b.y||a.x-b.x);
-  add(matchCat(top.map(w=>w.t).join(' ')),top.map(w=>w.raw||w.t).join(' '));
-  for(const l of o.text.split(/\n+/)){const t=l.trim();if(t.length>=3)add(matchCat(t),t)}
-  for(let i=0;i<top.length-1;i++){const f=top[i].t+' '+top[i+1].t;add(matchCat(f),f)}
-  for(const w of grandes.slice(0,12))add(matchCat(w.t),w.raw||w.t);
-  return out.slice(0,Math.max(max,nMarca+2));
-}
-function refTxt(nombre){const e=matchCat(nombre);if(!e)return'';let b=null;for(const s of activeSupers()){const p=e.p*IDX[s.id];if(!b||p<b.p)b={p,s}}return b?` · ≈ ${eur(Math.round(b.p*100)/100)} en ${b.s.n}`:''}
-async function leerCodigo(file){
-  if(NATIVO){try{const r=await natCall('barcode',await fileB64(file,1600));return r&&r.codes&&r.codes[0]||null}catch{return null}}
-  try{if('BarcodeDetector' in window){const bmp=await createImageBitmap(file);
-    const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});const r=await det.detect(bmp);if(r[0])return r[0].rawValue}}catch{}
-  await loadScript(ZX);
-  const url=URL.createObjectURL(file);
-  try{const rd=new ZXing.BrowserMultiFormatReader();const r=await rd.decodeFromImageUrl(url);return r.getText()}catch{return null}
-  finally{URL.revokeObjectURL(url)}
-}
-async function buscarOFF(code){
-  try{const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=product_name_es,product_name,generic_name_es,brands,quantity`);
-    const j=await r.json();if(j.status!==1||!j.product)return null;const p=j.product;
-    const n=p.product_name_es||p.product_name||p.generic_name_es;return n?{nombre:n,marca:(p.brands||'').split(',')[0].trim(),formato:p.quantity||''}:null}
-  catch{return null}
-}
-const genName=raw=>{const e=matchCat(raw);if(e)return e.n;const t=String(raw).toLowerCase().replace(/\s+/g,' ').trim();return t.charAt(0).toUpperCase()+t.slice(1)};
-function parseLista(text){
-  const out=[];
-  for(let l of text.split(/\n+/)){
-    l=l.replace(/^[\s\-–•·*_>\[\]()]+/,'').trim();
-    let cant=1;const q=l.match(/^(\d{1,2})\s*(?:x|uds?|kg|l)?\s+(.+)$/i);if(q){cant=+q[1];l=q[2]}
-    l=l.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]/g,' ').replace(/\s+/g,' ').trim();
-    if(l.replace(/\s/g,'').length<3)continue;
-    const e=matchCat(l);out.push({nombre:genName(l),cat:e?.c,cant,motivo:e?'':'leído: '+l});
-  }
-  return out;
-}
-function parseTicket(text){
-  const T=text.toUpperCase();
-  const SK=[['mercadona',/MERCADONA/],['consum',/CONSUM/],['lidl',/LIDL/],['carrefour',/CARREFOUR/],['alcampo',/ALCAMPO|AUCHAN/],['familycash',/FAMILY/],['dia',/\bDIA\b|DIA RETAIL/]];
-  const sup=(SK.find(([,r])=>r.test(T))||[])[0]||null;
-  let fecha=null;const fm=T.match(/(\d{2})[\/\-.](\d{2})[\/\-.](\d{2,4})/);
-  if(fm){const y=fm[3].length===2?'20'+fm[3]:fm[3];if(+fm[2]<=12&&+fm[1]<=31)fecha=`${y}-${fm[2]}-${fm[1]}`}
-  const PR=/-?\d{1,4}[.,]\d{2}(?!\d)/g;
-  const SKIP=/TOTAL|IVA|TARJETA|CAMBIO|ENTREGAD|EFECTIVO|BASE IMP|CUOTA|SUBTOTAL|IMPORTE|FACTURA|N\.?I\.?F|C\.?I\.?F|TEL[EÉ]F|DESCUENTO|AHORRO|PUNTOS|OPERACI|VISA|MASTER|FECHA|HORA|CAJA|TICKET|DEVOLUC|GRACIAS|BOLSA|APLAZ|AUTORIZ|CONTACTLESS|PAGO/;
-  const lineas=[];let total=null,pend=null;
-  for(const raw of text.split(/\n+/)){
-    const L=raw.toUpperCase();
-    const ps=[...raw.matchAll(PR)].map(m=>parseFloat(m[0].replace(',','.')));
-    if(/TOTAL/.test(L)&&ps.length){total=ps[ps.length-1];continue}
-    if(SKIP.test(L))continue;
-    let nom=raw.replace(PR,' ').replace(/€|EUR|\/\s*KG|\bKG\b|\bUDS?\b|\bUN\b/gi,' ');
-    let cant=1;const q=nom.trim().match(/^(\d{1,2})\s+(.+)$/);if(q){cant=+q[1];nom=q[2]}
-    nom=nom.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]/g,' ').replace(/\s+/g,' ').trim();
-    if(!ps.length){pend=nom.length>=3?nom:null;continue}
-    if(/KG/.test(L)&&nom.length<3&&pend){nom=pend;cant=1}
-    if(nom.replace(/\s/g,'').length<3)continue;
-    const tot=ps[ps.length-1];if(!(tot>0))continue;
-    const unit=ps.length>=2&&cant>1?ps[0]:tot/cant;
-    pend=null;
-    const e=matchCat(nom);
-    lineas.push({nombre:genName(nom),cant,precio_unit:Math.round(unit*100)/100,cat:e?.c||'Otros',match:e?e.n:null,leido:nom});
-  }
-  return{super:sup,fecha,total,lineas};
 }
 
 /* ---------- precios ---------- */
@@ -548,262 +352,211 @@ async function terminarCompra(sup){
     await put('productos',id,p);
     await del('lista',id);
   }
+  let tot=0;for(const [id,x] of hechos){const p=priceOf(id,sup);if(p)tot+=p*(x.cant||1)}
+  if(hechos.length)await put('tickets','t'+Date.now(),{fecha:hoy(),super:sup,total:Math.round(tot*100)/100,n:hechos.length});
   closeSheet();toast(`Compra registrada: ${hechos.length} productos.`);
 }
 
-/* ---------- reconocimiento de imágenes en el móvil (CLIP, sin API) ---------- */
-/* Compara cada foto con descripciones de productos usando un modelo de visión que se descarga una vez (~150 MB) y funciona sin conexión después. */
-const TFJS='https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1';
-const CLIP_M='Xenova/clip-vit-base-patch32';
-const VIS=[
-['Leche semidesnatada','a carton of milk'],['Huevos','eggs in an egg carton'],['Yogur natural','yogurt cups'],['Mantequilla','a block of butter'],
-['Queso curado','a wedge of cheese'],['Queso lonchas','a package of sliced cheese'],['Pan de barra','a baguette'],['Pan de molde','a bag of sliced bread'],
-['Galletas','a pack of cookies'],['Cereales','a box of breakfast cereal'],['Café molido','a package of ground coffee'],['Cápsulas de café','coffee capsules'],
-['Azúcar','a bag of sugar'],['Harina','a bag of flour'],['Aceite de oliva virgen extra','a bottle of olive oil'],['Arroz','a bag of rice'],
-['Pasta (macarrones/espaguetis)','a package of dry pasta'],['Garbanzos cocidos','a jar of chickpeas'],['Tomate frito','a jar of tomato sauce'],['Atún en aceite','cans of tuna'],
-['Mayonesa','a jar of mayonnaise'],['Ketchup','a bottle of ketchup'],['Mermelada','a jar of jam'],['Pollo entero','a raw whole chicken'],
-['Pechuga de pollo','raw chicken breast fillets'],['Carne picada','raw ground beef'],['Lomo de cerdo','raw pork loin'],['Salchichas','sausages'],
-['Jamón cocido','sliced cooked ham'],['Jamón serrano','cured serrano ham slices'],['Chorizo','chorizo sausage'],['Salmón','a raw salmon fillet'],
-['Merluza','a white fish fillet'],['Manzanas','apples'],['Plátanos','bananas'],['Naranjas','oranges'],['Mandarinas','tangerines'],['Peras','pears'],
-['Uvas','grapes'],['Fresas','strawberries'],['Limones','lemons'],['Tomates','tomatoes'],['Lechuga','a head of lettuce'],['Cebollas','onions'],
-['Patatas','potatoes'],['Zanahorias','carrots'],['Pimientos','bell peppers'],['Calabacín','zucchini'],['Ajos','garlic bulbs'],['Aguacates','avocados'],
-['Brócoli','broccoli'],['Pizza congelada','a frozen pizza box'],['Helado','a tub of ice cream'],['Agua mineral','plastic bottles of water'],
-['Refresco de cola','a bottle of cola'],['Cerveza','cans of beer'],['Vino tinto','a bottle of wine'],['Zumo de naranja','a carton of orange juice'],
-['Detergente ropa','a bottle of laundry detergent'],['Suavizante','a bottle of fabric softener'],['Lavavajillas a mano','a bottle of dish soap'],['Lejía','a bottle of bleach'],
-['Papel de cocina','paper towel rolls'],['Papel higiénico','toilet paper rolls'],['Gel de ducha','a bottle of shower gel'],['Champú','a bottle of shampoo'],
-['Pasta de dientes','a tube of toothpaste'],
-[null,'an empty refrigerator shelf'],[null,'an empty kitchen cupboard'],[null,'a plain wall'],[null,'a person\'s hand'],[null,'a white refrigerator door']];
 
-/* caché del modelo en IndexedDB (funciona también abriendo el HTML como archivo) */
-const idbCache={
-  db:null,
-  open(){return this.db||(this.db=new Promise((res,rej)=>{const r=indexedDB.open('fotocesta-modelos',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
-  async match(req){try{const k=typeof req==='string'?req:req.url;const db=await this.open();
-    const v=await new Promise(res=>{const t=db.transaction('f').objectStore('f').get(k);t.onsuccess=()=>res(t.result);t.onerror=()=>res(null)});
-    return v?new Response(v.blob,{headers:v.headers}):undefined}catch{return undefined}},
-  async put(req,resp){try{const k=typeof req==='string'?req:req.url;const blob=await resp.blob();const headers={'content-type':resp.headers.get('content-type')||'application/octet-stream','content-length':String(blob.size)};
-    const db=await this.open();await new Promise(res=>{const t=db.transaction('f','readwrite');t.objectStore('f').put({blob,headers},k);t.oncomplete=res;t.onerror=res})}catch{}}
-};
+const NUM={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,docena:12};
+function parseVoz(txt){
+  return txt.toLowerCase().replace(/\s+(y|e|además|tambien|también|más|mas)\s+/g,',').split(/[,.;]+/).map(t=>t.trim()).filter(Boolean).map(t=>{
+    let cant=1;t=t.replace(/^(añade|añadir|apunta|pon|compra|comprar|necesito|quiero)\s+/,'');
+    const m=t.match(/^(media docena|una docena|\d+|un|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+(?:de\s+)?(.+)$/);
+    if(m){cant=/docena/.test(m[1])?1:(+m[1]||NUM[m[1]]||1);t=m[2]}
+    t=t.replace(/^(kilo|kilos|paquete|paquetes|botella|botellas|bote|botes|lata|latas|bolsa|bolsas|brik|briks|litro|litros)\s+(de\s+)?/,'');
+    return{nombre:t.charAt(0).toUpperCase()+t.slice(1),cant};
+  }).filter(p=>p.nombre.length>=2);
+}
 
-let TF=null,clip=null;
-async function loadClip(){
-  if(clip)return clip;
-  busy('Cargando el reconocedor de imágenes…');
-  try{TF=await import(TFJS)}catch{throw{code:'net'}}
-  TF.env.allowLocalModels=false;TF.env.useBrowserCache=false;TF.env.useCustomCache=true;TF.env.customCache=idbCache;
-  const prog=p=>{if(cancelado)return;if(p.status==='progress'&&p.total>2e6)busy(`Descargando el reconocedor (solo la 1ª vez)… ${Math.round(p.loaded/p.total*100)} %`)};
-  try{
-    const tok=await TF.AutoTokenizer.from_pretrained(CLIP_M,{progress_callback:prog});
-    const proc=await TF.AutoProcessor.from_pretrained(CLIP_M,{progress_callback:prog});
-    const tm=await TF.CLIPTextModelWithProjection.from_pretrained(CLIP_M,{dtype:'q8',progress_callback:prog});
-    const vm=await TF.CLIPVisionModelWithProjection.from_pretrained(CLIP_M,{dtype:'q8',progress_callback:prog});
-    busy('Preparando el reconocedor…');
-    const prompts=VIS.map(v=>'a photo of '+v[1]);
-    const {text_embeds}=await tm(tok(prompts,{padding:true,truncation:true}));
-    const d=text_embeds.dims[1];const T=normRows(text_embeds.data,prompts.length,d);
-    clip={proc,vm,T,d};return clip;
-  }catch(e){if(e?.code)throw e;throw{code:'modelo'}}
-}
-function normRows(data,n,d){const out=[];for(let i=0;i<n;i++){const r=Float32Array.from(data.slice(i*d,(i+1)*d));let s=0;for(const v of r)s+=v*v;s=Math.sqrt(s)||1;for(let j=0;j<d;j++)r[j]/=s;out.push(r)}return out}
-async function clasificar(canvas){
-  const c=clip;
-  const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.9));
-  const img=await TF.RawImage.fromBlob(blob);
-  const {image_embeds}=await c.vm(await c.proc(img));
-  const v=normRows(image_embeds.data,1,c.d)[0];
-  const logits=c.T.map(t=>{let s=0;for(let j=0;j<c.d;j++)s+=t[j]*v[j];return s*100});
-  const m=Math.max(...logits);const ex=logits.map(x=>Math.exp(x-m));const z=ex.reduce((a,b)=>a+b,0);
-  return ex.map((x,i)=>({i,p:x/z})).sort((a,b)=>b.p-a.p);
-}
-function recortes(im,grid){
-  const W=im.naturalWidth,H=im.naturalHeight,out=[];
-  const add=(x,y,w,h)=>{const c=document.createElement('canvas');const k=Math.min(1,448/Math.max(w,h));c.width=Math.round(w*k);c.height=Math.round(h*k);c.getContext('2d').drawImage(im,x,y,w,h,0,0,c.width,c.height);out.push(c)};
-  add(0,0,W,H);
-  if(grid){for(const n of [2,3]){const w=W/n,h=H/n;for(let r=0;r<n;r++)for(let q=0;q<n;q++)add(q*w,r*h,w,h)}}
-  else{add(W*.15,H*.15,W*.7,H*.7)}
-  return out;
-}
-async function reconocer(file,grid){
-  await loadClip();
-  const im=await loadImg(file);
-  const cs=recortes(im,grid);const best={};
-  for(let k=0;k<cs.length;k++){
-    if(cancelado)return [];
-    busy(grid?`Mirando la foto… zona ${k+1} de ${cs.length}`:'Reconociendo el producto…');
-    const r=await clasificar(cs[k]);
-    for(const x of r.slice(0,grid?1:3)){const n=VIS[x.i][0];if(!n)continue;if(!best[n]||x.p>best[n])best[n]=x.p}
+/* ---------- puente con la app Android (voz y archivos) ---------- */
+const NATIVO=!!(window.Android&&window.Android.voz);
+const natCbs={};let natSeq=0;
+window.__nat=(id,res)=>{const cb=natCbs[id];if(cb){delete natCbs[id];cb(res)}};
+function natCall(fn,...args){return new Promise(res=>{const id='n'+(++natSeq);natCbs[id]=res;window.Android[fn](id,...args)})}
+function busy(msg){$('#busy').hidden=!msg;$('#busyMsg').textContent=msg||''}
+
+/* ---------- buscar modelos de un producto ---------- */
+function candidatos(q){
+  const qt=toks(q).split(' ').filter(w=>w.length>=2);
+  if(!qt.length)return[];
+  const full=qt.join(' ');const res=[];
+  for(const e of CAT_IDX){
+    const nombre=toks(e.n);const bolsa=' '+[nombre,...e.kw,e.t||''].join(' ')+' ';
+    if(!qt.every(w=>bolsa.includes(' '+w+' ')||(w.length>=5&&bolsa.includes(' '+w))))continue;
+    let sc=0;
+    if(nombre===full)sc+=100;
+    if(e.kw.includes(full))sc+=40;
+    if(nombre.startsWith(qt[0]))sc+=15;
+    if(!e.m)sc+=10;
+    sc-=nombre.split(' ').length;
+    res.push({e,sc});
   }
-  return Object.entries(best).map(([n,p])=>({n,p})).sort((a,b)=>b.p-a.p);
+  return res.sort((a,b)=>b.sc-a.sc).map(x=>x.e);
+}
+function resolver(texto){
+  let c=candidatos(texto);
+  if(!c.length){const corr=toks(texto).split(' ').map(w=>corrige(w,0)).join(' ');if(corr!==toks(texto))c=candidatos(corr)}
+  if(!c.length){const m=matchCat(texto);if(m){const mc=candidatos(m.n.split(' ')[0]);c=[m,...mc.filter(x=>x!==m)]}}
+  const exacto=c.find(e=>toks(e.n)===toks(texto));
+  if(exacto&&(toks(texto).includes(' ')||c.length===1))return{directo:exacto};
+  if(c.length===1)return{directo:c[0]};
+  if(!c.length)return{libre:true};
+  return{opciones:c.slice(0,20)};
 }
 
-/* ---------- fotos ---------- */
-const MODOS={
-  nevera:{t:'Nevera o despensa',d:'Qué hay y qué falta',msg:'Mirando la foto…'},
-  producto:{t:'Producto',d:'Lee su etiqueta o código',msg:'Reconociendo el producto…'},
-  ticket:{t:'Ticket',d:'Aprende precios reales y hábitos',msg:'Leyendo el ticket…'},
-  escrita:{t:'Lista escrita',d:'Mejor en mayúsculas claras',msg:'Leyendo la lista…'}};
-const ICON={
-  nevera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M5 10h14M9 5v2M9 13v3"/></svg>',
-  producto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>',
-  escrita:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6v18h12V7z"/><path d="M14 3v4h4M9 12h6M9 16h4"/></svg>',
-  ticket:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>'};
-let modoActual=null;
-function modesHTML(){return `<div class="modes">${Object.entries(MODOS).map(([k,m])=>`<button class="mode" data-act="modo" data-m="${k}">${ICON[k]}<b>${m.t}</b><span>${m.d}</span></button>`).join('')}</div>`}
-const pct=p=>Math.round(p*100)+' %';
+/* ---------- añadir a la lista ---------- */
+let deshacer=null;
+async function anadirALista(entradas,origen){
+  const antes={};const nombres=[];
+  for(const p of entradas){
+    const e=p.e||null;const nombre=e?e.n:cap(String(p.nombre||'').trim());if(!nombre)continue;
+    const id=slug(nombre);
+    if(!(id in antes))antes[id]=S.lista[id]?clone(S.lista[id]):null;
+    if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||'Otros',formato:e?.f||'',precios:{},compras:[],creado:hoy()});
+    const cur=S.lista[id];
+    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now()});
+    nombres.push(nombre+((p.cant||1)>1?' ×'+p.cant:''));
+  }
+  if(nombres.length)deshacer=antes;
+  return nombres;
+}
+async function deshacerUltimo(){
+  if(!deshacer)return;
+  for(const [id,v] of Object.entries(deshacer)){if(v)await put('lista',id,v);else await del('lista',id)}
+  deshacer=null;toast('Deshecho.');
+}
+let cola=[],colaTotal=0,colaAnadidos=[],colaOrigen='manual';
+async function procesarEntradas(entradas,origen){
+  const directos=[];cola=[];colaAnadidos=[];colaOrigen=origen;
+  for(const p of entradas){
+    const r=resolver(p.nombre);
+    if(r.directo)directos.push({e:r.directo,cant:p.cant});
+    else if(r.libre)directos.push({nombre:p.nombre,cant:p.cant});
+    else cola.push({texto:p.nombre,cant:p.cant,opciones:r.opciones});
+  }
+  colaAnadidos=await anadirALista(directos,origen);
+  colaTotal=cola.length;
+  if(cola.length)mostrarOpciones();
+  else if(colaAnadidos.length)toast('Añadido: '+colaAnadidos.join(', '),[['Deshacer','deshacer']]);
+}
+function mostrarOpciones(){
+  const it=cola[0];const n=colaTotal-cola.length+1;
+  openSheet(`<p class="note" style="margin:0">${colaTotal>1?`Producto ${n} de ${colaTotal}`:''}</p>
+  <h2>¿Qué «${esc(it.texto.toLowerCase())}» quieres?</h2>
+  <div class="cantSel"><span>Cantidad</span><div class="qty"><button data-act="opDec" aria-label="Menos">−</button><span id="opCant">${it.cant||1}</span><button data-act="opInc" aria-label="Más">+</button></div></div>
+  <div class="opciones">${it.opciones.map((e,i)=>`<button class="opcion" data-act="opElegir" data-i="${i}"><b>${esc(e.n)}</b><small>${esc(e.f||'')}${e.m?' · '+esc(e.m):''}</small></button>`).join('')}</div>
+  <div class="actions"><button class="btn line" data-act="opLibre">Añadir «${esc(it.texto)}» tal cual</button><button class="btn line" data-act="opSaltar">Saltar</button></div>`);
+}
+async function elegirOpcion(i,libre){
+  const it=cola.shift();if(!it)return;
+  const cant=+($('#opCant')?.textContent)||it.cant||1;
+  if(i!=null||libre){const nom=await anadirALista([libre?{nombre:it.texto,cant}:{e:it.opciones[i],cant}],colaOrigen);colaAnadidos.push(...nom)}
+  if(cola.length)mostrarOpciones();
+  else{closeSheet();if(colaAnadidos.length)toast('Añadido: '+colaAnadidos.join(', '),[['Deshacer','deshacer']])}
+}
+function entradasDeTexto(v){
+  return v.split(/[,;\n]+|\s+y\s+/).map(t=>t.trim()).filter(Boolean).map(t=>{const m=t.match(/^(\d+)\s*(?:x\s*)?(.+)$/i);return m?{nombre:m[2],cant:+m[1]}:{nombre:t,cant:1}});
+}
 
-async function onPhotos(files){
-  if(!files.length)return;
-  const m=modoActual;closeSheet();
-  cancelado=false;ctl={abort(){cancelado=true;busy()}};
-  busy(MODOS[m].msg);
-  try{
-    if(m==='producto'){
-      const items=[],leidos=[];
-      for(const f of files){if(cancelado)return;
-        busy('Buscando código de barras…');
-        const code=await leerCodigo(f);
-        if(code){busy('Consultando el producto '+code+'…');const off=await buscarOFF(code);
-          if(off){const e=matchCat(off.nombre);items.push({nombre:e?e.n:off.nombre,cat:e?.c,cant:1,motivo:'Código: '+[off.nombre,off.marca,off.formato].filter(Boolean).join(' · ')+refTxt(e?e.n:off.nombre)});continue}}
-        let o=await ocrWords(f,0);if(cancelado)return;
-        let hall=productosDeTexto(o,4);
-        if(!hall.length){o=await ocrWords(f,90);if(cancelado)return;hall=productosDeTexto(o,4)}
-        palabrasGrandes(o).forEach(w=>{if(!leidos.includes(w))leidos.push(w)});
-        if(hall.length){hall.forEach((x,i)=>items.push({nombre:x.e.n,cat:x.e.c,cant:1,ok:i===0,motivo:(x.marca?(x.principal?'Leído: «'+x.marca+'»':'Otro artículo de '+x.marca):(i===0?'Leído: ':'¿O es…? Leído: ')+'«'+x.leido.slice(0,40)+'»')+(x.e.f?' · '+x.e.f:'')+refTxt(x.e.n)}));continue}
-        const r=await reconocer(f,false);if(cancelado)return;
-        r.slice(0,3).forEach((x,i)=>items.push({nombre:x.n,cant:1,ok:i===0&&x.p>=0.25,motivo:(i===0?'Por su aspecto: ':'¿O es…? ')+pct(x.p)+refTxt(x.n)}));
-      }
-      if(cancelado)return;
-      showReview(items,m,leidos);
-    }else if(m==='nevera'){
-      const vistos={};
-      for(const f of files){if(cancelado)return;for(const x of await reconocer(f,true))if(x.p>=0.30&&(!vistos[x.n]||x.p>vistos[x.n]))vistos[x.n]=x.p}
-      for(const f of files){if(cancelado)return;const o=await ocrWords(f,0);for(const x of productosDeTexto(o,20))if(!vistos[x.e.n])vistos[x.e.n]=0.99}
-      if(cancelado)return;
-      const vistosN=new Set(Object.keys(vistos).map(slug));
-      const faltan=sugerencias().filter(s=>!vistosN.has(s.id)).map(s=>({nombre:s.nombre,cant:s.cant,ok:true,motivo:'Sueles comprarlo y no lo veo en la foto'}));
-      const habit=new Set(Object.values(S.productos).filter(p=>(p.compras||[]).length>=2).map(p=>slug(p.nombre)));
-      const noVistosHab=[...habit].filter(id=>!vistosN.has(id)&&!faltan.some(f=>slug(f.nombre)===id)&&!S.lista[id]).map(id=>({nombre:S.productos[id].nombre,cant:1,ok:false,motivo:'Sueles comprarlo y no lo veo en la foto'}));
-      const veo=Object.entries(vistos).sort((a,b)=>b[1]-a[1]).map(([n,p])=>({nombre:n,cant:1,ok:false,motivo:(p>=0.99?'Leo su etiqueta en la foto':'Lo veo en la foto ('+pct(p)+')')+'. Márcalo si se está acabando'+refTxt(n)}));
-      const items=[...faltan,...noVistosHab,...veo];
-      if(!items.length){toast('No he reconocido productos. Haz la foto más cerca y con buena luz.');return}
-      showReview(items,m);
-    }else{
-      let txt='';for(const f of files){if(cancelado)return;txt+='\n'+await ocr(f)}
-      if(cancelado)return;
-      if(m==='ticket')showTicket(parseTicket(txt));
-      else showReview(parseLista(txt),m);
+/* ---------- voz ---------- */
+let rec=null;
+async function escuchar(){
+  if(NATIVO){
+    const b=$('#qVoz');b.classList.add('on');
+    try{const r=await natCall('voz');if(r&&r.error){toast('No se puede usar el reconocimiento de voz en este móvil.');return}
+      const ps=parseVoz(r&&r.text||'');if(ps.length)await procesarEntradas(ps,'voz')}
+    finally{b.classList.remove('on')}
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('#addTxt').focus();toast('Pulsa el micrófono del teclado y di el producto.');return}
+  if(rec){try{rec.stop()}catch{}return}
+  rec=new SR();rec.lang='es-ES';rec.interimResults=true;rec.maxAlternatives=1;
+  const b=$('#qVoz');b.classList.add('on');$('#vozTxt').hidden=false;$('#vozTxt').textContent='Te escucho…';
+  let final='';
+  rec.onresult=e=>{let t='';for(const r of e.results)t+=r[0].transcript;$('#vozTxt').textContent=t;if(e.results[e.results.length-1].isFinal)final=t};
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){$('#addTxt').focus();toast('No se puede usar el micrófono aquí. Usa el micrófono del teclado.')}else if(e.error!=='no-speech'&&e.error!=='aborted')toast('No te he entendido. Vuelve a probar.')};
+  rec.onend=async()=>{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null;const ps=parseVoz(final||'');if(ps.length)await procesarEntradas(ps,'voz')};
+  try{rec.start()}catch{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null}
+}
+
+/* ---------- presupuesto detallado ---------- */
+function presupuesto(){
+  const items=Object.entries(S.lista);
+  const sups=activeSupers();
+  const per=sups.map(s=>{
+    let t=0,est=0,sin=0;const lineas=[];
+    for(const [id,x] of items){
+      const cant=x.cant||1;const i=priceInfo(id,s.id);let p=i?i.p:null,src=i?i.src:null;
+      if(p==null){const a=avgPrice(id);if(a!=null){p=Math.round(a*100)/100;src='media'}}
+      if(p==null){sin++;lineas.push({id,x,cant,p:null});continue}
+      if(src!=='ticket'&&src!=='web')est++;
+      t+=p*cant;lineas.push({id,x,cant,p,src});
     }
-  }catch(e){if(!cancelado)toast(errMsg(e))}
-  finally{ctl=null;busy()}
-}
-
-let review=[],revM=null,revLeidos=[];
-function showReview(items,m,leidos){
-  review=items.map(x=>({nombre:String(x.nombre||''),cat:x.cat,cant:Math.max(1,Math.round(Number(x.cant)||1)),motivo:x.motivo?String(x.motivo):'',ok:x.ok!==false})).filter(x=>x.nombre);
-  revM=m;revLeidos=leidos||[];
-  if(!review.length&&!revLeidos.length){toast('No he encontrado productos en la foto.');return}
-  pintaReview();
-}
-function syncReview(){review=review.map((r,i)=>({...r,ok:$('#rv-ok-'+i)?$('#rv-ok-'+i).checked:r.ok,nombre:($('#rv-n-'+i)?$('#rv-n-'+i).value:r.nombre).trim(),cant:+($('#rv-c-'+i)?$('#rv-c-'+i).value:r.cant)||1}))}
-function pintaReview(){
-  const m=revM;
-  openSheet(`<h2>${MODOS[m].t}</h2>
-  ${revLeidos.length?`<h3>Letras que he leído</h3><div class="chips">${revLeidos.map(w=>`<button class="chip" data-act="rvChip" data-w="${esc(w)}">+ ${esc(w)}</button>`).join('')}</div><p class="note">Toca una palabra para añadirla como producto.</p>`:''}
-  ${review.length?'<p class="note">Marca lo que quieras añadir. Al escribir un nombre te sugiere productos del catálogo.</p>':'<p class="note">No he reconocido ningún producto del catálogo. Toca lo que he leído o escríbelo.</p>'}
-  <div id="rvList">${review.map((x,i)=>`<div class="rv"><input type="checkbox" id="rv-ok-${i}" ${x.ok?'checked':''} aria-label="Incluir"><input type="text" id="rv-n-${i}" list="catlist" value="${esc(x.nombre)}"><input type="number" id="rv-c-${i}" min="1" value="${x.cant}" aria-label="Cantidad">${x.motivo?`<small>${esc(x.motivo)}</small>`:''}</div>`).join('')}</div>
-  <div class="actions"><button class="btn ghost" data-act="rvNuevo">+ Otro producto</button></div>
-  <div class="actions"><button class="btn" data-act="rvAdd" data-m="${m}">Añadir a la lista</button><button class="btn line" data-act="cerrar">Descartar</button></div>`);
-}
-
-let tk=null;
-function showTicket(r){
-  const lineas=(r?.lineas||[]).filter(l=>l&&l.nombre);
-  if(!lineas.length){toast('No he podido leer líneas del ticket. Haz la foto recta, con buena luz y que ocupe toda la imagen.');return}
-  tk={super:r.super||'mercadona',fecha:r.fecha||hoy(),total:Number(r.total)||lineas.reduce((a,l)=>a+l.precio_unit*l.cant,0),lineas};
-  openSheet(`<h2>Ticket leído</h2>
-  ${r.super?'':'<p class="note">No he reconocido el súper: elígelo.</p>'}
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-    <select class="field" id="tk-sup">${SUPERS.map(s=>`<option value="${s.id}" ${s.id===tk.super?'selected':''}>${s.n}</option>`).join('')}</select>
-    <input class="field" type="date" id="tk-fecha" value="${tk.fecha}">
-  </div>
-  <p class="note">Corrige lo que el lector haya leído mal. Precio = precio por unidad.</p>
-  ${lineas.map((l,i)=>`<div class="rv" style="grid-template-columns:24px 1fr 48px 70px"><input type="checkbox" id="tk-ok-${i}" checked aria-label="Incluir"><input type="text" id="tk-n-${i}" value="${esc(l.nombre)}"><input type="number" id="tk-c-${i}" min="1" value="${l.cant}" aria-label="Cantidad"><input type="number" id="tk-p-${i}" step="0.01" min="0" value="${l.precio_unit.toFixed(2)}" aria-label="Precio"><small>${l.match?'':'nuevo · '}leído: ${esc(l.leido)}</small></div>`).join('')}
-  <p class="num" style="text-align:right;font-weight:600">Total ticket: ${eur(tk.total)}</p>
-  <p class="note">Guardaré estos precios como reales, apuntaré la compra en tus hábitos y quitaré estos productos de la lista.</p>
-  <div class="actions"><button class="btn" data-act="tkSave">Guardar ticket</button><button class="btn line" data-act="cerrar">Descartar</button></div>`);
-}
-async function saveTicket(){
-  const sup=$('#tk-sup').value,fecha=$('#tk-fecha').value||hoy();
-  const ls=tk.lineas.map((l,i)=>({ok:$('#tk-ok-'+i).checked,nombre:$('#tk-n-'+i).value.trim(),cant:+$('#tk-c-'+i).value||1,pu:+$('#tk-p-'+i).value||0,cat:l.cat})).filter(l=>l.ok&&l.nombre);
-  closeSheet();
-  for(const l of ls){
-    const e=matchCat(l.nombre);const id=slug(l.nombre);
-    const p=clone(S.productos[id]||{nombre:l.nombre,cat:e?.c||(CATS.includes(l.cat)?l.cat:'Otros'),precios:{},compras:[],creado:hoy()});
-    p.precios=p.precios||{};
-    if(l.pu>0)p.precios[sup]={p:Math.round(l.pu*100)/100,src:'ticket',f:fecha};
-    p.compras=[...(p.compras||[]),{fecha,cant:l.cant,super:sup,precio:l.pu>0?l.pu:null}].sort((a,b)=>a.fecha<b.fecha?-1:1).slice(-40);
-    await put('productos',id,p);
-    if(S.lista[id])await del('lista',id);
+    return{s,t:Math.round(t*100)/100,est,sin,lineas};
+  }).sort((a,b)=>a.t-b.t);
+  let pair=null;
+  for(let i=0;i<sups.length;i++)for(let j=i+1;j<sups.length;j++){
+    let t=0;const a=sups[i].id,b=sups[j].id,en={};
+    for(const [id,x] of items){const pa=priceOf(id,a)??avgPrice(id),pb=priceOf(id,b)??avgPrice(id);if(pa==null)continue;t+=Math.min(pa,pb)*(x.cant||1);en[id]=pa<=pb?a:b}
+    if(!pair||t<pair.t)pair={a,b,t:Math.round(t*100)/100,en};
   }
-  await put('tickets','t'+Date.now(),{fecha,super:sup,total:Math.round(tk.total*100)/100,n:ls.length});
-  tk=null;
-  toast(`Ticket guardado: ${ls.length} productos con precio real.`);
+  return{items,per,pair};
+}
+function renderPresu(){
+  const el=$('#v-presu');
+  const act=S.ajustes.general?.supers;
+  const chips=`<div class="chips">${SUPERS.map(s=>{const on=!act||act.includes(s.id);return `<button class="chip ${on?'on':'off'}" data-act="supTog" data-s="${s.id}" aria-pressed="${on}">${s.n}</button>`}).join('')}</div>`;
+  const P=presupuesto();
+  if(!P.items.length){el.innerHTML=`<h2>Presupuesto</h2><p class="note">Añade productos a la lista y pulsa «Confirmar lista» para ver cuánto te cuesta en cada supermercado.</p><h3>Súpers que comparo</h3>${chips}`;return}
+  const uds=P.items.reduce((a,[,x])=>a+(x.cant||1),0);const best=P.per[0];const max=Math.max(...P.per.map(p=>p.t),0.01);
+  const ahorro=P.pair?best.t-P.pair.t:0;
+  el.innerHTML=`<h2>Presupuesto de tu lista</h2>
+  <p class="note" style="margin-top:-4px">${P.items.length} producto${P.items.length>1?'s':''} · ${uds} unidad${uds>1?'es':''} · precios del ${PRECIOS_FECHA}</p>
+  <div class="ticket"><div class="hd">Total en cada supermercado</div>
+  ${P.per.map((p,i)=>`<div class="bar ${i===0?'best':''}"><span class="n">${p.s.n}</span><div class="track"><div class="fill" style="width:${(p.t/max*100).toFixed(1)}%"></div></div><span class="v">${eur(p.t)}</span>${i>0?`<span class="flag">+${eur(p.t-best.t)} más que ${best.s.n}</span>`:''}</div>`).join('')}
+  <div class="pick"><small style="color:var(--muted)">Más barato en un solo súper</small><b>${best.s.n} · ${eur(best.t)}</b>
+  ${ahorro>0.5?`<small style="color:var(--muted);margin-top:6px">Repartiendo entre ${SN[P.pair.a]} y ${SN[P.pair.b]}: <b style="font:600 14px var(--f-mono);color:var(--accent)">${eur(P.pair.t)}</b> (ahorras ${eur(ahorro)})</small>`:''}</div></div>
+  <h3>Detalle por supermercado</h3>
+  <div class="detalles">${P.per.map((p,i)=>`<details class="det" ${i===0?'open':''}><summary><span>${i+1}. ${p.s.n}</span><b class="num">${eur(p.t)}</b></summary>
+    <table class="tbl num">${p.lineas.map(l=>`<tr><td style="font-family:var(--f-body)">${esc(l.x.nombre)}${l.p!=null&&l.src!=='ticket'&&l.src!=='web'?' <span class="tag est">'+(l.src==='media'?'media':'ref.')+'</span>':''}<br><small style="color:var(--muted)">${l.cant} × ${l.p!=null?eur(l.p):'sin precio'} · <button class="lk" data-act="precio" data-id="${l.id}" data-s="${p.s.id}">cambiar precio</button></small></td><td>${l.p!=null?eur(l.p*l.cant):'—'}</td></tr>`).join('')}
+    <tr><td style="font-family:var(--f-body);font-weight:700">Total ${p.s.n}</td><td style="font-weight:700">${eur(p.t)}</td></tr></table></details>`).join('')}</div>
+  ${P.pair&&ahorro>0.5?`<h3>Si repartes la compra</h3><div class="card"><table class="tbl">${P.items.map(([id,x])=>`<tr><td>${esc(x.nombre)} ×${x.cant||1}</td><td>${P.pair.en[id]?SN[P.pair.en[id]]:'—'}</td></tr>`).join('')}</table></div>`:''}
+  <h3>Súpers que comparo</h3>${chips}
+  <p class="note"><span class="tag est">ref.</span> precio de referencia ajustado a cada súper · <span class="tag est">media</span> sin dato de ese súper. Los precios que corrijas tú se usan siempre.</p>
+  <p class="note">El índice de Mercadona, Alcampo, Dia y Carrefour sale de la cesta básica de RadarSuper; el de Lidl, Consum y Family Cash es estimado.</p>`;
 }
 
 /* ---------- vistas ---------- */
 let tab='lista',rq=0;
 function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
 function render(){
-  const b=budget();const best=b.per[0];
-  $('#est').innerHTML=b.items.length&&best&&best.t>0?`<small>Presupuesto aprox.</small><b>${eur(best.t)}</b><br><em>en ${SN[best.s.id]}</em>`:`<small>Presupuesto aprox.</small><b>—</b>`;
-  renderLista(b);renderPresu(b);renderHabitos();
+  const n=Object.keys(S.lista).length;
+  $('#est').innerHTML=`<small>En la lista</small><b>${n}</b><br><em>producto${n===1?'':'s'}</em>`;
+  renderLista();renderPresu();renderHabitos();
 }
-
-function renderLista(b){
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function renderLista(){
   const el=$('#v-lista');
   const all=Object.entries(S.lista);
   const pend=all.filter(([,x])=>!x.marcado),hechos=all.filter(([,x])=>x.marcado);
   const sug=sugerencias().slice(0,8);
-  const row=([id,x])=>{const c=cheapest(id);
-    return `<li class="row ${x.marcado?'done':''}"><button class="chk" data-act="tog" data-id="${id}" aria-label="Marcar">✓</button>
-    <div class="nm"><b>${esc(x.nombre)}</b><small>${S.productos[id]?.formato?esc(S.productos[id].formato)+' · ':''}${c?`<span class="pr">${eur(c.p)}</span> en ${SN[c.sup]}`:'Sin precio'} · <button class="lk" data-act="precio" data-id="${id}">${c&&c.src!=='est'?'cambiar':'poner'} precio</button></small></div>
+  const row=([id,x])=>`<li class="row ${x.marcado?'done':''}"><button class="chk" data-act="tog" data-id="${id}" aria-label="Marcar">✓</button>
+    <div class="nm"><b>${esc(x.nombre)}</b><small>${esc(S.productos[id]?.formato||'')}</small></div>
     <div class="qty"><button data-act="dec" data-id="${id}" aria-label="Menos">−</button><span>${x.cant||1}</span><button data-act="inc" data-id="${id}" aria-label="Más">+</button></div>
-    <button class="x" data-act="rm" data-id="${id}" aria-label="Quitar">×</button></li>`};
+    <button class="x" data-act="rm" data-id="${id}" aria-label="Quitar">×</button></li>`;
   const grupos=CATS.map(c=>[c,pend.filter(([,x])=>(x.cat||'Otros')===c)]).filter(([,v])=>v.length);
   el.innerHTML=`
-  <form class="add" id="addForm"><input id="addTxt" list="catlist" placeholder="Escribe o dicta: pan, 2 leche…" autocomplete="off"><button class="btn">Añadir</button></form>
+  <form class="add" id="addForm"><input id="addTxt" list="catlist" placeholder="Escribe: leche, 2 pan, huevos…" autocomplete="off"><button class="btn">Añadir</button></form>
   ${sug.length?`<h3>Te suele tocar comprar</h3><div class="chips">${sug.map(s=>`<button class="chip" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">+ ${esc(s.nombre)}</button>`).join('')}</div>`:''}
-  ${!all.length?`<h2>Tu lista está vacía</h2><div class="empty"><p class="note" style="margin:0"><b>Producto</b>: apunta a la etiqueta y dispara; se añade solo.<br><b>Nevera</b>: foto de la nevera; añade lo que sueles comprar y falta.<br><b>Voz</b>: pulsa y di «dos leches y pan».</p></div>`:''}
+  ${!all.length?`<h2>Tu lista está vacía</h2><div class="empty"><p class="note" style="margin:0">Pulsa <b>Dictar</b> y di por ejemplo «dos leches, pan y detergente», o escríbelo arriba. Si un producto tiene varios modelos te dejo elegir. Cuando termines, pulsa <b>Confirmar lista</b> y verás el presupuesto en cada supermercado.</p></div>`:''}
   ${grupos.map(([c,v])=>`<h3>${c}</h3><ul class="list">${v.map(row).join('')}</ul>`).join('')}
+  ${pend.length?`<div class="actions"><button class="btn grande" data-act="confirmar">Confirmar lista y ver presupuesto</button></div>`:''}
   ${hechos.length?`<h3>En el carro (${hechos.length})</h3><ul class="list">${hechos.map(row).join('')}</ul>
-  <div class="actions"><button class="btn" data-act="terminar">Terminar compra</button></div>`:''}
-  ${b.sinPrecio?`<p class="note">${b.sinPrecio} producto${b.sinPrecio>1?'s':''} sin precio: pulsa «poner precio» en la lista o fotografía el ticket.</p>`:''}`;
-  $('#addForm').onsubmit=e=>{e.preventDefault();const v=$('#addTxt').value.trim();if(!v)return;
-    addItems(v.split(/[,;\n]+/).map(t=>{const m=t.trim().match(/^(\d+)\s*(?:x\s*)?(.+)$/i);return m?{nombre:cap(m[2]),cant:+m[1]}:{nombre:cap(t.trim()),cant:1}}),'manual');$('#addTxt').value=''};
+  <div class="actions"><button class="btn" data-act="terminar">Terminar compra</button></div>`:''}`;
+  $('#addForm').onsubmit=e=>{e.preventDefault();const v=$('#addTxt').value.trim();if(!v)return;$('#addTxt').value='';procesarEntradas(entradasDeTexto(v),'manual')};
 }
-const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
-
-function renderPresu(b){
-  const el=$('#v-presu');
-  const act=S.ajustes.general?.supers;
-  const chips=`<div class="chips">${SUPERS.map(s=>{const on=!act||act.includes(s.id);return `<button class="chip ${on?'on':'off'}" data-act="supTog" data-s="${s.id}" aria-pressed="${on}">${s.n}</button>`}).join('')}</div>`;
-  if(!b.items.length){el.innerHTML=`<h2>Presupuesto</h2><p class="note">Añade productos a la lista para comparar supermercados.</p><h3>Súpers que comparo</h3>${chips}`;return}
-  const max=Math.max(...b.per.map(p=>p.t),0.01);const best=b.per[0];
-  const ahorro=b.pair&&best?best.t-b.pair.t:0;
-  const filas=b.items.map(([id,x])=>{const c=cheapest(id);return `<tr><td>${esc(x.nombre)} <span style="color:var(--muted)">×${x.cant||1}</span><br><small style="color:var(--muted)">${c?SN[c.sup]:'sin precio'}</small> <button class="lk" data-act="precio" data-id="${id}">${c&&c.src!=='est'?'cambiar':'poner'} precio</button></td><td class="num">${c?eur(c.p*(x.cant||1)):'—'}<br>${c?`<span class="tag ${c.src==='est'?'est':'real'}">${c.src==='ticket'?'real':c.src==='web'?'internet':'referencia'}</span>`:''}</td></tr>`}).join('');
-  el.innerHTML=`<h2>Presupuesto de ${b.items.length} producto${b.items.length>1?'s':''}</h2>
-  <div class="ticket"><div class="hd">Comparativa · ${new Date().toLocaleDateString('es-ES')}</div>
-  ${b.per.map((p,i)=>`<div class="bar ${i===0?'best':''}"><span class="n">${p.s.n}</span><div class="track"><div class="fill" style="width:${(p.t/max*100).toFixed(1)}%"></div></div><span class="v">${eur(p.t)}</span>${p.miss?`<span class="flag">${p.miss} precio${p.miss>1?'s':''} de referencia (sin ticket)</span>`:''}</div>`).join('')}
-  <div class="pick"><small style="color:var(--muted)">Mejor opción en un solo súper</small><b>${SN[best.s.id]} · ${eur(best.t)}</b>
-  ${ahorro>0.5?`<small style="color:var(--muted);margin-top:6px">Repartiendo entre ${SN[b.pair.a]} y ${SN[b.pair.b]}: <b style="font:600 14px var(--f-mono);color:var(--accent)">${eur(b.pair.t)}</b> (ahorras ${eur(ahorro)})</small>`:''}</div></div>
-  ${b.sinPrecio?`<p class="note">${b.sinPrecio} producto${b.sinPrecio>1?'s':''} sin precio no cuenta${b.sinPrecio>1?'n':''} en el total.</p>`:''}
-  <div class="actions"><button class="btn ghost" data-act="fotoTicket">Fotografiar un ticket (aprende precios reales)</button></div>
-  <h3>Súpers que comparo</h3>${chips}
-  <h3>Dónde sale más barato cada producto</h3><div class="card" style="overflow-x:auto"><table class="tbl">${filas}</table></div>
-  <p class="note"><span class="tag real">real</span> de tus tickets o puesto por ti · <span class="tag est">referencia</span> precio de referencia × índice del súper</p>
-  <p class="note">Precios de referencia del ${PRECIOS_FECHA}. El índice de Mercadona, Alcampo, Dia y Carrefour sale de la cesta básica de RadarSuper; el de Lidl, Consum y Family Cash es estimado. Cada ticket que fotografías pone precios reales.</p>`;
-}
-
 function renderHabitos(){
   const el=$('#v-habitos');
   const tks=Object.values(S.tickets);
@@ -817,128 +570,14 @@ function renderHabitos(){
   el.innerHTML=`<h2>Tus hábitos</h2>
   <div class="stats">
     <div class="stat"><small>Gasto últimos 30 días</small><b>${t30.length?eur(g30):'—'}</b></div>
-    <div class="stat"><small>Media por ticket</small><b>${media!=null?eur(media):'—'}</b></div>
-    <div class="stat"><small>Tickets guardados</small><b>${tks.length}</b></div>
+    <div class="stat"><small>Media por compra</small><b>${media!=null?eur(media):'—'}</b></div>
+    <div class="stat"><small>Compras registradas</small><b>${tks.length}</b></div>
     <div class="stat"><small>Súper habitual</small><b style="font-family:var(--f-disp);font-size:18px">${fav?SN[fav[0]]||fav[0]:'—'}</b></div>
   </div>
   <h3>Te toca comprar</h3>
   <div class="card">${sug.length?sug.map(s=>`<div class="sug"><div><b>${esc(s.nombre)}</b><small>Lo compras cada ${s.media} días · última vez hace ${s.hace}</small></div><button class="btn ghost" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">Añadir</button></div>`).join(''):'<p class="note" style="margin:0">Cuando registres al menos dos compras de un producto, aquí te avisaré cuando te toque volver a comprarlo.</p>'}</div>
   <h3>Lo que más compras</h3>
-  <div class="card">${top.length?top.map(x=>`<div class="rank"><span>${esc(x.n)}</span><span class="num">${x.v}×</span></div>`).join(''):'<p class="note" style="margin:0">Fotografía tus tickets o pulsa «Terminar compra» y la app irá aprendiendo.</p>'}</div>`;
-}
-
-/* ---------- botones rápidos: producto, nevera y voz ---------- */
-let camStream=null,camModo=null;
-async function abrirCamara(modo){
-  camModo=modo;
-  $('#camTit').textContent=modo==='nevera'?'Nevera o despensa':modo==='ticket'?'Ticket':'Producto';$('.camHint').textContent=modo==='ticket'?'Encuadra el ticket entero, recto y con buena luz':modo==='nevera'?'Apunta a la nevera abierta y pulsa':'Apunta a las letras grandes del producto y pulsa';
-  try{
-    if(!navigator.mediaDevices?.getUserMedia)throw 0;
-    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
-    const v=$('#camVid');v.srcObject=camStream;$('#cam').hidden=false;await v.play().catch(()=>{});
-  }catch{cerrarCamara();$('#fotoRapida').click()}
-}
-function cerrarCamara(){if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}$('#cam').hidden=true}
-async function disparar(){
-  const v=$('#camVid');if(!v.videoWidth)return;
-  const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);
-  $('#cam').classList.add('flash');setTimeout(()=>$('#cam').classList.remove('flash'),150);
-  const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.92));
-  cerrarCamara();
-  const f=new File([blob],'foto.jpg',{type:'image/jpeg'});
-  if(camModo==='ticket'){modoActual='ticket';onPhotos([f])}else procesarRapido(f,camModo);
-}
-let deshacer=null;
-async function anadirRapido(prods,origen){
-  const antes={};const nombres=[];
-  for(const p of prods){
-    const e=matchCat(p.nombre);const nombre=e?e.n:p.nombre;const id=slug(nombre);
-    if(!(id in antes))antes[id]=S.lista[id]?clone(S.lista[id]):null;
-    if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||'Otros',formato:e?.f||'',precios:{},compras:[],creado:hoy()});
-    const cur=S.lista[id];
-    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur&&!cur.marcado?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now()});
-    nombres.push(nombre+((p.cant||1)>1?' ×'+p.cant:''));
-  }
-  deshacer=antes;
-  return nombres;
-}
-async function deshacerUltimo(){
-  if(!deshacer)return;
-  for(const [id,v] of Object.entries(deshacer)){if(v)await put('lista',id,v);else await del('lista',id)}
-  deshacer=null;toast('Deshecho.');
-}
-let ultAlternativas=null;
-async function procesarRapido(file,modo){
-  cancelado=false;ctl={abort(){cancelado=true;busy()}};
-  try{
-    if(modo==='producto'){
-      busy('Leyendo el producto…');
-      let hall=[];let o=null;
-      try{if('BarcodeDetector' in window){const bmp=await createImageBitmap(file);const r=await new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']}).detect(bmp);
-        if(r[0]){busy('Consultando el código…');const off=await buscarOFF(r[0].rawValue);if(off){const e=matchCat(off.nombre)||matchCat(off.marca+' '+off.nombre);hall=[{e:e||{n:off.nombre,c:'Otros',f:off.formato},leido:off.nombre}]}}}}catch{}
-      if(!hall.length){o=await ocrWords(file,0);if(cancelado)return;hall=productosDeTexto(o,4)}
-      if(!hall.length&&!NATIVO){o=await ocrWords(file,90);if(cancelado)return;hall=productosDeTexto(o,4)}
-      if(cancelado)return;
-      if(!hall.length){
-        const pal=o?palabrasGrandes(o):[];
-        if(pal.length){showReview([],'producto',pal);toast('No he reconocido el producto. Toca lo que he leído.')}
-        else toast('No he podido leer el producto. Acércate a las letras grandes, con buena luz.');
-        return;
-      }
-      const x=hall[0];
-      const nom=await anadirRapido([{nombre:x.e.n,cant:1}],'foto');
-      ultAlternativas=hall;
-      toast('Añadido: '+nom[0]+refTxt(x.e.n),[['Deshacer','deshacer'],hall.length>1?['Cambiar','cambiar']:null]);
-    }else{
-      const vistos={};
-      const o=await ocrWords(file,0);if(cancelado)return;
-      for(const x of productosDeTexto(o,20))vistos[x.e.n]=0.99;
-      try{for(const x of await reconocer(file,true))if(x.p>=0.30&&!vistos[x.n])vistos[x.n]=x.p}catch{}
-      if(cancelado)return;
-      const vistosN=new Set(Object.keys(vistos).map(slug));
-      const faltan=[];
-      for(const p of Object.values(S.productos)){const id=slug(p.nombre);if((p.compras||[]).length>=2&&!vistosN.has(id)&&!S.lista[id])faltan.push({nombre:p.nombre,cant:1})}
-      if(faltan.length){const nom=await anadirRapido(faltan,'nevera');toast('Añadido lo que falta: '+nom.join(', '),[['Deshacer','deshacer']]);return}
-      const veo=Object.keys(vistos);
-      if(veo.length){showReview(veo.map(n=>({nombre:n,cant:1,ok:false,motivo:'Lo veo en la foto. Márcalo si se está acabando'+refTxt(n)})),'nevera');
-        toast('Aún no conozco tus hábitos: marca lo que se está acabando.')}
-      else toast('No he reconocido nada. Haz la foto más cerca y con buena luz.');
-    }
-  }catch(e){if(!cancelado)toast(errMsg(e))}
-  finally{ctl=null;busy()}
-}
-/* Voz */
-const NUM={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,docena:12};
-function parseVoz(txt){
-  return txt.toLowerCase().replace(/\s+(y|e|además|tambien|también|más|mas)\s+/g,',').split(/[,.;]+/).map(t=>t.trim()).filter(Boolean).map(t=>{
-    let cant=1;t=t.replace(/^(añade|añadir|apunta|pon|compra|comprar|necesito|quiero)\s+/,'');
-    const m=t.match(/^(media docena|una docena|\d+|un|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+(?:de\s+)?(.+)$/);
-    if(m){cant=/docena/.test(m[1])?1:(+m[1]||NUM[m[1]]||1);t=m[2]}
-    t=t.replace(/^(kilo|kilos|paquete|paquetes|botella|botellas|bote|botes|lata|latas|bolsa|bolsas|brik|briks|litro|litros)\s+(de\s+)?/,'');
-    return{nombre:t.charAt(0).toUpperCase()+t.slice(1),cant};
-  }).filter(p=>p.nombre.length>=2);
-}
-let rec=null;
-async function escucharNativo(){
-  const b=$('#qVoz');b.classList.add('on');
-  try{const r=await natCall('voz');b.classList.remove('on');if(r&&r.error){toast('No se puede usar el reconocimiento de voz en este móvil.');return}
-    const ps=parseVoz(r&&r.text||'');if(!ps.length)return;const nom=await anadirRapido(ps,'voz');toast('Añadido: '+nom.join(', '),[['Deshacer','deshacer']])}
-  finally{b.classList.remove('on')}
-}
-function escuchar(){
-  if(NATIVO)return escucharNativo();
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){$('#addTxt').focus();toast('Pulsa el micrófono del teclado y di el producto.');return}
-  if(rec){try{rec.stop()}catch{}return}
-  rec=new SR();rec.lang='es-ES';rec.interimResults=true;rec.maxAlternatives=1;
-  const b=$('#qVoz');b.classList.add('on');$('#vozTxt').hidden=false;$('#vozTxt').textContent='Te escucho…';
-  let final='';
-  rec.onresult=e=>{let t='';for(const r of e.results)t+=r[0].transcript;$('#vozTxt').textContent=t;if(e.results[e.results.length-1].isFinal)final=t};
-  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){$('#addTxt').focus();toast('Chrome no deja usar el micrófono aquí. Usa el micrófono del teclado.')}else if(e.error!=='no-speech'&&e.error!=='aborted')toast('No te he entendido. Vuelve a probar.')};
-  rec.onend=async()=>{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null;
-    const ps=parseVoz(final||'');if(!ps.length)return;
-    const nom=await anadirRapido(ps,'voz');toast('Añadido: '+nom.join(', '),[['Deshacer','deshacer']]);};
-  try{rec.start()}catch{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null}
+  <div class="card">${top.length?top.map(x=>`<div class="rank"><span>${esc(x.n)}</span><span class="num">${x.v}×</span></div>`).join(''):'<p class="note" style="margin:0">Marca los productos al comprarlos y pulsa «Terminar compra»: la app irá aprendiendo.</p>'}</div>`;
 }
 
 /* ---------- ajustes y copia ---------- */
@@ -962,44 +601,41 @@ $('#imp').addEventListener('change',async e=>{
   catch{toast('Ese archivo no es una copia de FotoCesta.')}
 });
 
+
 window.__atras=()=>{
-  if(!$('#cam').hidden){cerrarCamara();return true}
-  if(!$('#busy').hidden){ctl?.abort();return true}
-  if(!$('#sheet').hidden){closeSheet();return true}
+  if(!$('#sheet').hidden){closeSheet();cola=[];return true}
   if(tab!=='lista'){document.querySelector('[data-tab=lista]').click();return true}
   return false;
 };
+
 /* ---------- hojas ---------- */
 function openSheet(html){$('#sheetBody').innerHTML=html;$('#sheet').hidden=false}
 function closeSheet(){$('#sheet').hidden=true;$('#sheetBody').innerHTML=''}
 $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
 let tt=0;function toast(m,acts){const t=$('#toast');t.textContent=m;(acts||[]).filter(Boolean).forEach(([l,a])=>{const b=document.createElement('button');b.textContent=l;b.dataset.act=a;t.appendChild(b)});t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,acts?6000:3500)}
 
-$('#foto').addEventListener('change',e=>{const f=e.target.files;onPhotos(f?[...f]:[]);e.target.value=''});
-$('#fotoRapida').addEventListener('change',e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;if(camModo==='ticket'){modoActual='ticket';onPhotos([f])}else procesarRapido(f,camModo)});
-$('#fotoCam').addEventListener('change',e=>{const f=e.target.files;onPhotos(f?[...f]:[]);e.target.value=''});
 
+
+function irA(v){tab=v;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===v?'page':'false'));['lista','presu','habitos'].forEach(k=>$('#v-'+k).hidden=k!==v);scrollTo(0,0)}
 document.addEventListener('click',async e=>{
   const t=e.target.closest('[data-tab],[data-act]');if(!t)return;
-  if(t.dataset.tab){tab=t.dataset.tab;
-    document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b===t?'page':'false'));
-    ['lista','presu','habitos'].forEach(v=>$('#v-'+v).hidden=v!==tab);scrollTo(0,0);return}
+  if(t.dataset.tab){irA(t.dataset.tab);return}
   const a=t.dataset.act,id=t.dataset.id,x=id&&S.lista[id];
   switch(a){
-    case'camara':openSheet(`<h2>¿Qué vas a fotografiar?</h2>${modesHTML()}<p class="note">La primera vez necesita internet para descargar el lector de texto y el reconocedor de imágenes (unos 150 MB). Después funciona sin conexión.</p>`);break;
-    case'modo':modoActual=t.dataset.m;openSheet(`<h2>${MODOS[modoActual].t}</h2>
-      <div class="modes"><button class="mode" data-act="camFoto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><b>Hacer foto</b><span>Abre la cámara</span></button>
-      <button class="mode" data-act="galFoto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 8"/></svg><b>Elegir foto</b><span>De la galería</span></button></div>
-      <div class="actions"><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break;
-    case'camFoto':$('#fotoCam').click();break;
-    case'galFoto':$('#foto').click();break;
     case'cerrar':closeSheet();break;
-    case'parar':ctl?.abort();break;
     case'tog':if(x)put('lista',id,{...x,marcado:!x.marcado});break;
     case'inc':if(x)put('lista',id,{...x,cant:(x.cant||1)+1});break;
     case'dec':if(x){if((x.cant||1)<=1)del('lista',id);else put('lista',id,{...x,cant:x.cant-1})}break;
     case'rm':if(x)del('lista',id);break;
-    case'sugAdd':{const p=S.productos[id];if(p)addItems([{nombre:p.nombre,cat:p.cat,cant:+t.dataset.c||1}],'habito');toast(`${p?.nombre} añadido.`);break}
+    case'sugAdd':{const p=S.productos[id];if(!p)break;const nom=await anadirALista([{e:matchCat(p.nombre)&&toks(matchCat(p.nombre).n)===toks(p.nombre)?matchCat(p.nombre):null,nombre:p.nombre,cant:+t.dataset.c||1}],'habito');toast('Añadido: '+nom.join(', '),[['Deshacer','deshacer']]);break}
+    case'qVoz':escuchar();break;
+    case'deshacer':$('#toast').hidden=true;deshacerUltimo();break;
+    case'opInc':{const s=$('#opCant');s.textContent=(+s.textContent||1)+1;break}
+    case'opDec':{const s=$('#opCant');s.textContent=Math.max(1,(+s.textContent||1)-1);break}
+    case'opElegir':elegirOpcion(+t.dataset.i);break;
+    case'opLibre':elegirOpcion(null,true);break;
+    case'opSaltar':elegirOpcion(null,false);break;
+    case'confirmar':irA('presu');break;
     case'ajustes':abrirAjustes();break;
     case'exportar':exportar();break;
     case'importar':$('#imp').click();break;
@@ -1007,36 +643,23 @@ document.addEventListener('click',async e=>{
     case'supTog':{const cur=S.ajustes.general?.supers||SUPERS.map(s=>s.id);const s=t.dataset.s;
       const nx=cur.includes(s)?cur.filter(v=>v!==s):[...cur,s];if(!nx.length){toast('Deja al menos un súper.');break}
       put('ajustes','general',{supers:nx});break}
-    case'rvAdd':{const out=review.map((r,i)=>({...r,ok:$('#rv-ok-'+i).checked,nombre:$('#rv-n-'+i).value.trim(),cant:+$('#rv-c-'+i).value||1})).filter(r=>r.ok&&r.nombre);
-      const m=t.dataset.m;closeSheet();await addItems(out,m);toast(`${out.length} productos añadidos.`);break}
-    case'tkSave':saveTicket();break;
-    case'qProducto':abrirCamara('producto');break;
-    case'qNevera':abrirCamara('nevera');break;
-    case'qVoz':escuchar();break;
-    case'disparar':disparar();break;
-    case'camCerrar':cerrarCamara();break;
-    case'deshacer':$('#toast').hidden=true;deshacerUltimo();break;
-    case'cambiar':{$('#toast').hidden=true;const alt=ultAlternativas||[];deshacerUltimo().then(()=>showReview(alt.map((x,i)=>({nombre:x.e.n,cat:x.e.c,cant:1,ok:false,motivo:(x.marca?'Artículo de '+x.marca:'Leído: «'+String(x.leido).slice(0,30)+'»')+(x.e.f?' · '+x.e.f:'')+refTxt(x.e.n)})),'producto'));break}
-    case'fotoTicket':abrirCamara('ticket');break;
-    case'rvChip':{syncReview();const w=t.dataset.w;const e=matchCat(w);review.push({nombre:e?e.n:cap(w.toLowerCase()),cat:e?.c,cant:1,ok:true,motivo:'De la palabra «'+w+'»'+(e?refTxt(e.n):' · sin precio de referencia')});pintaReview();break}
-    case'rvNuevo':{syncReview();review.push({nombre:'',cant:1,ok:true,motivo:''});pintaReview();setTimeout(()=>{const el=$('#rv-n-'+(review.length-1));if(el)el.focus()},50);break}
-
-    case'precio':{const p=S.productos[id];if(!p)break;const c=cheapest(id);
-      openSheet(`<h2>Precio de ${esc(p.nombre)}</h2><p class="note">Pon lo que cuesta en un súper. Se guarda como precio real, igual que los de los tickets.</p>
-      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px"><select class="field" id="pm-sup">${SUPERS.map(s=>`<option value="${s.id}" ${c?.sup===s.id?'selected':''}>${s.n}</option>`).join('')}</select>
-      <input class="field" id="pm-p" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00 €"></div>
+    case'precio':{const p=S.productos[id];if(!p)break;const sup=t.dataset.s||'mercadona';const cur=priceInfo(id,sup);
+      openSheet(`<h2>Precio de ${esc(p.nombre)}</h2><p class="note">Pon lo que cuesta en un súper. Se guarda y se usa en los próximos presupuestos.</p>
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px"><select class="field" id="pm-sup">${SUPERS.map(s=>`<option value="${s.id}" ${sup===s.id?'selected':''}>${s.n}</option>`).join('')}</select>
+      <input class="field" id="pm-p" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00 €" value="${cur&&cur.src!=='est'?String(cur.p).replace('.',','):''}"></div>
       <div class="actions"><button class="btn" data-act="pmSave" data-id="${id}">Guardar precio</button><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break}
     case'pmSave':{const v=parseFloat(String($('#pm-p').value).replace(',','.'));if(!(v>0)){toast('Escribe un precio.');break}
       const p=clone(S.productos[id]);p.precios=p.precios||{};p.precios[$('#pm-sup').value]={p:Math.round(v*100)/100,src:'ticket',f:hoy()};
       closeSheet();put('productos',id,p);toast('Precio guardado.');break}
-    case'terminar':openSheet(`<h2>¿Dónde has comprado?</h2><p class="note">Apunto la compra en tus hábitos y vacío el carro. Si tienes el ticket, mejor fotografíalo: así guardo también los precios reales.</p>
+    case'terminar':openSheet(`<h2>¿Dónde has comprado?</h2><p class="note">Apunto la compra en tus hábitos y vacío el carro.</p>
       <div class="chips">${SUPERS.map(s=>`<button class="chip" data-act="fin" data-s="${s.id}">${s.n}</button>`).join('')}</div>
-      <div class="actions"><button class="btn ghost" data-act="modo" data-m="ticket">Fotografiar ticket</button><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break;
+      <div class="actions"><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break;
     case'fin':terminarCompra(t.dataset.s);break;
   }
 });
 
 $('#catlist').innerHTML=CATALOGO.map(r=>`<option value="${esc(r[0])}">`).join('');
 loadLocal();render();
+
 </script>
 </body></html>
