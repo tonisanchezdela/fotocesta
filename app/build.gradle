@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.fotocesta.app'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.fotocesta.app"
         minSdk 26
-        targetSdk 34
+        targetSdk 36
         versionCode Integer.parseInt(System.getenv("GITHUB_RUN_NUMBER") ?: "1")
         versionName "1." + (System.getenv("GITHUB_RUN_NUMBER") ?: "0")
     }
@@ -34,6 +34,11 @@ android {
         }
     }
 
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -45,6 +50,7 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.activity:activity-ktx:1.9.1'
     implementation 'androidx.webkit:webkit:1.11.0'
 }

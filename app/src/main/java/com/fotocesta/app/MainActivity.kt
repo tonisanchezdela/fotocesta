@@ -16,6 +16,10 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import android.widget.FrameLayout
 import androidx.webkit.WebViewAssetLoader
 import androidx.webkit.WebViewClientCompat
 import org.json.JSONObject
@@ -68,7 +72,20 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         web = WebView(this)
-        setContentView(web)
+        val raiz = FrameLayout(this)
+        raiz.setBackgroundColor(0xFFF1F5EF.toInt())
+        raiz.addView(web, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        setContentView(raiz)
+        WindowCompat.getInsetsController(window, raiz).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(raiz) { v, insets ->
+            val barras = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val teclado = insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.setPadding(barras.left, barras.top, barras.right, maxOf(barras.bottom, teclado.bottom))
+            WindowInsetsCompat.CONSUMED
+        }
 
         web.settings.apply {
             javaScriptEnabled = true

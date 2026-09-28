@@ -792,7 +792,8 @@ function abrirAjustes(){
   <h3>Copia de seguridad</h3>
   <p class="note">Tus listas, precios y hábitos se guardan en este móvil. Haz una copia para pasarlos a otro móvil o no perderlos si borras el navegador.</p>
   <div class="actions"><button class="btn ghost" data-act="exportar">Descargar copia</button><button class="btn ghost" data-act="importar">Cargar copia</button></div>
-  <div class="actions"><button class="btn line" style="color:var(--danger)" data-act="borrarTodo">Borrar todos los datos</button></div>`);
+  <div class="actions"><button class="btn line" style="color:var(--danger)" data-act="borrarTodo">Borrar todos los datos</button></div>
+  <p class="note" style="margin-top:18px"><a href="https://github.com/tonisanchezdela/fotocesta/blob/main/PRIVACIDAD.md" style="color:var(--accent)">Política de privacidad</a></p>`);
 }
 function exportar(){
   if(NATIVO){window.Android.guardar('fotocesta-copia-'+hoy()+'.json',JSON.stringify({app:'FotoCesta',v:1,fecha:hoy(),datos:S},null,1));return}

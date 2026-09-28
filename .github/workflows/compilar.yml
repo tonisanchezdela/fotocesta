@@ -21,18 +21,22 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '8.9'
+          gradle-version: '8.11.1'
 
       - name: Compilar
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: gradle assembleRelease bundleRelease --no-daemon --stacktrace
 
       - name: Preparar APK
-        run: cp app/build/outputs/apk/release/app-release.apk FotoCesta.apk
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk FotoCesta.apk
+          cp app/build/outputs/bundle/release/app-release.aab FotoCesta-GooglePlay.aab
 
       - uses: actions/upload-artifact@v4
         with:
           name: FotoCesta-apk
-          path: FotoCesta.apk
+          path: |
+            FotoCesta.apk
+            FotoCesta-GooglePlay.aab
 
       - name: Publicar para descargar desde el móvil
         uses: softprops/action-gh-release@v2
@@ -40,5 +44,7 @@ jobs:
           tag_name: v${{ github.run_number }}
           name: FotoCesta ${{ github.run_number }}
           body: Descarga FotoCesta.apk e instálala en el móvil.
-          files: FotoCesta.apk
+          files: |
+            FotoCesta.apk
+            FotoCesta-GooglePlay.aab
           make_latest: true
