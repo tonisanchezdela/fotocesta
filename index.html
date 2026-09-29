@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2C7A4B">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>FotoCesta</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="FotoCesta">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+html{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+:root{
+  --bg:#F1F5EF;--surface:#FFFFFF;--ink:#15211A;--muted:#5C6A60;--line:#D9E2D6;
+  --accent:#2C7A4B;--accent-soft:#E0EFE4;--accent-ink:#FFFFFF;
+  --warm:#C8651A;--warm-soft:#FBEBDD;--paper:#FFFFFF;--danger:#B3372B;
+  --shadow:0 8px 28px rgba(21,33,26,.14);
+  --f-disp:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;--bg:#0F1511;--surface:#18211B;--ink:#E5EEE7;--muted:#93A298;--line:#2A362E;
+  --accent:#5CBD80;--accent-soft:#1F3527;--accent-ink:#0F1511;--warm:#EFA052;--warm-soft:#3A2A1B;--paper:#1C261F;--danger:#EE7B6E;
+  --shadow:0 8px 28px rgba(0,0,0,.5);}}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#0F1511;--surface:#18211B;--ink:#E5EEE7;--muted:#93A298;--line:#2A362E;
+  --accent:#5CBD80;--accent-soft:#1F3527;--accent-ink:#0F1511;--warm:#EFA052;--warm-soft:#3A2A1B;--paper:#1C261F;--danger:#EE7B6E;
+  --shadow:0 8px 28px rgba(0,0,0,.5);}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-body);-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:0 190px}
+
+/* cabecera */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line)}
+.brand{font:800 26px/1 var(--f-disp);letter-spacing:-.02em}
+.brand span{color:var(--accent)}
+.hr{display:flex;align-items:flex-end;gap:10px}
+.gear{border:1px solid var(--line);background:var(--surface);border-radius:12px;width:40px;height:40px;display:grid;place-items:center;color:var(--muted)}
+.gear svg{width:20px;height:20px}
+.est{text-align:right}
+.est small{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.est b{font:600 20px/1.1 var(--f-mono);color:var(--warm)}
+.est em{font-style:normal;font-size:12px;color:var(--muted)}
+
+h2{font:700 19px/1.2 var(--f-disp);margin:22px 0 10px;text-wrap:balance}
+h3{font:600 12px/1 var(--f-body);letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+p.note{color:var(--muted);font-size:13px;margin:6px 0}
+
+/* añadir manual */
+.add{display:flex;gap:8px;margin-top:14px}
+.add input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:11px 12px;font:inherit}
+.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:600;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn.line{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.5}
+
+/* sugerencias */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.chip.on{background:var(--accent);color:var(--accent-ink);border-style:solid}
+.chip.off{border-color:var(--line);color:var(--muted);border-style:solid}
+
+/* lista */
+ul.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row{display:grid;grid-template-columns:32px 1fr auto 28px;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.chk{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:transparent;display:grid;place-items:center;font-size:14px;color:transparent}
+.done .chk{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.done .nm b{text-decoration:line-through;color:var(--muted)}
+.nm{min-width:0}
+.nm b{font-weight:600;display:block;overflow-wrap:anywhere}
+.nm small{color:var(--muted);font-size:12px}
+.nm small .pr{color:var(--warm);font-family:var(--f-mono)}
+.qty{display:flex;align-items:center;gap:2px;background:var(--bg);border-radius:10px}
+.qty button{border:0;background:transparent;width:30px;height:30px;font-size:18px;font-weight:600}
+.qty span{min-width:18px;text-align:center;font-family:var(--f-mono)}
+.lk{border:0;background:none;padding:0;color:var(--accent);font-size:12px;font-weight:600;text-decoration:underline}
+.x{border:0;background:transparent;color:var(--muted);font-size:20px;width:28px;height:28px}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.mode{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px;text-align:left;display:grid;gap:4px}
+.mode b{font:700 15px/1.2 var(--f-disp)}
+.mode span{font-size:12.5px;color:var(--muted)}
+.mode svg{width:26px;height:26px;color:var(--accent)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* ticket / presupuesto */
+.ticket{background:var(--paper);border:1px solid var(--line);border-radius:4px 4px 0 0;padding:16px 16px 22px;position:relative;font-family:var(--f-mono);
+  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x;
+  mask:linear-gradient(#000 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 8px repeat-x}
+.ticket .hd{text-align:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);border-bottom:1px dashed var(--line);padding-bottom:10px;margin-bottom:10px}
+.bar{display:grid;grid-template-columns:96px 1fr 76px;align-items:center;gap:8px;padding:6px 0;font-size:13px}
+.bar .n{font-family:var(--f-body);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .track{height:10px;background:var(--bg);border-radius:5px;overflow:hidden}
+.bar .fill{height:100%;background:var(--muted);opacity:.45;border-radius:5px}
+.bar.best .fill{background:var(--accent);opacity:1}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums}
+.bar.best .v{color:var(--accent);font-weight:600}
+.bar .flag{grid-column:2/4;font-size:11px;color:var(--muted);font-family:var(--f-body);margin-top:-4px}
+.pick{margin-top:12px;border-top:1px dashed var(--line);padding-top:12px;font-family:var(--f-body);display:grid;gap:4px}
+.pick b{font:700 17px/1.2 var(--f-disp)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td{padding:8px 4px;border-top:1px solid var(--line);vertical-align:top}
+.tbl td:last-child{text-align:right;white-space:nowrap}
+.tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:5px}
+.tag.real{background:var(--accent-soft);color:var(--accent)}
+.tag.est{background:var(--warm-soft);color:var(--warm)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+
+/* hábitos */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat small{display:block;color:var(--muted);font-size:12px}
+.stat b{font:600 20px/1.2 var(--f-mono)}
+.sug{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.sug:first-child{border-top:0}
+.sug small{display:block;color:var(--muted);font-size:12px}
+.rank{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:14px;padding:6px 0;border-top:1px solid var(--line)}
+.rank:first-child{border-top:0}
+
+/* barra inferior */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}
+.quick{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:8px;padding:10px 16px 4px}
+.qb{font-size:17px!important;border:0;border-radius:16px;background:var(--accent);color:var(--accent-ink);padding:12px 4px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px}
+.qb svg{width:24px;height:24px;flex:none}
+#qVoz{background:var(--warm)}
+.btn.grande{width:100%;padding:15px;font-size:16px}
+.cantSel{display:flex;justify-content:space-between;align-items:center;margin:4px 0 12px}
+.opciones{display:grid;gap:8px}
+.opcion{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;text-align:left;display:grid;gap:2px}
+.opcion b{font-weight:600}
+.opcion small{color:var(--muted);font-size:12.5px}
+.opcion:active{background:var(--accent-soft)}
+.det{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.det summary{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;font-weight:600;list-style:none}
+.det summary::-webkit-details-marker{display:none}
+.det[open] summary{border-bottom:1px solid var(--line)}
+.det .tbl{margin:0 14px 10px;width:calc(100% - 28px)}
+#qVoz.on{animation:pulso 1s ease-in-out infinite}
+@keyframes pulso{50%{transform:scale(1.06);opacity:.85}}
+.cam{position:fixed;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cam.flash::after{content:"";position:absolute;inset:0;background:#fff;opacity:.7}
+.camTop{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;color:#fff;background:linear-gradient(#000a,#0000);font:700 18px var(--f-disp)}
+.camX{border:0;background:#0006;color:#fff;width:44px;height:44px;border-radius:50%;font-size:28px;line-height:1}
+.camHint{position:relative;color:#fff;background:#0008;padding:6px 12px;border-radius:10px;font-size:14px;margin:0 16px 16px}
+.shutter{position:relative;width:84px;height:84px;border-radius:50%;border:6px solid #fff;background:#fff5;margin-bottom:calc(32px + env(safe-area-inset-bottom,0px))}
+.shutter:active{background:#fff}
+.vozTxt{position:fixed;left:16px;right:16px;bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:31;background:var(--warm);color:#fff;font:600 18px var(--f-body);padding:14px 16px;border-radius:14px;text-align:center}
+.tab{border:0;background:transparent;padding:10px 4px 12px;font-size:12px;font-weight:600;color:var(--muted);display:grid;justify-items:center;gap:3px}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--accent)}
+.fab{justify-self:center;width:64px;height:64px;border-radius:50%;border:4px solid var(--bg);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-26px;box-shadow:var(--shadow)}
+.fab svg{width:28px;height:28px}
+
+.av{position:relative;display:inline-grid;place-items:center;width:var(--t);height:var(--t);border-radius:50%;background:var(--c);color:#fff;font:700 calc(var(--t)*.45) var(--f-body);flex:none;box-shadow:0 0 0 2px var(--surface)}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.av .enl{position:absolute;right:-1px;bottom:-1px;width:30%;height:30%;min-width:8px;min-height:8px;border-radius:50%;background:#2fbf5b;box-shadow:0 0 0 2px var(--surface)}
+.famBar{display:flex;align-items:center;gap:10px;margin-top:12px}
+.famAvs{display:flex}
+.famAvs .av+.av{margin-left:-8px}
+.listaSel{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
+.listaSel span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.listaSel small{color:var(--muted);font-weight:500;flex:none}
+.porq{display:flex;align-items:center;gap:5px;margin-top:3px}
+.lbl{display:block;font-weight:600;font-size:13px;margin-bottom:6px}
+.field.big{font-size:17px;padding:12px}
+.perfil{display:flex;gap:14px;align-items:flex-end;margin:12px 0}
+.pfFoto{border:0;background:none;display:grid;justify-items:center;gap:4px;color:var(--muted);padding:0}
+.pfFoto #pf-prev{width:76px;height:76px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;overflow:hidden}
+.pfFoto #pf-prev img{width:100%;height:100%;object-fit:cover}
+.pfFoto svg{width:30px;height:30px}
+.codigo{font:600 38px/1 var(--f-mono);letter-spacing:.18em;text-align:center;background:var(--accent-soft);color:var(--accent);border-radius:14px;padding:18px 8px;margin:12px 0}
+.miembros{display:grid;gap:10px}
+.mb{display:flex;align-items:center;gap:10px;font-weight:600}
+.lrow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}
+.lrow .btn{padding:8px 10px;font-size:13px}
+.lrow.on .opcion{border-color:var(--accent)}
+
+/* hojas y avisos */
+.sheet{position:fixed;inset:0;z-index:10;background:rgba(10,16,12,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet .body{background:var(--surface);width:100%;max-width:560px;max-height:86%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.sheet h2{margin-top:0}
+.rv{display:grid;grid-template-columns:24px 1fr 64px;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.rv input[type=text],.rv input[type=number],.field{width:100%;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:7px 8px;font:inherit}
+.rv small{grid-column:2/4;color:var(--muted);font-size:12px;margin-top:-4px}
+.busy{position:fixed;inset:0;z-index:20;background:rgba(10,16,12,.55);display:grid;place-items:center;padding:16px}
+.busy .b{background:var(--surface);border-radius:18px;padding:22px;max-width:320px;width:100%;display:grid;gap:14px;justify-items:center;text-align:center}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--accent-soft);border-top-color:var(--accent);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:3s}}
+.toast button{border:0;background:none;color:var(--accent);font-weight:700;padding:4px 2px;font-size:14px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:30;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:14px;max-width:calc(100% - 32px)}
+</style>
+</head><body>
+<div class="wrap">
+  <header>
+    <div class="brand">Foto<span>Cesta</span></div>
+    <div class="hr"><div class="est" id="est"></div><button class="gear" data-act="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>
+  </header>
+
+  <main id="v-lista"></main>
+  <main id="v-presu" hidden></main>
+  <main id="v-habitos" hidden></main>
+</div>
+
+<nav>
+<div class="quick">
+  <button class="qb" id="qVoz" data-act="qVoz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Dictar productos</button>
+</div>
+<div class="in">
+  <button class="tab" data-tab="lista" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>Lista</button>
+  <button class="tab" data-tab="presu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>Presupuesto</button>
+  <button class="tab" data-tab="habitos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V10M10 19V5M16 19v-7M22 19H2"/></svg>Hábitos</button>
+</div></nav>
+<div class="vozTxt" id="vozTxt" hidden></div>
+
+<datalist id="catlist"></datalist>
+<input type="file" id="fotoPerfil" accept="image/*" hidden>
+<input type="file" id="imp" accept="application/json,.json" hidden>
+<div class="sheet" id="sheet" hidden><div class="body" id="sheetBody"></div></div>
+<div class="busy" id="busy" hidden><div class="b"><div class="spin"></div><div id="busyMsg"></div><button class="btn line" data-act="parar">Cancelar</button></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const SUPERS=[
+  {id:'mercadona',n:'Mercadona'},{id:'consum',n:'Consum'},{id:'lidl',n:'Lidl'},
+  {id:'carrefour',n:'Carrefour'},{id:'alcampo',n:'Alcampo'},{id:'dia',n:'Dia'},{id:'familycash',n:'Family Cash'}];
+const SN=Object.fromEntries(SUPERS.map(s=>[s.id,s.n]));
+const CATS=['Frutas y verduras','Carne y pescado','Lácteos y huevos','Panadería','Despensa','Congelados','Bebidas','Limpieza','Higiene','Mascotas','Otros'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const eur=n=>n==null||isNaN(n)?'—':n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});
+const slug=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'item';
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+const hoy=()=>new Date().toISOString().slice(0,10);
+const DAY=864e5;
+const dias=f=>Math.round((Date.now()-new Date(f).getTime())/DAY);
+
+/* ---------- datos ---------- */
+const S={productos:{},lista:{},tickets:{},ajustes:{},miembros:{},listas:{}};
+const LS='fotocesta-v1';
+const LOCALES=['productos','lista','tickets','ajustes'];
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d)for(const k of LOCALES)S[k]=d[k]||{}}catch{}}
+function saveLocal(){if(FAM)return;try{const o={};for(const k of LOCALES)o[k]=S[k];localStorage.setItem(LS,JSON.stringify(o))}catch{}}
+function avisoError(e){console.warn(e);if(e&&e.code==='permission-denied')toast('Sin permiso para guardar. Revisa que sigues en la familia.')}
+function put(col,id,data){
+  S[col][id]=data;scheduleRender();
+  if(!FAM){saveLocal();return Promise.resolve()}
+  refDoc(col,id).set(data).catch(avisoError);return Promise.resolve();
+}
+function del(col,id){
+  delete S[col][id];scheduleRender();
+  if(!FAM){saveLocal();return Promise.resolve()}
+  refDoc(col,id).delete().catch(avisoError);return Promise.resolve();
+}
+/* ---------- catálogo y precios de referencia ---------- */
+const PRECIOS_FECHA='26/09/2026';
+/* Índice de cada cadena respecto a Mercadona. Mercadona, Alcampo, Dia y Carrefour: cesta básica de RadarSuper (26/09/2026).
+   Lidl, Consum y Family Cash no salen en RadarSuper: índice estimado. */
+const IDX={mercadona:1,alcampo:0.88,dia:0.89,carrefour:1.28,lidl:0.95,consum:1.05,familycash:0.93};
+const IDX_REAL=['mercadona','alcampo','dia','carrefour'];
+/* [nombre, categoría, formato, precio de referencia (€), palabras clave separadas por |] */
+const CATALOGO=[["Manzanas", "Frutas y verduras", "1 kg", 2.2, "manzana"], ["Manzana golden", "Frutas y verduras", "1 kg", 2.1, "golden"], ["Manzana fuji", "Frutas y verduras", "1 kg", 2.6, "fuji"], ["Manzana pink lady", "Frutas y verduras", "1 kg", 3.5, "pink lady"], ["Plátanos", "Frutas y verduras", "1 kg", 2.1, "platano|banana"], ["Plátano de Canarias", "Frutas y verduras", "1 kg", 2.6, "platano canarias"], ["Naranjas", "Frutas y verduras", "2 kg", 2.9, "naranja"], ["Naranjas de zumo", "Frutas y verduras", "4 kg", 4.5, "naranja zumo"], ["Mandarinas", "Frutas y verduras", "1 kg", 2.3, "mandarina|clementina"], ["Peras", "Frutas y verduras", "1 kg", 2.4, "pera"], ["Pera conferencia", "Frutas y verduras", "1 kg", 2.5, "conferencia"], ["Uvas", "Frutas y verduras", "500 g", 1.9, "uva"], ["Fresas", "Frutas y verduras", "500 g", 2.5, "fresa|freson"], ["Arándanos", "Frutas y verduras", "125 g", 1.8, "arandano"], ["Frambuesas", "Frutas y verduras", "125 g", 2.0, "frambuesa"], ["Moras", "Frutas y verduras", "125 g", 2.0, "mora"], ["Cerezas", "Frutas y verduras", "500 g", 3.5, "cereza"], ["Limones", "Frutas y verduras", "1 kg", 2.2, "limon"], ["Limas", "Frutas y verduras", "250 g", 1.1, "lima"], ["Pomelo", "Frutas y verduras", "1 kg", 2.2, "pomelo"], ["Kiwis", "Frutas y verduras", "1 kg", 3.2, "kiwi"], ["Kiwi gold", "Frutas y verduras", "500 g", 3.2, "kiwi gold|kiwi amarillo"], ["Melocotones", "Frutas y verduras", "1 kg", 2.6, "melocoton"], ["Nectarinas", "Frutas y verduras", "1 kg", 2.6, "nectarina"], ["Paraguayos", "Frutas y verduras", "1 kg", 2.8, "paraguayo"], ["Albaricoques", "Frutas y verduras", "1 kg", 3.2, "albaricoque"], ["Ciruelas", "Frutas y verduras", "1 kg", 2.6, "ciruela"], ["Piña", "Frutas y verduras", "1 ud", 2.2, "pina"], ["Mango", "Frutas y verduras", "1 ud", 1.5, "mango"], ["Papaya", "Frutas y verduras", "1 ud", 2.5, "papaya"], ["Melón", "Frutas y verduras", "1 ud", 3.5, "melon"], ["Sandía", "Frutas y verduras", "1 kg", 0.99, "sandia"], ["Granada", "Frutas y verduras", "1 ud", 1.2, "granada"], ["Caqui", "Frutas y verduras", "1 kg", 2.4, "caqui|kaki|persimon"], ["Higos", "Frutas y verduras", "500 g", 2.8, "higo|breva"], ["Chirimoya", "Frutas y verduras", "1 kg", 3.5, "chirimoya"], ["Coco", "Frutas y verduras", "1 ud", 1.8, "coco"], ["Aguacates", "Frutas y verduras", "2 ud", 2.5, "aguacate"], ["Tomates", "Frutas y verduras", "1 kg", 2.3, "tomate"], ["Tomate cherry", "Frutas y verduras", "250 g", 1.3, "cherry|tomate cherry"], ["Tomate pera", "Frutas y verduras", "1 kg", 2.4, "tomate pera"], ["Tomate rama", "Frutas y verduras", "1 kg", 2.8, "tomate rama"], ["Tomate para ensalada", "Frutas y verduras", "1 kg", 2.5, "tomate ensalada"], ["Lechuga", "Frutas y verduras", "1 ud", 0.85, "lechuga"], ["Lechuga iceberg", "Frutas y verduras", "1 ud", 0.95, "iceberg"], ["Cogollos", "Frutas y verduras", "3 ud", 1.3, "cogollo"], ["Canónigos", "Frutas y verduras", "125 g", 1.3, "canonigo"], ["Rúcula", "Frutas y verduras", "100 g", 1.2, "rucula"], ["Ensalada en bolsa", "Frutas y verduras", "250 g", 1.4, "ensalada bolsa|mezclum|bolsa ensalada"], ["Espinacas", "Frutas y verduras", "300 g", 1.3, "espinaca"], ["Acelgas", "Frutas y verduras", "500 g", 1.4, "acelga"], ["Cebollas", "Frutas y verduras", "2 kg", 2.4, "cebolla"], ["Cebolla morada", "Frutas y verduras", "1 kg", 1.9, "cebolla morada|cebolla roja"], ["Cebolleta", "Frutas y verduras", "1 manojo", 0.99, "cebolleta|cebollino"], ["Puerros", "Frutas y verduras", "3 ud", 1.4, "puerro"], ["Ajos", "Frutas y verduras", "250 g", 1.4, "ajo"], ["Ajo tierno", "Frutas y verduras", "1 manojo", 1.2, "ajo tierno|ajete"], ["Patatas", "Frutas y verduras", "3 kg", 3.9, "patata"], ["Patata nueva", "Frutas y verduras", "2 kg", 3.2, "patata nueva"], ["Boniato", "Frutas y verduras", "1 kg", 1.9, "boniato|batata"], ["Zanahorias", "Frutas y verduras", "1 kg", 1.1, "zanahoria"], ["Pimientos", "Frutas y verduras", "1 kg", 2.6, "pimiento"], ["Pimiento rojo", "Frutas y verduras", "1 kg", 2.9, "pimiento rojo"], ["Pimiento verde", "Frutas y verduras", "1 kg", 2.4, "pimiento verde|pimiento italiano"], ["Pimientos de Padrón", "Frutas y verduras", "200 g", 1.6, "padron"], ["Calabacín", "Frutas y verduras", "1 kg", 1.9, "calabacin"], ["Berenjena", "Frutas y verduras", "1 kg", 1.9, "berenjena"], ["Pepino", "Frutas y verduras", "1 ud", 0.55, "pepino"], ["Calabaza", "Frutas y verduras", "1 kg", 1.5, "calabaza"], ["Brócoli", "Frutas y verduras", "500 g", 1.6, "brocoli"], ["Coliflor", "Frutas y verduras", "1 ud", 1.7, "coliflor"], ["Repollo", "Frutas y verduras", "1 ud", 1.4, "repollo|col"], ["Lombarda", "Frutas y verduras", "1 ud", 1.6, "lombarda"], ["Coles de Bruselas", "Frutas y verduras", "500 g", 2.0, "bruselas"], ["Alcachofas", "Frutas y verduras", "500 g", 2.4, "alcachofa"], ["Espárragos verdes", "Frutas y verduras", "250 g", 1.9, "esparrago verde|esparragos trigueros|triguero"], ["Judías verdes", "Frutas y verduras", "500 g", 1.9, "judia verde|judias verdes|bajoca"], ["Guisantes frescos", "Frutas y verduras", "500 g", 2.5, "guisante fresco"], ["Champiñones", "Frutas y verduras", "250 g", 1.35, "champinon|champi|chamipinon"], ["Setas", "Frutas y verduras", "200 g", 1.9, "seta|shiitake|portobello"], ["Apio", "Frutas y verduras", "1 ud", 1.1, "apio"], ["Rabanitos", "Frutas y verduras", "1 manojo", 0.99, "rabanito|rabano"], ["Remolacha cocida", "Frutas y verduras", "500 g", 1.2, "remolacha"], ["Maíz dulce", "Frutas y verduras", "2 mazorcas", 1.5, "mazorca"], ["Jengibre", "Frutas y verduras", "100 g", 0.8, "jengibre"], ["Perejil", "Frutas y verduras", "1 manojo", 0.7, "perejil"], ["Cilantro", "Frutas y verduras", "1 manojo", 0.8, "cilantro"], ["Albahaca", "Frutas y verduras", "1 maceta", 1.8, "albahaca"], ["Hierbabuena", "Frutas y verduras", "1 manojo", 0.9, "hierbabuena|menta fresca"], ["Verdura para cocido", "Frutas y verduras", "1 bandeja", 2.2, "verdura cocido|verdura puchero"], ["Verdura para paella", "Frutas y verduras", "1 bandeja", 2.5, "verdura paella"], ["Gazpacho", "Frutas y verduras", "1 L", 2.2, "gazpacho"], ["Salmorejo", "Frutas y verduras", "1 L", 2.4, "salmorejo"], ["Fruta cortada", "Frutas y verduras", "300 g", 2.2, "fruta cortada|macedonia"], ["Pollo entero", "Carne y pescado", "1 kg", 3.6, "pollo entero"], ["Pechuga de pollo", "Carne y pescado", "1 kg", 7.2, "pechuga|pollo"], ["Filetes de pechuga", "Carne y pescado", "500 g", 4.2, "filete pechuga|filetes pollo"], ["Muslos de pollo", "Carne y pescado", "1 kg", 3.9, "muslo|contramuslo"], ["Alitas de pollo", "Carne y pescado", "1 kg", 3.5, "alita"], ["Pollo troceado", "Carne y pescado", "1 kg", 3.9, "pollo troceado"], ["Pollo asado", "Carne y pescado", "1 ud", 6.5, "pollo asado"], ["Pavo (filetes)", "Carne y pescado", "500 g", 4.2, "filete pavo|pechuga pavo fresca"], ["Carne picada", "Carne y pescado", "500 g", 3.6, "picada|carne picada"], ["Carne picada de ternera", "Carne y pescado", "500 g", 4.6, "picada ternera|picado vacuno"], ["Filetes de ternera", "Carne y pescado", "500 g", 6.9, "ternera|filete ternera"], ["Entrecot", "Carne y pescado", "500 g", 11.0, "entrecot|chuleton"], ["Carne para guisar", "Carne y pescado", "500 g", 5.5, "guisar|carne guiso|jarrete|morcillo"], ["Solomillo de cerdo", "Carne y pescado", "500 g", 4.5, "solomillo cerdo|solomillo"], ["Lomo de cerdo", "Carne y pescado", "1 kg", 6.5, "lomo"], ["Chuletas de cerdo", "Carne y pescado", "1 kg", 5.9, "chuleta"], ["Costillas de cerdo", "Carne y pescado", "1 kg", 5.5, "costilla"], ["Secreto ibérico", "Carne y pescado", "500 g", 7.5, "secreto|presa|pluma"], ["Panceta", "Carne y pescado", "500 g", 3.4, "panceta"], ["Cordero", "Carne y pescado", "1 kg", 12.5, "cordero|paletilla"], ["Conejo", "Carne y pescado", "1 kg", 7.5, "conejo"], ["Hamburguesas", "Carne y pescado", "4 ud", 3.2, "hamburguesa|burger"], ["Albóndigas", "Carne y pescado", "500 g", 3.5, "albondiga"], ["Salchichas frescas", "Carne y pescado", "500 g", 2.8, "salchicha fresca|longaniza"], ["Salchichas", "Carne y pescado", "400 g", 1.9, "salchicha|frankfurt"], ["Morcilla", "Carne y pescado", "400 g", 1.9, "morcilla"], ["Chorizo", "Carne y pescado", "250 g", 2.4, "chorizo"], ["Chorizo para cocinar", "Carne y pescado", "300 g", 2.3, "chorizo cocinar|chorizo fresco"], ["Salchichón", "Carne y pescado", "250 g", 2.3, "salchichon"], ["Fuet", "Carne y pescado", "170 g", 2.1, "fuet"], ["Lomo embuchado", "Carne y pescado", "100 g", 2.9, "lomo embuchado"], ["Jamón cocido", "Carne y pescado", "200 g", 2.1, "jamon cocido|jamon york|york"], ["Jamón serrano", "Carne y pescado", "200 g", 3.4, "serrano|jamon"], ["Jamón ibérico", "Carne y pescado", "100 g", 5.5, "iberico"], ["Paleta", "Carne y pescado", "150 g", 2.6, "paleta"], ["Pavo en lonchas", "Carne y pescado", "200 g", 2.0, "pavo"], ["Mortadela", "Carne y pescado", "200 g", 1.4, "mortadela"], ["Chopped", "Carne y pescado", "200 g", 1.2, "chopped"], ["Bacon", "Carne y pescado", "200 g", 1.85, "bacon|beicon"], ["Taquitos de jamón", "Carne y pescado", "150 g", 1.8, "taquito|taco jamon"], ["Paté", "Carne y pescado", "3x80 g", 1.5, "pate|foie"], ["Sobrasada", "Carne y pescado", "250 g", 2.2, "sobrasada"], ["Salmón", "Carne y pescado", "500 g", 8.5, "salmon"], ["Salmón ahumado", "Carne y pescado", "100 g", 2.9, "ahumado"], ["Merluza", "Carne y pescado", "500 g", 5.2, "merluza"], ["Bacalao", "Carne y pescado", "500 g", 6.5, "bacalao"], ["Dorada", "Carne y pescado", "1 ud", 4.5, "dorada"], ["Lubina", "Carne y pescado", "1 ud", 4.5, "lubina"], ["Atún fresco", "Carne y pescado", "300 g", 6.0, "atun fresco"], ["Emperador", "Carne y pescado", "300 g", 4.2, "emperador|pez espada"], ["Boquerones", "Carne y pescado", "500 g", 3.5, "boqueron"], ["Sardinas frescas", "Carne y pescado", "500 g", 2.8, "sardina fresca"], ["Caballa", "Carne y pescado", "500 g", 3.2, "caballa"], ["Rape", "Carne y pescado", "500 g", 9.0, "rape"], ["Gallo", "Carne y pescado", "500 g", 6.0, "gallo"], ["Lenguado", "Carne y pescado", "500 g", 7.5, "lenguado"], ["Sepia", "Carne y pescado", "500 g", 5.0, "sepia"], ["Calamar fresco", "Carne y pescado", "500 g", 5.5, "calamar fresco"], ["Pulpo cocido", "Carne y pescado", "200 g", 6.5, "pulpo"], ["Mejillones", "Carne y pescado", "1 kg", 2.9, "mejillon"], ["Almejas", "Carne y pescado", "500 g", 6.0, "almeja|chirla"], ["Gambas frescas", "Carne y pescado", "500 g", 6.5, "gamba fresca"], ["Langostinos cocidos", "Carne y pescado", "500 g", 6.0, "langostino cocido"], ["Surimi", "Carne y pescado", "250 g", 1.7, "surimi|palito|palitos cangrejo"], ["Gulas", "Carne y pescado", "200 g", 2.4, "gula"], ["Huevas", "Carne y pescado", "100 g", 2.5, "hueva"], ["Leche semidesnatada", "Lácteos y huevos", "1 L", 0.95, "leche semi|semidesnatada|l semi|leche"], ["Leche entera", "Lácteos y huevos", "1 L", 0.99, "leche entera|l entera"], ["Leche desnatada", "Lácteos y huevos", "1 L", 0.92, "leche desn|desnatada"], ["Leche sin lactosa", "Lácteos y huevos", "1 L", 1.15, "sin lactosa|s lactosa"], ["Leche (pack 6)", "Lácteos y huevos", "6x1 L", 5.7, "pack leche|leche pack"], ["Batido de chocolate", "Lácteos y huevos", "1 L", 1.4, "batido"], ["Bebida de avena", "Lácteos y huevos", "1 L", 1.2, "bebida avena|avena"], ["Bebida de soja", "Lácteos y huevos", "1 L", 1.2, "soja|bebida soja"], ["Bebida de almendra", "Lácteos y huevos", "1 L", 1.6, "bebida almendra"], ["Huevos", "Lácteos y huevos", "12 ud", 2.85, "huevo|docena"], ["Huevos camperos", "Lácteos y huevos", "12 ud", 3.9, "campero"], ["Huevos XL", "Lácteos y huevos", "6 ud", 1.9, "huevos xl|huevo grande"], ["Claras de huevo", "Lácteos y huevos", "1 L", 3.2, "clara"], ["Yogur natural", "Lácteos y huevos", "6 ud", 1.1, "yogur nat|yogur|yog"], ["Yogur de sabores", "Lácteos y huevos", "8 ud", 1.4, "yogur sabor|yogur fresa|yogur limon"], ["Yogur griego", "Lácteos y huevos", "6 ud", 1.85, "griego"], ["Yogur desnatado", "Lácteos y huevos", "6 ud", 1.2, "yogur desnatado|yogur 0"], ["Yogur líquido", "Lácteos y huevos", "6 ud", 2.1, "yogur liquido|bebible"], ["Bífidus", "Lácteos y huevos", "4 ud", 1.4, "bifidus|activia"], ["Kéfir", "Lácteos y huevos", "500 ml", 1.5, "kefir"], ["Petit suisse", "Lácteos y huevos", "6 ud", 1.3, "petit|danonino"], ["Natillas", "Lácteos y huevos", "4 ud", 1.3, "natilla"], ["Flan", "Lácteos y huevos", "4 ud", 1.1, "flan"], ["Arroz con leche", "Lácteos y huevos", "4 ud", 1.6, "arroz con leche"], ["Cuajada", "Lácteos y huevos", "4 ud", 1.6, "cuajada"], ["Gelatina", "Lácteos y huevos", "4 ud", 1.1, "gelatina"], ["Mousse de chocolate", "Lácteos y huevos", "4 ud", 1.6, "mousse"], ["Mantequilla", "Lácteos y huevos", "250 g", 2.5, "mantequilla|mantq"], ["Margarina", "Lácteos y huevos", "500 g", 1.6, "margarina|tulipan"], ["Nata para cocinar", "Lácteos y huevos", "3x200 ml", 1.75, "nata cocinar|nata"], ["Nata para montar", "Lácteos y huevos", "200 ml", 1.1, "nata montar"], ["Queso lonchas", "Lácteos y huevos", "250 g", 2.2, "queso lonch|lonchas"], ["Queso curado", "Lácteos y huevos", "400 g", 5.2, "queso curado|curado"], ["Queso semicurado", "Lácteos y huevos", "400 g", 4.6, "semicurado|tierno"], ["Queso manchego", "Lácteos y huevos", "400 g", 6.2, "manchego"], ["Queso fresco", "Lácteos y huevos", "250 g", 1.7, "queso fresco|burgos"], ["Queso rallado", "Lácteos y huevos", "200 g", 1.95, "rallado"], ["Queso de untar", "Lácteos y huevos", "300 g", 1.8, "untar|philadelphia|queso crema"], ["Mozzarella", "Lácteos y huevos", "125 g", 0.95, "mozzarella|mozarela"], ["Queso de cabra", "Lácteos y huevos", "200 g", 2.4, "cabra|rulo"], ["Queso azul", "Lácteos y huevos", "150 g", 2.2, "queso azul|roquefort|gorgonzola"], ["Queso brie", "Lácteos y huevos", "200 g", 2.4, "brie|camembert"], ["Parmesano", "Lácteos y huevos", "150 g", 2.9, "parmesano|grana padano"], ["Queso gouda", "Lácteos y huevos", "250 g", 2.6, "gouda|edam|emmental"], ["Queso en porciones", "Lácteos y huevos", "16 ud", 1.8, "porciones|quesito"], ["Queso havarti", "Lácteos y huevos", "250 g", 2.4, "havarti"], ["Requesón", "Lácteos y huevos", "250 g", 1.5, "requeson|ricotta"], ["Queso batido", "Lácteos y huevos", "500 g", 1.6, "queso batido|skyr"], ["Pan de barra", "Panadería", "250 g", 0.45, "barra|baguette|pan barra|pan"], ["Pan de pueblo", "Panadería", "500 g", 1.4, "pan pueblo|hogaza|payes"], ["Pan integral", "Panadería", "250 g", 0.7, "pan integral|integral"], ["Pan de molde", "Panadería", "460 g", 1.45, "pan molde|molde"], ["Pan de molde integral", "Panadería", "460 g", 1.6, "molde integral"], ["Pan de molde sin corteza", "Panadería", "450 g", 1.8, "sin corteza"], ["Pan de hamburguesa", "Panadería", "4 ud", 1.1, "pan hamburguesa"], ["Pan de perrito", "Panadería", "6 ud", 1.1, "perrito|hot dog"], ["Panecillos", "Panadería", "11 ud", 1.14, "panecillo"], ["Pan de pita", "Panadería", "6 ud", 1.2, "pita"], ["Pan sin gluten", "Panadería", "300 g", 2.8, "sin gluten"], ["Tostadas", "Panadería", "270 g", 1.3, "tostada|biscote"], ["Picos de pan", "Panadería", "250 g", 1.2, "pico|picos|regañas|regana"], ["Colines", "Panadería", "200 g", 1.2, "colin|grissini"], ["Pan rallado", "Panadería", "500 g", 0.85, "pan rallado"], ["Croissants", "Panadería", "6 ud", 1.75, "croissant|cruasan"], ["Magdalenas", "Panadería", "12 ud", 1.6, "magdalena"], ["Bizcocho", "Panadería", "400 g", 1.9, "bizcocho"], ["Donuts", "Panadería", "4 ud", 2.4, "donut|dona"], ["Palmeras", "Panadería", "4 ud", 1.6, "palmera"], ["Napolitanas", "Panadería", "4 ud", 1.8, "napolitana"], ["Ensaimadas", "Panadería", "4 ud", 1.8, "ensaimada"], ["Sobaos", "Panadería", "8 ud", 1.8, "sobao"], ["Brioche", "Panadería", "400 g", 1.9, "brioche|pan brioche"], ["Pan de leche", "Panadería", "6 ud", 1.51, "pan leche|bollito"], ["Tortitas de arroz", "Panadería", "130 g", 1.0, "tortita arroz|tortitas maiz"], ["Masa de pizza", "Panadería", "1 ud", 1.3, "masa pizza"], ["Masa de hojaldre", "Panadería", "1 ud", 1.1, "hojaldre"], ["Obleas de empanadilla", "Panadería", "20 ud", 1.2, "oblea|empanadilla"], ["Galletas", "Despensa", "800 g", 1.85, "galleta|maria"], ["Galletas de chocolate", "Despensa", "300 g", 1.6, "galleta chocolate|oreo|chips ahoy"], ["Galletas integrales", "Despensa", "600 g", 1.9, "galleta integral|digestive"], ["Cereales", "Despensa", "500 g", 1.9, "cereal|corn flakes"], ["Cereales de chocolate", "Despensa", "500 g", 2.2, "cereal chocolate|choco krispies|chocapic"], ["Muesli", "Despensa", "750 g", 2.5, "muesli|granola"], ["Copos de avena", "Despensa", "500 g", 1.1, "copos avena|avena copos"], ["Barritas de cereales", "Despensa", "6 ud", 1.5, "barrita"], ["Café molido", "Despensa", "250 g", 3.2, "cafe molido|cafe"], ["Café en grano", "Despensa", "1 kg", 12.5, "cafe grano"], ["Café soluble", "Despensa", "200 g", 4.5, "soluble|nescafe"], ["Cápsulas de café", "Despensa", "10 ud", 2.1, "capsula|nespresso|dolce gusto"], ["Descafeinado", "Despensa", "250 g", 3.3, "descafeinado|descaf"], ["Cacao soluble", "Despensa", "500 g", 3.3, "cacao|cola cao|colacao|nesquik"], ["Té e infusiones", "Despensa", "20 sobres", 1.1, "infusion|manzanilla|te verde|poleo|te negro|rooibos"], ["Azúcar", "Despensa", "1 kg", 1.15, "azucar"], ["Azúcar moreno", "Despensa", "1 kg", 1.6, "azucar moreno"], ["Edulcorante", "Despensa", "1 bote", 1.8, "edulcorante|sacarina|stevia"], ["Miel", "Despensa", "500 g", 3.5, "miel"], ["Sal", "Despensa", "1 kg", 0.35, "sal fina|sal"], ["Sal gruesa", "Despensa", "1 kg", 0.4, "sal gruesa"], ["Harina", "Despensa", "1 kg", 0.85, "harina"], ["Harina integral", "Despensa", "1 kg", 1.2, "harina integral"], ["Levadura", "Despensa", "5 sobres", 0.9, "levadura"], ["Maicena", "Despensa", "400 g", 1.4, "maicena|almidon"], ["Aceite de oliva virgen extra", "Despensa", "1 L", 4.95, "aceite oliva|virgen extra|aove|ac oliva|aceite"], ["Aceite de oliva suave", "Despensa", "1 L", 4.5, "oliva suave|aceite suave|intenso"], ["Aceite de girasol", "Despensa", "1 L", 1.65, "girasol"], ["Vinagre", "Despensa", "1 L", 0.75, "vinagre"], ["Vinagre de Módena", "Despensa", "250 ml", 1.6, "modena|balsamico"], ["Arroz", "Despensa", "1 kg", 1.25, "arroz"], ["Arroz bomba", "Despensa", "1 kg", 3.2, "bomba"], ["Arroz basmati", "Despensa", "1 kg", 2.3, "basmati|jazmin"], ["Arroz integral", "Despensa", "1 kg", 1.6, "arroz integral"], ["Vasitos de arroz", "Despensa", "2x125 g", 1.2, "vasito arroz|arroz microondas"], ["Pasta (macarrones/espaguetis)", "Despensa", "500 g", 0.8, "pasta|macarron|espagueti|spaghetti|tallarin|helice|penne|tiburon|lazo|pajarita"], ["Fideos", "Despensa", "500 g", 0.8, "fideo|fideua"], ["Pasta fresca", "Despensa", "250 g", 1.6, "pasta fresca|tortellini|raviolis|ravioli"], ["Lasaña (placas)", "Despensa", "200 g", 1.1, "lasana|canelon"], ["Cuscús", "Despensa", "500 g", 1.2, "cuscus|couscous"], ["Quinoa", "Despensa", "500 g", 2.6, "quinoa"], ["Garbanzos cocidos", "Despensa", "400 g", 0.75, "garbanzo"], ["Lentejas cocidas", "Despensa", "400 g", 0.75, "lenteja"], ["Alubias cocidas", "Despensa", "400 g", 0.75, "alubia|judia blanca|judion"], ["Legumbres secas", "Despensa", "1 kg", 1.9, "legumbre seca|garbanzo seco|lenteja seca|alubia seca"], ["Tomate frito", "Despensa", "400 g", 0.95, "tomate frito|t frito"], ["Tomate triturado", "Despensa", "400 g", 0.65, "triturado"], ["Tomate natural entero", "Despensa", "400 g", 0.7, "tomate entero|pelado"], ["Salsa de tomate para pasta", "Despensa", "400 g", 1.4, "salsa pasta|pomodoro|bolonesa"], ["Pesto", "Despensa", "190 g", 2.2, "pesto"], ["Salsa carbonara", "Despensa", "200 ml", 1.4, "carbonara"], ["Atún en aceite", "Despensa", "3x80 g", 3.2, "atun"], ["Atún al natural", "Despensa", "3x80 g", 3.1, "atun natural"], ["Bonito del norte", "Despensa", "250 g", 4.5, "bonito"], ["Sardinas en lata", "Despensa", "120 g", 1.35, "sardina"], ["Sardinillas", "Despensa", "90 g", 1.2, "sardinilla"], ["Caballa en lata", "Despensa", "120 g", 1.6, "caballa lata"], ["Mejillones en escabeche", "Despensa", "110 g", 1.5, "mejillon escabeche|escabeche"], ["Berberechos", "Despensa", "110 g", 2.6, "berberecho"], ["Navajas", "Despensa", "110 g", 2.9, "navaja"], ["Calamares en su tinta", "Despensa", "110 g", 1.3, "tinta"], ["Anchoas", "Despensa", "50 g", 2.3, "anchoa"], ["Pimientos del piquillo", "Despensa", "290 g", 1.7, "piquillo"], ["Pimiento asado", "Despensa", "290 g", 1.6, "asado"], ["Espárragos blancos", "Despensa", "250 g", 2.2, "esparrago blanco|esparrago"], ["Maíz en lata", "Despensa", "3x140 g", 1.4, "maiz"], ["Guisantes en lata", "Despensa", "400 g", 0.85, "guisante"], ["Champiñones en lata", "Despensa", "355 g", 1.1, "champinon lata|laminado"], ["Alcachofas en conserva", "Despensa", "390 g", 1.7, "alcachofa conserva"], ["Menestra en conserva", "Despensa", "400 g", 1.1, "menestra conserva"], ["Aceitunas", "Despensa", "350 g", 1.2, "aceituna|oliva negra"], ["Pepinillos", "Despensa", "345 g", 1.3, "pepinillo"], ["Banderillas", "Despensa", "200 g", 1.4, "banderilla|encurtido"], ["Mayonesa", "Despensa", "450 ml", 1.6, "mayonesa"], ["Ketchup", "Despensa", "560 g", 1.45, "ketchup"], ["Mostaza", "Despensa", "250 g", 1.0, "mostaza"], ["Salsa barbacoa", "Despensa", "400 g", 1.4, "barbacoa"], ["Salsa rosa", "Despensa", "300 ml", 1.3, "salsa rosa"], ["Alioli", "Despensa", "200 ml", 1.2, "alioli|allioli"], ["Salsa de soja", "Despensa", "150 ml", 1.3, "salsa soja"], ["Tabasco y salsas picantes", "Despensa", "60 ml", 1.9, "tabasco|picante|sriracha"], ["Caldo de pollo", "Despensa", "1 L", 1.1, "caldo"], ["Caldo de pescado", "Despensa", "1 L", 1.3, "caldo pescado|fumet"], ["Pastillas de caldo", "Despensa", "10 ud", 1.1, "pastilla caldo|avecrem|cubito"], ["Sopa de sobre", "Despensa", "1 sobre", 0.9, "sopa sobre|sopa"], ["Puré de patatas", "Despensa", "3 sobres", 1.3, "pure patata|pure"], ["Cremas de verduras", "Despensa", "500 ml", 1.6, "crema verdura|crema calabaza"], ["Especias", "Despensa", "1 bote", 1.2, "especia|pimenton|oregano|comino|pimienta|curry|canela|laurel|tomillo|colorante|azafran"], ["Mermelada", "Despensa", "350 g", 1.55, "mermelada|confitura"], ["Crema de cacao", "Despensa", "500 g", 2.6, "nocilla|nutella|crema cacao"], ["Crema de cacahuete", "Despensa", "350 g", 2.5, "crema cacahuete|mantequilla cacahuete"], ["Chocolate", "Despensa", "200 g", 1.6, "chocolate|choco"], ["Chocolate a la taza", "Despensa", "300 g", 1.8, "chocolate taza"], ["Bombones", "Despensa", "200 g", 3.5, "bombon"], ["Caramelos y chicles", "Despensa", "1 bolsa", 1.2, "caramelo|chuche|gominola|chicle"], ["Frutos secos", "Despensa", "200 g", 2.5, "fruto seco|almendra|nuez|nueces|cacahuete|pistacho|anacardo|avellana"], ["Pipas", "Despensa", "200 g", 1.1, "pipa"], ["Pasas y dátiles", "Despensa", "200 g", 1.6, "pasa|datil|orejon|ciruela pasa"], ["Patatas fritas (bolsa)", "Despensa", "170 g", 1.3, "patatas fritas|chips|snack|patatilla"], ["Nachos", "Despensa", "200 g", 1.3, "nacho|tortilla chips|doritos"], ["Palomitas", "Despensa", "3 sobres", 1.3, "palomita"], ["Aperitivos", "Despensa", "150 g", 1.1, "aperitivo|gusanito|cortezas|corteza"], ["Tortillas de trigo", "Despensa", "8 ud", 1.3, "tortilla trigo|wrap|fajita|burrito"], ["Guacamole", "Despensa", "200 g", 1.9, "guacamole"], ["Hummus", "Despensa", "240 g", 1.6, "hummus|humus"], ["Leche condensada", "Despensa", "370 g", 1.6, "condensada"], ["Leche evaporada", "Despensa", "500 g", 1.4, "evaporada|ideal"], ["Tomate seco", "Despensa", "100 g", 1.6, "tomate seco"], ["Vino para cocinar", "Despensa", "1 L", 1.2, "vino cocinar|jerez cocina"], ["Tortilla de patatas", "Despensa", "600 g", 2.8, "tortilla patata|tortilla"], ["Platos preparados", "Despensa", "300 g", 2.8, "plato preparado|lasana preparada|paella preparada"], ["Fabada / cocido en lata", "Despensa", "420 g", 2.2, "fabada|cocido|potaje"], ["Comida para bebé (potitos)", "Despensa", "2x200 g", 1.8, "potito|papilla"], ["Leche infantil", "Despensa", "800 g", 9.5, "leche infantil|leche continuacion"], ["Verduras congeladas", "Congelados", "1 kg", 1.8, "verdura cong|menestra|salteado"], ["Guisantes congelados", "Congelados", "1 kg", 1.9, "guisante congelado"], ["Espinacas congeladas", "Congelados", "750 g", 1.4, "espinaca congelada"], ["Judías verdes congeladas", "Congelados", "1 kg", 1.9, "judia congelada"], ["Pizza congelada", "Congelados", "1 ud", 2.3, "pizza"], ["Pizza fresca", "Congelados", "1 ud", 2.8, "pizza fresca|pizza refrigerada"], ["Lasaña congelada", "Congelados", "600 g", 2.9, "lasana congelada"], ["Croquetas congeladas", "Congelados", "500 g", 2.4, "croqueta"], ["Empanadillas congeladas", "Congelados", "500 g", 2.2, "empanadilla congelada"], ["Patatas congeladas", "Congelados", "1 kg", 1.6, "patatas cong|prefrita|patatas congeladas"], ["San Jacobos", "Congelados", "400 g", 2.2, "san jacobo|cordon bleu"], ["Nuggets", "Congelados", "400 g", 2.4, "nugget|fingers"], ["Varitas de merluza", "Congelados", "400 g", 2.4, "varita|palito merluza|rebozado"], ["Merluza congelada", "Congelados", "800 g", 4.9, "merluza congelada"], ["Langostinos congelados", "Congelados", "500 g", 5.5, "langostino|gamba"], ["Gambas peladas", "Congelados", "300 g", 3.5, "gamba pelada"], ["Calamares", "Congelados", "500 g", 4.2, "calamar|anilla|romana"], ["Sepia congelada", "Congelados", "500 g", 4.0, "sepia congelada"], ["Mejillones congelados", "Congelados", "450 g", 2.6, "mejillon congelado"], ["Fruta congelada", "Congelados", "500 g", 2.2, "fruta congelada|frutos rojos"], ["Masa de pizza congelada", "Congelados", "2 ud", 1.8, "base pizza"], ["Hielo", "Congelados", "2 kg", 1.0, "hielo"], ["Helado", "Congelados", "1 L", 2.6, "helado|tarrina"], ["Helados de palo", "Congelados", "6 ud", 2.8, "polo|bombon helado|cono|sandwich helado"], ["Tarta helada", "Congelados", "1 ud", 3.5, "tarta helada|tarta"], ["Agua mineral", "Bebidas", "6x1,5 L", 1.9, "agua"], ["Agua 5 litros", "Bebidas", "5 L", 0.9, "agua 5|garrafa"], ["Agua con gas", "Bebidas", "1 L", 0.6, "agua gas|gaseosa|soda"], ["Refresco de cola", "Bebidas", "2 L", 1.4, "cola|coca"], ["Cola zero", "Bebidas", "2 L", 1.4, "zero|light|cola zero"], ["Refresco de naranja", "Bebidas", "2 L", 1.3, "fanta|refresco naranja|naranjada"], ["Refresco de limón", "Bebidas", "2 L", 1.3, "refresco limon|limonada"], ["Tónica", "Bebidas", "4x25 cl", 1.6, "tonica"], ["Refresco de té", "Bebidas", "1,5 L", 1.4, "nestea|te frio|ice tea"], ["Bebida isotónica", "Bebidas", "1,5 L", 1.4, "isotonica|aquarius|powerade"], ["Bebida energética", "Bebidas", "500 ml", 1.1, "energetica|red bull|monster"], ["Zumo de naranja", "Bebidas", "1 L", 1.4, "zumo"], ["Zumo de piña", "Bebidas", "1 L", 1.2, "zumo pina"], ["Zumo de melocotón", "Bebidas", "1 L", 1.2, "zumo melocoton|nectar"], ["Zumo exprimido", "Bebidas", "1 L", 2.3, "exprimido"], ["Horchata", "Bebidas", "1 L", 1.6, "horchata"], ["Cerveza", "Bebidas", "6x33 cl", 3.6, "cerveza|birra"], ["Cerveza sin alcohol", "Bebidas", "6x33 cl", 3.6, "cerveza sin|sin alcohol"], ["Cerveza (lata grande)", "Bebidas", "50 cl", 0.9, "lata cerveza"], ["Vino tinto", "Bebidas", "75 cl", 2.5, "vino|tinto"], ["Vino blanco", "Bebidas", "75 cl", 2.6, "vino blanco|blanco"], ["Vino rosado", "Bebidas", "75 cl", 2.5, "rosado"], ["Cava", "Bebidas", "75 cl", 3.5, "cava|champan"], ["Sidra", "Bebidas", "70 cl", 2.2, "sidra"], ["Vermut", "Bebidas", "1 L", 3.5, "vermut|vermu"], ["Tinto de verano", "Bebidas", "1,5 L", 1.6, "tinto verano|sangria"], ["Ginebra", "Bebidas", "70 cl", 9.5, "ginebra|gin"], ["Ron", "Bebidas", "70 cl", 9.5, "ron"], ["Whisky", "Bebidas", "70 cl", 11.0, "whisky"], ["Vodka", "Bebidas", "70 cl", 8.5, "vodka"], ["Licores", "Bebidas", "70 cl", 7.5, "licor|orujo|pacharan|mistela"], ["Detergente ropa", "Limpieza", "40 lavados", 6.5, "detergente|lavadora"], ["Detergente en cápsulas", "Limpieza", "30 ud", 6.9, "capsula detergente|capsulas lavadora"], ["Suavizante", "Limpieza", "60 lavados", 2.6, "suavizante"], ["Quitamanchas", "Limpieza", "1 L", 2.5, "quitamanchas|vanish"], ["Lejía", "Limpieza", "2 L", 1.1, "lejia"], ["Lejía con detergente", "Limpieza", "2 L", 1.4, "lejia detergente"], ["Lavavajillas a mano", "Limpieza", "750 ml", 1.3, "lavavajillas mano|fairy|mistol"], ["Pastillas lavavajillas", "Limpieza", "40 ud", 5.9, "pastillas lavav|lavavajillas"], ["Sal lavavajillas", "Limpieza", "2 kg", 1.2, "sal lavavajillas"], ["Abrillantador", "Limpieza", "500 ml", 1.2, "abrillantador"], ["Friegasuelos", "Limpieza", "1,5 L", 1.6, "friegasuelos|fregasuelos"], ["Limpiacristales", "Limpieza", "750 ml", 1.3, "cristal|limpiacristales"], ["Multiusos", "Limpieza", "750 ml", 1.4, "multiuso|desengrasante"], ["Limpiador baño", "Limpieza", "750 ml", 1.5, "limpiador bano|antical"], ["Limpiador WC", "Limpieza", "750 ml", 1.2, "wc|pato|inodoro"], ["Amoniaco", "Limpieza", "1,5 L", 1.0, "amoniaco"], ["Limpiahogar", "Limpieza", "1 L", 1.4, "limpiahogar|don limpio"], ["Ambientador", "Limpieza", "1 ud", 1.8, "ambientador"], ["Insecticida", "Limpieza", "1 ud", 2.8, "insecticida|cucaracha|mosquito|raid"], ["Papel de cocina", "Limpieza", "4 rollos", 2.8, "papel cocina|rollo cocina"], ["Servilletas", "Limpieza", "100 ud", 1.1, "servilleta"], ["Papel de aluminio", "Limpieza", "30 m", 1.6, "aluminio"], ["Film transparente", "Limpieza", "30 m", 1.2, "film"], ["Papel de horno", "Limpieza", "10 m", 1.4, "papel horno|sulfurizado"], ["Bolsas de basura", "Limpieza", "30 ud", 1.4, "bolsa basura|basura"], ["Bolsas de congelación", "Limpieza", "30 ud", 1.2, "bolsa congelacion|bolsa zip"], ["Estropajos", "Limpieza", "3 ud", 1.0, "estropajo"], ["Bayetas", "Limpieza", "3 ud", 1.4, "bayeta"], ["Fregona", "Limpieza", "1 ud", 2.2, "fregona|mocho"], ["Guantes de fregar", "Limpieza", "1 par", 1.2, "guante"], ["Pilas", "Limpieza", "4 ud", 3.5, "pila|pilas aa|pilas aaa|alcalina|alkaline|lr03|lr6"], ["Bombillas", "Limpieza", "1 ud", 2.5, "bombilla"], ["Velas", "Limpieza", "1 ud", 1.5, "vela"], ["Carbón y pastillas de encendido", "Limpieza", "1 ud", 3.0, "carbon|encendido"], ["Platos y vasos de plástico", "Limpieza", "1 pack", 1.5, "vaso plastico|plato plastico|desechable"], ["Papel higiénico", "Higiene", "12 rollos", 4.5, "papel higienico|higienico"], ["Toallitas húmedas", "Higiene", "80 ud", 1.3, "toallita"], ["Pañuelos", "Higiene", "10 paquetes", 1.2, "panuelo|klinex|kleenex"], ["Gel de ducha", "Higiene", "750 ml", 1.6, "gel|gel ducha"], ["Champú", "Higiene", "400 ml", 1.8, "champu"], ["Acondicionador", "Higiene", "400 ml", 1.8, "acondicionador|suavizante pelo"], ["Mascarilla capilar", "Higiene", "300 ml", 2.5, "mascarilla pelo|mascarilla capilar"], ["Jabón de manos", "Higiene", "500 ml", 1.1, "jabon manos|jabon"], ["Pasta de dientes", "Higiene", "75 ml", 1.4, "dientes|dentifrico|dental"], ["Cepillo de dientes", "Higiene", "2 ud", 1.8, "cepillo dientes|cepillo"], ["Enjuague bucal", "Higiene", "500 ml", 2.3, "enjuague|colutorio|listerine"], ["Seda dental", "Higiene", "1 ud", 1.6, "seda dental|hilo dental"], ["Desodorante", "Higiene", "200 ml", 1.9, "desodorante"], ["Crema hidratante", "Higiene", "200 ml", 3.5, "crema hidratante|body milk|locion|crema"], ["Crema de manos", "Higiene", "75 ml", 1.5, "crema manos"], ["Protector solar", "Higiene", "200 ml", 6.0, "solar|protector|bronceador"], ["Espuma de afeitar", "Higiene", "300 ml", 1.6, "espuma afeitar|gel afeitar"], ["Maquinillas de afeitar", "Higiene", "4 ud", 2.5, "maquinilla|cuchilla|afeitar"], ["Compresas", "Higiene", "20 ud", 1.7, "compresa|salvaslip|tampon"], ["Pañales", "Higiene", "40 ud", 9.5, "panal|dodot"], ["Toallitas de bebé", "Higiene", "3x80 ud", 3.0, "toallita bebe"], ["Colonia", "Higiene", "750 ml", 3.5, "colonia"], ["Laca y fijadores", "Higiene", "300 ml", 2.2, "laca|gomina|espuma pelo"], ["Tinte de pelo", "Higiene", "1 ud", 3.5, "tinte"], ["Algodón y bastoncillos", "Higiene", "1 ud", 1.0, "algodon|bastoncillo"], ["Tiritas", "Higiene", "20 ud", 1.6, "tirita|apósito|aposito"], ["Quitaesmalte", "Higiene", "200 ml", 1.2, "quitaesmalte"], ["Desmaquillante", "Higiene", "200 ml", 2.2, "desmaquillante|micelar"], ["Mascarillas", "Higiene", "10 ud", 1.5, "mascarilla"], ["Preservativos", "Higiene", "12 ud", 6.0, "preservativo|condon"], ["Comida para gato", "Mascotas", "1,5 kg", 4.5, "gato|pienso gato"], ["Comida húmeda gato", "Mascotas", "4x85 g", 1.8, "lata gato|sobre gato|humeda gato"], ["Comida para perro", "Mascotas", "4 kg", 8.9, "perro|pienso perro"], ["Comida húmeda perro", "Mascotas", "400 g", 1.1, "lata perro|humeda perro"], ["Snacks para perro", "Mascotas", "1 bolsa", 1.8, "snack perro|premio perro|hueso"], ["Arena para gatos", "Mascotas", "5 kg", 2.9, "arena"], ["Empapadores", "Mascotas", "10 ud", 2.5, "empapador"], ["Actimel natural", "Lácteos y huevos", "6x100 g", 3.2, "actimel|actimel natural", "Actimel"], ["Actimel fresa", "Lácteos y huevos", "6x100 g", 3.2, "actimel fresa", "Actimel"], ["Actimel 0%", "Lácteos y huevos", "6x100 g", 3.3, "actimel 0|actimel cero", "Actimel"], ["Actimel kids", "Lácteos y huevos", "6x100 g", 3.3, "actimel kids", "Actimel"], ["Activia natural", "Lácteos y huevos", "4x120 g", 2.1, "activia|activia natural", "Activia"], ["Activia fresa", "Lácteos y huevos", "4x120 g", 2.2, "activia fresa", "Activia"], ["Activia 0%", "Lácteos y huevos", "4x120 g", 2.2, "activia 0", "Activia"], ["Danone natural", "Lácteos y huevos", "4x120 g", 1.6, "danone|danone natural", "Danone"], ["Danone griego Oikos", "Lácteos y huevos", "4x110 g", 2.4, "oikos|danone griego", "Danone"], ["Danonino", "Lácteos y huevos", "6x40 g", 2.3, "danonino", "Danone"], ["Vitalinea", "Lácteos y huevos", "4x120 g", 2.0, "vitalinea", "Danone"], ["Danet natillas", "Lácteos y huevos", "4x125 g", 2.3, "danet", "Danone"], ["Alpro bebida de soja", "Lácteos y huevos", "1 L", 2.2, "alpro|alpro soja", "Alpro"], ["Alpro bebida de avena", "Lácteos y huevos", "1 L", 2.3, "alpro avena", "Alpro"], ["Puleva semidesnatada", "Lácteos y huevos", "1 L", 1.25, "puleva|puleva semi", "Puleva"], ["Puleva Omega 3", "Lácteos y huevos", "1 L", 1.75, "puleva omega|omega 3", "Puleva"], ["Puleva sin lactosa", "Lácteos y huevos", "1 L", 1.45, "puleva sin lactosa", "Puleva"], ["Central Lechera Asturiana semidesnatada", "Lácteos y huevos", "1 L", 1.25, "central lechera|asturiana", "Central Lechera Asturiana"], ["Central Lechera Asturiana entera", "Lácteos y huevos", "1 L", 1.29, "asturiana entera", "Central Lechera Asturiana"], ["Central Lechera Asturiana desnatada", "Lácteos y huevos", "1 L", 1.22, "asturiana desnatada", "Central Lechera Asturiana"], ["Pascual semidesnatada", "Lácteos y huevos", "1 L", 1.25, "pascual|leche pascual", "Pascual"], ["Pascual Bifidus", "Lácteos y huevos", "4x125 g", 2.1, "pascual bifidus", "Pascual"], ["Kaiku sin lactosa", "Lácteos y huevos", "1 L", 1.45, "kaiku", "Kaiku"], ["Lauki", "Lácteos y huevos", "1 L", 1.1, "lauki", "Lauki"], ["Nesquik batido", "Lácteos y huevos", "6x200 ml", 3.4, "batido nesquik", "Nesquik"], ["Président mantequilla", "Lácteos y huevos", "250 g", 3.2, "president", "Président"], ["Philadelphia original", "Lácteos y huevos", "200 g", 2.3, "philadelphia", "Philadelphia"], ["Philadelphia light", "Lácteos y huevos", "200 g", 2.3, "philadelphia light", "Philadelphia"], ["García Baquero semicurado", "Lácteos y huevos", "400 g", 6.5, "garcia baquero|baquero", "García Baquero"], ["García Baquero curado", "Lácteos y huevos", "400 g", 7.2, "baquero curado", "García Baquero"], ["El Caserío quesitos", "Lácteos y huevos", "16 ud", 1.99, "caserio", "El Caserío"], ["La Vaca que ríe", "Lácteos y huevos", "16 ud", 2.4, "vaca que rie", "La Vaca que ríe"], ["Babybel", "Lácteos y huevos", "6 ud", 2.9, "babybel", "Babybel"], ["Hochland lonchas", "Lácteos y huevos", "250 g", 3.0, "hochland", "Hochland"], ["Galbani mozzarella", "Lácteos y huevos", "125 g", 1.6, "galbani", "Galbani"], ["Reina natillas", "Lácteos y huevos", "4x135 g", 1.6, "natillas reina|reina natillas", "Reina"], ["Dhul flan", "Lácteos y huevos", "4x100 g", 1.9, "dhul", "Dhul"], ["La Lechera condensada", "Despensa", "370 g", 2.4, "la lechera", "Nestlé"], ["Kinder Chocolate", "Despensa", "8 barritas", 2.6, "kinder", "Kinder"], ["Kinder Bueno", "Despensa", "3 ud", 2.9, "kinder bueno", "Kinder"], ["Kinder Sorpresa", "Despensa", "3 ud", 4.5, "kinder sorpresa", "Kinder"], ["Milka con leche", "Despensa", "100 g", 1.6, "milka", "Milka"], ["Milka Oreo", "Despensa", "100 g", 1.8, "milka oreo", "Milka"], ["Lindt 70% cacao", "Despensa", "100 g", 2.6, "lindt", "Lindt"], ["Nestlé Extrafino", "Despensa", "125 g", 1.9, "nestle extrafino|extrafino", "Nestlé"], ["Valor chocolate negro", "Despensa", "170 g", 2.6, "chocolate valor|valor chocolate", "Valor"], ["Ferrero Rocher", "Despensa", "16 ud", 6.9, "ferrero|rocher", "Ferrero"], ["Conguitos", "Despensa", "128 g", 1.9, "conguito", "Conguitos"], ["Lacasitos", "Despensa", "75 g", 1.5, "lacasito", "Lacasa"], ["Haribo", "Despensa", "150 g", 1.6, "haribo", "Haribo"], ["Chupa Chups", "Despensa", "10 ud", 2.2, "chupa chups", "Chupa Chups"], ["Bimbo pan de molde", "Panadería", "460 g", 2.3, "bimbo|pan bimbo", "Bimbo"], ["Bimbo sin corteza", "Panadería", "450 g", 2.6, "bimbo sin corteza", "Bimbo"], ["Bimbo integral", "Panadería", "460 g", 2.4, "bimbo integral", "Bimbo"], ["Panrico pan de molde", "Panadería", "460 g", 2.1, "panrico", "Panrico"], ["Donuts clásicos", "Panadería", "4 ud", 2.7, "donuts|donut", "Donuts"], ["Bollycao", "Panadería", "3 ud", 2.2, "bollycao", "Bollycao"], ["Phoskitos", "Panadería", "3 ud", 1.99, "phoskitos", "Phoskitos"], ["Dulcesol magdalenas", "Panadería", "12 ud", 2.2, "dulcesol", "Dulcesol"], ["La Bella Easo magdalenas", "Panadería", "12 ud", 2.4, "bella easo", "La Bella Easo"], ["Recondo tostadas", "Panadería", "270 g", 1.9, "recondo", "Recondo"], ["Oreo galletas", "Despensa", "154 g", 1.6, "oreo", "Oreo"], ["Oreo pack", "Despensa", "440 g", 3.2, "oreo pack", "Oreo"], ["Príncipe galletas", "Despensa", "300 g", 2.1, "principe", "Príncipe"], ["Chips Ahoy", "Despensa", "300 g", 2.4, "chips ahoy", "Chips Ahoy"], ["Fontaneda Digestive", "Despensa", "400 g", 2.1, "fontaneda", "Fontaneda"], ["Gullón María", "Despensa", "800 g", 1.85, "gullon", "Gullón"], ["Gullón Digestive", "Despensa", "600 g", 2.3, "gullon digestive", "Gullón"], ["Cuétara Tosta Rica", "Despensa", "570 g", 2.4, "tosta rica|cuetara", "Cuétara"], ["Filipinos", "Despensa", "128 g", 1.9, "filipinos", "Filipinos"], ["Kellogg's Corn Flakes", "Despensa", "500 g", 3.2, "kellogg|corn flakes", "Kellogg's"], ["Kellogg's Special K", "Despensa", "375 g", 3.8, "special k", "Kellogg's"], ["Kellogg's Choco Krispies", "Despensa", "450 g", 3.6, "krispies|choco krispies", "Kellogg's"], ["Kellogg's Frosties", "Despensa", "500 g", 3.4, "frosties", "Kellogg's"], ["Nestlé Chocapic", "Despensa", "430 g", 3.4, "chocapic", "Nestlé"], ["Nestlé Fitness", "Despensa", "375 g", 3.6, "fitness nestle|nestle fitness", "Nestlé"], ["Nestlé Golden Grahams", "Despensa", "450 g", 3.5, "golden grahams", "Nestlé"], ["Cola Cao Original", "Despensa", "760 g", 5.3, "cola cao|colacao", "Cola Cao"], ["Cola Cao 0%", "Despensa", "700 g", 6.2, "cola cao 0", "Cola Cao"], ["Nesquik cacao", "Despensa", "700 g", 5.2, "nesquik", "Nesquik"], ["Nescafé Classic", "Despensa", "200 g", 6.9, "nescafe", "Nescafé"], ["Nescafé Dolce Gusto cápsulas", "Despensa", "16 ud", 5.2, "dolce gusto", "Nescafé"], ["L'Or cápsulas", "Despensa", "10 ud", 3.3, "l or|lor|lor espresso", "L'Or"], ["Nespresso compatibles Starbucks", "Despensa", "10 ud", 4.9, "starbucks", "Starbucks"], ["Marcilla café molido", "Despensa", "250 g", 3.9, "marcilla", "Marcilla"], ["Saimaza café molido", "Despensa", "250 g", 3.9, "saimaza", "Saimaza"], ["Bonka café molido", "Despensa", "250 g", 3.4, "bonka", "Bonka"], ["Tassimo cápsulas", "Despensa", "16 ud", 5.2, "tassimo", "Tassimo"], ["Hornimans infusiones", "Despensa", "20 sobres", 1.9, "hornimans", "Hornimans"], ["Pompadour infusiones", "Despensa", "20 sobres", 1.9, "pompadour", "Pompadour"], ["Lipton té", "Despensa", "20 sobres", 2.1, "lipton", "Lipton"], ["Nocilla", "Despensa", "620 g", 4.2, "nocilla", "Nocilla"], ["Nutella", "Despensa", "450 g", 4.1, "nutella", "Nutella"], ["Pastas Gallo macarrones", "Despensa", "500 g", 1.35, "pastas gallo|gallo macarron", "Gallo"], ["Pastas Gallo espaguetis", "Despensa", "500 g", 1.35, "gallo espagueti", "Gallo"], ["Barilla espaguetis", "Despensa", "500 g", 1.7, "barilla", "Barilla"], ["Arroz La Fallera", "Despensa", "1 kg", 2.1, "fallera", "La Fallera"], ["Arroz SOS", "Despensa", "1 kg", 2.3, "arroz sos", "SOS"], ["Arroz Brillante", "Despensa", "1 kg", 2.2, "arroz brillante", "Brillante"], ["Arroz Nomen", "Despensa", "1 kg", 2.1, "nomen", "Nomen"], ["Orlando tomate frito", "Despensa", "3x400 g", 2.3, "orlando", "Orlando"], ["Solís tomate frito", "Despensa", "350 g", 1.5, "solis", "Solís"], ["Apis tomate frito", "Despensa", "400 g", 1.1, "apis", "Apis"], ["Hellmann's mayonesa", "Despensa", "450 ml", 3.2, "hellmann|hellmans", "Hellmann's"], ["Heinz ketchup", "Despensa", "570 g", 3.0, "heinz", "Heinz"], ["Calvo atún en aceite", "Despensa", "3x80 g", 4.5, "calvo", "Calvo"], ["Isabel atún en aceite", "Despensa", "3x80 g", 4.4, "atun isabel|isabel atun", "Isabel"], ["Albo atún", "Despensa", "3x80 g", 4.2, "albo", "Albo"], ["Carbonell aceite de oliva virgen extra", "Despensa", "1 L", 8.5, "carbonell", "Carbonell"], ["Coosur aceite de oliva virgen extra", "Despensa", "1 L", 7.9, "coosur", "Coosur"], ["La Española aceite de oliva", "Despensa", "1 L", 8.2, "la espanola", "La Española"], ["Koipesol aceite de girasol", "Despensa", "1 L", 2.6, "koipesol|koipe", "Koipe"], ["Ybarra aceite de oliva", "Despensa", "1 L", 8.2, "ybarra", "Ybarra"], ["Borges aceite de oliva", "Despensa", "1 L", 7.9, "borges", "Borges"], ["Gallina Blanca caldo", "Despensa", "1 L", 2.1, "gallina blanca", "Gallina Blanca"], ["Avecrem pastillas", "Despensa", "10 ud", 1.6, "avecrem", "Gallina Blanca"], ["Knorr sopa", "Despensa", "1 sobre", 1.9, "knorr", "Knorr"], ["Maggi pastillas", "Despensa", "10 ud", 1.6, "maggi", "Maggi"], ["Litoral fabada", "Despensa", "435 g", 3.2, "litoral", "Litoral"], ["Cidacos conservas", "Despensa", "400 g", 1.5, "cidacos", "Cidacos"], ["Bonduelle maíz", "Despensa", "3x140 g", 2.3, "bonduelle", "Bonduelle"], ["Hero mermelada", "Despensa", "345 g", 2.3, "mermelada hero|hero mermelada", "Hero"], ["Royal levadura", "Despensa", "5 sobres", 1.6, "levadura royal|royal levadura", "Royal"], ["Maizena", "Despensa", "400 g", 2.2, "maizena", "Maizena"], ["Azucarera azúcar", "Despensa", "1 kg", 1.4, "azucarera", "Azucarera"], ["Old El Paso tortillas", "Despensa", "8 ud", 2.6, "old el paso", "Old El Paso"], ["La Piara paté", "Despensa", "3x75 g", 2.2, "piara", "La Piara"], ["Lay's patatas", "Despensa", "160 g", 2.3, "lay s|lays", "Lay's"], ["Ruffles patatas", "Despensa", "160 g", 2.3, "ruffles", "Ruffles"], ["Pringles", "Despensa", "165 g", 2.9, "pringles", "Pringles"], ["Doritos", "Despensa", "150 g", 2.0, "doritos", "Doritos"], ["Cheetos", "Despensa", "100 g", 1.5, "cheetos", "Cheetos"], ["Risi", "Despensa", "100 g", 1.5, "risi", "Risi"], ["Grefusa", "Despensa", "150 g", 1.9, "grefusa", "Grefusa"], ["Borges frutos secos", "Despensa", "200 g", 3.2, "borges frutos", "Borges"], ["Campofrío pavo", "Carne y pescado", "200 g", 2.9, "campofrio", "Campofrío"], ["Campofrío jamón cocido", "Carne y pescado", "200 g", 2.9, "campofrio jamon", "Campofrío"], ["ElPozo jamón cocido", "Carne y pescado", "200 g", 2.5, "elpozo|el pozo", "ElPozo"], ["ElPozo pavo", "Carne y pescado", "200 g", 2.5, "elpozo pavo", "ElPozo"], ["Navidul jamón serrano", "Carne y pescado", "100 g", 3.9, "navidul", "Navidul"], ["Oscar Mayer salchichas", "Carne y pescado", "400 g", 2.3, "oscar mayer", "Oscar Mayer"], ["Revilla chorizo", "Carne y pescado", "225 g", 2.6, "revilla", "Revilla"], ["Noel embutido", "Carne y pescado", "200 g", 2.6, "noel", "Noel"], ["Pescanova pescado", "Congelados", "400 g", 5.9, "pescanova", "Pescanova"], ["Findus verduras", "Congelados", "400 g", 3.9, "findus", "Findus"], ["La Cocinera empanadillas", "Congelados", "500 g", 2.9, "cocinera", "La Cocinera"], ["Casa Tarradellas pizza", "Congelados", "1 ud", 3.4, "tarradellas", "Casa Tarradellas"], ["Buitoni pizza", "Congelados", "1 ud", 3.6, "buitoni", "Buitoni"], ["Dr. Oetker Ristorante pizza", "Congelados", "1 ud", 3.6, "oetker|ristorante", "Dr. Oetker"], ["Frudesa verduras", "Congelados", "1 kg", 2.6, "frudesa", "Frudesa"], ["Carte d'Or helado", "Congelados", "900 ml", 4.5, "carte d or|carte dor", "Carte d'Or"], ["Magnum helados", "Congelados", "3 ud", 4.2, "magnum", "Magnum"], ["Häagen-Dazs helado", "Congelados", "460 ml", 5.5, "haagen dazs|haagen", "Häagen-Dazs"], ["Coca-Cola", "Bebidas", "2 L", 2.3, "coca cola|cocacola", "Coca-Cola"], ["Coca-Cola Zero", "Bebidas", "2 L", 2.3, "coca cola zero", "Coca-Cola"], ["Coca-Cola latas", "Bebidas", "9x33 cl", 5.9, "coca cola lata", "Coca-Cola"], ["Pepsi", "Bebidas", "2 L", 1.9, "pepsi", "Pepsi"], ["Fanta naranja", "Bebidas", "2 L", 2.0, "fanta|fanta naranja", "Fanta"], ["Fanta limón", "Bebidas", "2 L", 2.0, "fanta limon", "Fanta"], ["Sprite", "Bebidas", "2 L", 2.0, "sprite", "Sprite"], ["7Up", "Bebidas", "2 L", 1.9, "7up|seven up", "7Up"], ["Schweppes tónica", "Bebidas", "4x25 cl", 2.6, "schweppes", "Schweppes"], ["Aquarius", "Bebidas", "1,5 L", 1.9, "aquarius", "Aquarius"], ["Nestea", "Bebidas", "1,5 L", 1.8, "nestea", "Nestea"], ["Red Bull", "Bebidas", "250 ml", 1.5, "red bull|redbull", "Red Bull"], ["Monster Energy", "Bebidas", "500 ml", 1.6, "monster energy|monster", "Monster"], ["Don Simón zumo", "Bebidas", "1 L", 1.4, "don simon", "Don Simón"], ["Granini zumo", "Bebidas", "1 L", 1.9, "granini", "Granini"], ["Zumosol", "Bebidas", "1 L", 1.6, "zumosol", "Zumosol"], ["Font Vella", "Bebidas", "6x1,5 L", 3.2, "font vella|fontvella", "Font Vella"], ["Bezoya", "Bebidas", "6x1,5 L", 3.1, "bezoya", "Bezoya"], ["Lanjarón", "Bebidas", "6x1,5 L", 3.0, "lanjaron", "Lanjarón"], ["Solán de Cabras", "Bebidas", "1,5 L", 1.1, "solan|solan de cabras", "Solán de Cabras"], ["Mahou Cinco Estrellas", "Bebidas", "6x33 cl", 4.4, "mahou", "Mahou"], ["Estrella Damm", "Bebidas", "6x33 cl", 4.6, "estrella damm|damm", "Damm"], ["Voll-Damm", "Bebidas", "6x33 cl", 5.2, "voll damm", "Damm"], ["Cruzcampo", "Bebidas", "6x33 cl", 4.3, "cruzcampo", "Cruzcampo"], ["San Miguel", "Bebidas", "6x33 cl", 4.3, "san miguel", "San Miguel"], ["Heineken", "Bebidas", "6x33 cl", 5.0, "heineken", "Heineken"], ["Amstel", "Bebidas", "6x33 cl", 4.2, "amstel", "Amstel"], ["Alhambra", "Bebidas", "6x33 cl", 5.2, "alhambra", "Alhambra"], ["Estrella Galicia", "Bebidas", "6x33 cl", 4.8, "estrella galicia", "Estrella Galicia"], ["Turia", "Bebidas", "6x33 cl", 4.2, "cerveza turia|turia", "Turia"], ["Coronita", "Bebidas", "6x35,5 cl", 5.2, "coronita|corona extra", "Corona"], ["Freixenet cava", "Bebidas", "75 cl", 4.9, "freixenet", "Freixenet"], ["Codorníu cava", "Bebidas", "75 cl", 4.9, "codorniu", "Codorníu"], ["Ron Barceló", "Bebidas", "70 cl", 13.0, "barcelo", "Barceló"], ["Bacardí", "Bebidas", "70 cl", 13.0, "bacardi", "Bacardí"], ["Beefeater", "Bebidas", "70 cl", 14.0, "beefeater", "Beefeater"], ["Larios", "Bebidas", "70 cl", 10.0, "larios", "Larios"], ["Ballantine's", "Bebidas", "70 cl", 13.0, "ballantine", "Ballantine's"], ["Martini", "Bebidas", "1 L", 7.5, "martini", "Martini"], ["Ariel detergente", "Limpieza", "40 lavados", 12.5, "ariel", "Ariel"], ["Ariel cápsulas", "Limpieza", "30 ud", 11.5, "ariel pods|ariel capsula", "Ariel"], ["Skip detergente", "Limpieza", "40 lavados", 12.0, "skip", "Skip"], ["Dixan detergente", "Limpieza", "40 lavados", 10.5, "dixan", "Dixan"], ["Wipp Express", "Limpieza", "40 lavados", 9.5, "wipp", "Wipp"], ["Colón detergente", "Limpieza", "40 lavados", 7.9, "detergente colon", "Colón"], ["Mimosín suavizante", "Limpieza", "60 lavados", 3.5, "mimosin", "Mimosín"], ["Flor suavizante", "Limpieza", "60 lavados", 3.5, "suavizante flor", "Flor"], ["Vernel suavizante", "Limpieza", "60 lavados", 3.5, "vernel", "Vernel"], ["Fairy lavavajillas", "Limpieza", "650 ml", 2.5, "fairy", "Fairy"], ["Mistol lavavajillas", "Limpieza", "650 ml", 1.8, "mistol", "Mistol"], ["Finish pastillas", "Limpieza", "40 ud", 11.0, "finish", "Finish"], ["Somat pastillas", "Limpieza", "40 ud", 9.5, "somat", "Somat"], ["Calgon", "Limpieza", "30 ud", 8.5, "calgon", "Calgon"], ["Vanish quitamanchas", "Limpieza", "1 L", 4.5, "vanish", "Vanish"], ["Neutrex lejía", "Limpieza", "2 L", 1.7, "neutrex", "Neutrex"], ["Don Limpio", "Limpieza", "1,3 L", 2.2, "don limpio", "Don Limpio"], ["Cillit Bang", "Limpieza", "750 ml", 3.5, "cillit|cillit bang", "Cillit Bang"], ["KH-7", "Limpieza", "750 ml", 4.5, "kh7|kh 7", "KH-7"], ["Pato WC", "Limpieza", "750 ml", 2.6, "pato wc|pato", "Pato"], ["Harpic", "Limpieza", "750 ml", 2.4, "harpic", "Harpic"], ["Cristasol", "Limpieza", "750 ml", 2.0, "cristasol", "Cristasol"], ["Ajax", "Limpieza", "1 L", 2.2, "ajax", "Ajax"], ["Asevi", "Limpieza", "1 L", 1.6, "asevi", "Asevi"], ["Sanytol", "Limpieza", "750 ml", 3.9, "sanytol", "Sanytol"], ["Air Wick", "Limpieza", "1 ud", 3.5, "air wick|airwick", "Air Wick"], ["Glade", "Limpieza", "1 ud", 3.2, "glade", "Glade"], ["Raid insecticida", "Limpieza", "1 ud", 4.5, "raid", "Raid"], ["Scottex papel higiénico", "Higiene", "12 rollos", 6.9, "scottex", "Scottex"], ["Renova papel higiénico", "Higiene", "12 rollos", 6.5, "renova", "Renova"], ["Colhogar papel higiénico", "Higiene", "12 rollos", 5.9, "colhogar", "Colhogar"], ["Foxy papel de cocina", "Limpieza", "3 rollos", 3.9, "foxy", "Foxy"], ["Albal papel de aluminio", "Limpieza", "30 m", 2.4, "albal", "Albal"], ["Scotch-Brite estropajos", "Limpieza", "3 ud", 2.2, "scotch brite", "Scotch-Brite"], ["Vileda", "Limpieza", "1 ud", 3.5, "vileda", "Vileda"], ["Duracell pilas", "Limpieza", "4 ud", 6.5, "duracell", "Duracell"],
+["Varta pilas", "Limpieza", "4 ud", 5.5, "varta", "Varta"],
+["Energizer pilas", "Limpieza", "4 ud", 6.2, "energizer", "Energizer"], ["Colgate pasta de dientes", "Higiene", "75 ml", 2.3, "colgate", "Colgate"], ["Signal pasta de dientes", "Higiene", "75 ml", 1.9, "signal", "Signal"], ["Sensodyne", "Higiene", "75 ml", 5.2, "sensodyne", "Sensodyne"], ["Oral-B cepillo", "Higiene", "2 ud", 3.5, "oral b|oralb", "Oral-B"], ["Listerine", "Higiene", "500 ml", 5.9, "listerine", "Listerine"], ["Dove gel", "Higiene", "600 ml", 3.6, "dove", "Dove"], ["Sanex gel", "Higiene", "600 ml", 3.5, "sanex", "Sanex"], ["Nivea crema", "Higiene", "150 ml", 4.5, "nivea", "Nivea"], ["H&S champú", "Higiene", "300 ml", 5.2, "head shoulders", "H&S"], ["Pantene champú", "Higiene", "300 ml", 4.2, "pantene", "Pantene"], ["Elvive champú", "Higiene", "370 ml", 4.2, "elvive", "L'Oréal"], ["Garnier Fructis", "Higiene", "300 ml", 3.9, "fructis|garnier", "Garnier"], ["Timotei champú", "Higiene", "400 ml", 2.9, "timotei", "Timotei"], ["Rexona desodorante", "Higiene", "200 ml", 3.2, "rexona", "Rexona"], ["Axe desodorante", "Higiene", "150 ml", 3.9, "axe", "Axe"], ["Gillette maquinillas", "Higiene", "4 ud", 9.9, "gillette", "Gillette"], ["Wilkinson maquinillas", "Higiene", "4 ud", 7.9, "wilkinson", "Wilkinson"], ["Ausonia compresas", "Higiene", "20 ud", 2.9, "ausonia", "Ausonia"], ["Evax compresas", "Higiene", "20 ud", 2.9, "evax", "Evax"], ["Tampax", "Higiene", "18 ud", 4.5, "tampax", "Tampax"], ["Dodot pañales", "Higiene", "40 ud", 14.5, "dodot", "Dodot"], ["Huggies pañales", "Higiene", "40 ud", 13.0, "huggies", "Huggies"], ["Kleenex pañuelos", "Higiene", "10 paquetes", 2.2, "kleenex", "Kleenex"], ["La Toja gel", "Higiene", "600 ml", 3.2, "toja|la toja", "La Toja"], ["Instituto Español gel", "Higiene", "1,25 L", 3.5, "instituto espanol", "Instituto Español"], ["Neutrogena crema de manos", "Higiene", "50 ml", 4.5, "neutrogena", "Neutrogena"], ["Whiskas comida gato", "Mascotas", "1,4 kg", 5.5, "whiskas", "Whiskas"], ["Felix sobres gato", "Mascotas", "12x85 g", 5.5, "felix", "Felix"], ["Friskies comida gato", "Mascotas", "1,5 kg", 5.2, "friskies", "Friskies"], ["Purina One gato", "Mascotas", "1,5 kg", 7.5, "purina", "Purina"], ["Pedigree comida perro", "Mascotas", "4 kg", 8.5, "pedigree", "Pedigree"], ["Dentastix", "Mascotas", "7 ud", 3.9, "dentastix", "Pedigree"], ["Ultima pienso", "Mascotas", "1,5 kg", 9.9, "affinity ultima", "Ultima"]];
+const nrm=s=>' '+String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()+' ';
+const STOP=new Set(['de','del','con','la','el','los','las','en','para','al','a','y','sin_']);
+const RAW=new Set();for(const r of CATALOGO)for(const w of nrm(r[0]+' '+r[4].replace(/\|/g,' ')).trim().split(' '))RAW.add(w);
+const sing=w=>{if(w.length<=3||!w.endsWith('s'))return w;const a=w.slice(0,-1);if(RAW.has(a))return a;if(w.endsWith('es')){const b=w.slice(0,-2);if(RAW.has(b))return b}return w.length>4?w.replace(/(es|s)$/,''):w};
+const toks=s=>nrm(s).trim().split(' ').filter(w=>w&&!STOP.has(w)).map(sing).join(' ');
+const CAT_IDX=CATALOGO.map(([n,c,f,p,kw,m])=>({n,c,f,p,m,kw:kw.split('|').map(toks).filter(Boolean)}));
+/* Tipo de producto de cada marca, para ofrecerla cuando dices el producto genérico ("cerveza" → Mahou, Estrella Damm…) */
+const TIPO_MARCA={"Actimel":"yogur liquido bebible","Activia":"yogur bifidus","Danone":"yogur","Alpro":"bebida vegetal","Puleva":"leche","Central Lechera Asturiana":"leche","Pascual":"leche","Kaiku":"leche","Lauki":"leche","Président":"mantequilla","Philadelphia":"queso untar","García Baquero":"queso","El Caserío":"queso","La Vaca que ríe":"queso","Babybel":"queso","Hochland":"queso","Galbani":"queso","Reina":"postre","Dhul":"postre","Kinder":"chocolate","Milka":"chocolate","Lindt":"chocolate","Valor":"chocolate","Ferrero":"chocolate bombon","Conguitos":"chuche","Lacasa":"chuche","Haribo":"chuche caramelo","Chupa Chups":"caramelo","Bimbo":"pan molde","Panrico":"pan molde","Donuts":"bolleria","Bollycao":"bolleria","Phoskitos":"bolleria","Dulcesol":"bolleria magdalena","La Bella Easo":"bolleria magdalena","Recondo":"tostada","Oreo":"galleta","Príncipe":"galleta","Chips Ahoy":"galleta","Fontaneda":"galleta","Gullón":"galleta","Cuétara":"galleta","Filipinos":"galleta","Kellogg's":"cereal","Cola Cao":"cacao","Nescafé":"cafe","L'Or":"cafe","Starbucks":"cafe","Marcilla":"cafe","Saimaza":"cafe","Bonka":"cafe","Tassimo":"cafe","Hornimans":"infusion te","Pompadour":"infusion te","Lipton":"infusion te","Nocilla":"crema cacao","Nutella":"crema cacao","Gallo":"pasta","Barilla":"pasta","La Fallera":"arroz","SOS":"arroz","Brillante":"arroz","Nomen":"arroz","Orlando":"tomate frito","Solís":"tomate frito","Apis":"tomate frito","Hellmann's":"mayonesa","Heinz":"ketchup","Calvo":"atun","Isabel":"atun","Albo":"atun","Carbonell":"aceite oliva","Coosur":"aceite oliva","La Española":"aceite oliva","Ybarra":"aceite oliva","Koipe":"aceite girasol","Gallina Blanca":"caldo","Knorr":"caldo sopa","Maggi":"caldo","Litoral":"fabada","Cidacos":"conserva","Bonduelle":"conserva maiz","Hero":"mermelada","Royal":"levadura","Maizena":"harina maicena","Azucarera":"azucar","Old El Paso":"tortilla","La Piara":"pate","Lay's":"patatas fritas snack","Ruffles":"patatas fritas snack","Pringles":"patatas fritas snack","Doritos":"snack nachos","Cheetos":"snack aperitivo","Risi":"snack aperitivo","Grefusa":"snack aperitivo pipas","Campofrío":"embutido fiambre","ElPozo":"embutido fiambre","Navidul":"jamon embutido","Oscar Mayer":"salchichas","Revilla":"chorizo embutido","Noel":"embutido fiambre","Pescanova":"pescado congelado","Findus":"verdura congelada","Frudesa":"verdura congelada","La Cocinera":"congelado","Casa Tarradellas":"pizza","Buitoni":"pizza","Dr. Oetker":"pizza","Carte d'Or":"helado","Magnum":"helado","Häagen-Dazs":"helado","Coca-Cola":"refresco","Pepsi":"refresco cola","Fanta":"refresco","Sprite":"refresco","7Up":"refresco","Schweppes":"refresco tonica","Aquarius":"refresco isotonica","Nestea":"refresco te","Red Bull":"bebida energetica","Monster":"bebida energetica","Don Simón":"zumo","Granini":"zumo","Zumosol":"zumo","Font Vella":"agua","Bezoya":"agua","Lanjarón":"agua","Solán de Cabras":"agua","Mahou":"cerveza","Damm":"cerveza","Cruzcampo":"cerveza","San Miguel":"cerveza","Heineken":"cerveza","Amstel":"cerveza","Alhambra":"cerveza","Estrella Galicia":"cerveza","Turia":"cerveza","Corona":"cerveza","Freixenet":"cava","Codorníu":"cava","Barceló":"ron","Bacardí":"ron","Beefeater":"ginebra","Larios":"ginebra","Ballantine's":"whisky","Martini":"vermut","Ariel":"detergente","Skip":"detergente","Dixan":"detergente","Wipp":"detergente","Colón":"detergente","Mimosín":"suavizante","Flor":"suavizante","Vernel":"suavizante","Fairy":"lavavajillas","Mistol":"lavavajillas","Finish":"lavavajillas pastillas","Somat":"lavavajillas pastillas","Calgon":"lavadora antical","Vanish":"quitamanchas","Neutrex":"lejia","Don Limpio":"limpiador","Cillit Bang":"limpiador","KH-7":"limpiador desengrasante","Ajax":"limpiador","Asevi":"limpiador","Sanytol":"limpiador desinfectante","Pato":"limpiador wc","Harpic":"limpiador wc","Cristasol":"limpiacristales","Air Wick":"ambientador","Glade":"ambientador","Raid":"insecticida","Scottex":"papel higienico","Renova":"papel higienico","Colhogar":"papel higienico","Foxy":"papel cocina","Albal":"papel aluminio","Scotch-Brite":"estropajo","Vileda":"fregona bayeta","Duracell":"pilas","Varta":"pilas","Energizer":"pilas","Colgate":"pasta dientes","Signal":"pasta dientes","Sensodyne":"pasta dientes","Oral-B":"cepillo dientes","Listerine":"enjuague bucal","Dove":"gel ducha","Sanex":"gel ducha","La Toja":"gel ducha","Instituto Español":"gel ducha","Nivea":"crema","Neutrogena":"crema","H&S":"champu","Pantene":"champu","L'Oréal":"champu","Garnier":"champu","Timotei":"champu","Rexona":"desodorante","Axe":"desodorante","Gillette":"maquinilla","Wilkinson":"maquinilla","Ausonia":"compresa","Evax":"compresa","Tampax":"tampon","Dodot":"panal","Huggies":"panal","Kleenex":"panuelo","Whiskas":"comida gato","Felix":"comida gato","Friskies":"comida gato","Purina":"comida gato","Pedigree":"comida perro","Ultima":"pienso comida"};
+const TIPO_FILA={"La Lechera condensada":"leche condensada","Nestlé Chocapic":"cereal","Nestlé Fitness":"cereal","Nestlé Golden Grahams":"cereal","Nestlé Extrafino":"chocolate","Nesquik batido":"batido leche","Nesquik cacao":"cacao","Avecrem pastillas":"caldo","Borges frutos secos":"frutos secos","Borges aceite de oliva":"aceite oliva","Dentastix":"perro snack"};
+for(const e of CAT_IDX){const t=TIPO_FILA[e.n]||(e.m&&TIPO_MARCA[e.m])||'';e.t=toks(t)}
+const CAT_NOM=Object.fromEntries(CAT_IDX.map(e=>[toks(e.n),e]));
+function matchCat(nombre){
+  const t=' '+toks(nombre)+' ';if(CAT_NOM[t.trim()])return CAT_NOM[t.trim()];let best=null,bestM=null;
+  for(const e of CAT_IDX){if(!e.m)continue;for(const k of e.kw){if(k.length<3)continue;if(t.includes(' '+k+' ')&&(!bestM||k.length>bestM.l))bestM={e,l:k.length}}}
+  if(bestM)return bestM.e;
+  for(const e of CAT_IDX)for(const k of e.kw){if(k.length<3)continue;if(t.includes(' '+k+' ')&&(!best||k.length>best.l||(k.length===best.l&&e.m&&!best.e.m)))best={e,l:k.length}}
+  return best?best.e:null;
+}
+
+let VOCAB=null;
+function vocab(){
+  if(VOCAB)return VOCAB;
+  const s=new Set();
+  for(const e of CAT_IDX){for(const k of e.kw)for(const w of k.split(' '))if(w.length>=4)s.add(w);for(const w of toks(e.n).split(' '))if(w.length>=4)s.add(w)}
+  VOCAB=[...s];return VOCAB;
+}
+function lev(a,b,max){
+  if(Math.abs(a.length-b.length)>max)return max+1;
+  let prev=Array.from({length:b.length+1},(_,i)=>i);
+  for(let i=1;i<=a.length;i++){const cur=[i];let best=i;
+    for(let j=1;j<=b.length;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));if(cur[j]<best)best=cur[j]}
+    if(best>max)return max+1;prev=cur}
+  return prev[b.length];
+}
+function limpiaPalabra(raw){
+  let t=String(raw||'');
+  t=t.replace(/(?<=[A-Za-zÁÉÍÓÚÑáéíóúñ])[|\/!1](?=[A-Za-zÁÉÍÓÚÑáéíóúñ]|$)/g,'l').replace(/^[|\/!](?=[A-Za-z])/,'l').replace(/(?<=[A-Za-z])0(?=[A-Za-z])/g,'o');
+  return t.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9]/g,'');
+}
+const corrCache=new Map();
+const COMUNES=new Set('materia grasa grasas contenido ingredientes ingrediente sabor calidad origen nuevo nueva receta peso neto energia valor valores consumir preferente conservar lugar fresco seco envase producto productos fabricado espana hecho azucares proteinas hidratos carbono fibra sodio porcion racion unidades gramos litros formato familiar ahorro oferta precio marca original clasico clasica extra mejor sin con para natural fresca'.split(' '));
+function corrige(w,conf){
+  const t=toks(w);if(!t||t.includes(' '))return t;if(COMUNES.has(t)||(conf||0)>=88)return t;
+  const ck=t;if(corrCache.has(ck))return corrCache.get(ck);
+  let r=t;
+  if(t.length>=5&&!/^\d+$/.test(t)){
+    const V=vocab();if(!V.includes(t)){const max=t.length>=8?2:1;let best=null,bd=max+1;
+      for(const v of V){const d=lev(t,v,max);if(d<bd){bd=d;best=v;if(d===1&&max===1)break}}
+      if(best&&bd<=max)r=best}
+  }
+  corrCache.set(ck,r);return r;
+}
+
+/* ---------- precios ---------- */
+function activeSupers(){const a=S.ajustes.general?.supers;return SUPERS.filter(s=>!a||a.includes(s.id))}
+function priceInfo(id,sup){
+  const p=S.productos[id];const v=p?.precios?.[sup];
+  if(v&&v.p>0)return{p:v.p,src:v.src==='web'?'web':'ticket'};
+  const e=matchCat(p?.nombre);if(e)return{p:Math.round(e.p*IDX[sup]*100)/100,src:'est'};
+  return null;
+}
+function priceOf(id,sup){return priceInfo(id,sup)?.p??null}
+function avgPrice(id){const v=SUPERS.map(s=>priceOf(id,s.id)).filter(n=>n>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function cheapest(id){let best=null;for(const s of activeSupers()){const i=priceInfo(id,s.id);if(i&&(!best||i.p<best.p))best={sup:s.id,...i}}return best}
+function budget(){
+  const items=Object.entries(S.lista).filter(([,x])=>!x.marcado);
+  const sups=activeSupers();
+  const sinPrecio=items.filter(([id])=>avgPrice(id)==null).length;
+  const cost=(id,sup)=>priceOf(id,sup)??avgPrice(id);
+  const per=sups.map(s=>{let t=0,miss=0;for(const [id,x] of items){const i=priceInfo(id,s.id);const p=i?i.p:avgPrice(id);if(p==null)continue;if(!i||i.src==='est')miss++;t+=p*(x.cant||1)}return{s,t,miss}}).sort((a,b)=>a.t-b.t);
+  let pair=null;
+  for(let i=0;i<sups.length;i++)for(let j=i+1;j<sups.length;j++){
+    let t=0;const a=sups[i].id,b=sups[j].id;
+    for(const [id,x] of items){const pa=cost(id,a),pb=cost(id,b);if(pa==null)continue;t+=Math.min(pa,pb)*(x.cant||1)}
+    if(!pair||t<pair.t)pair={a,b,t};
+  }
+  return{items,per,pair,sinPrecio};
+}
+
+/* ---------- lista ---------- */
+async function addItems(arr,origen){
+  const nuevos=[];
+  for(const it of arr){
+    const nombre=String(it.nombre||'').trim();if(!nombre)continue;
+    const id=slug(nombre);
+    if(!S.productos[id]){const e=matchCat(nombre);await put('productos',id,{nombre,cat:CATS.includes(it.cat)?it.cat:(e?.c||'Otros'),formato:e?.f||'',precios:{},compras:[],creado:hoy()});}
+    const cur=S.lista[id];
+    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:Math.max(cur?.cant||0,Math.max(1,Math.round(Number(it.cant)||1))),marcado:false,origen:origen||'manual',ts:Date.now()});
+    if(avgPrice(id)==null)nuevos.push(id);
+  }
+}
+
+function sugerencias(){
+  const out=[];
+  for(const [id,p] of Object.entries(S.productos)){
+    const f=(p.compras||[]).map(c=>c.fecha).filter(Boolean).sort();
+    if(f.length<2||S.lista[id])continue;
+    const iv=[];for(let i=1;i<f.length;i++){const d=(new Date(f[i])-new Date(f[i-1]))/DAY;if(d>0)iv.push(d)}
+    if(!iv.length)continue;
+    const media=iv.reduce((a,b)=>a+b,0)/iv.length;
+    const hace=dias(f[f.length-1]);
+    if(hace>=media*0.85)out.push({id,nombre:p.nombre,media:Math.round(media),hace,cant:Math.round((p.compras.reduce((a,c)=>a+(c.cant||1),0))/p.compras.length)||1});
+  }
+  return out.sort((a,b)=>b.hace/b.media-a.hace/a.media);
+}
+
+async function terminarCompra(sup){
+  const hechos=Object.entries(S.lista).filter(([,x])=>x.marcado);
+  for(const [id,x] of hechos){
+    const p=clone(S.productos[id]||{nombre:x.nombre,cat:x.cat,precios:{}});
+    p.compras=[...(p.compras||[]),{fecha:hoy(),cant:x.cant||1,super:sup,precio:priceOf(id,sup)}].slice(-40);
+    await put('productos',id,p);
+    await del('lista',id);
+  }
+  let tot=0;for(const [id,x] of hechos){const p=priceOf(id,sup);if(p)tot+=p*(x.cant||1)}
+  if(hechos.length)await put('tickets','t'+Date.now(),{fecha:hoy(),super:sup,total:Math.round(tot*100)/100,n:hechos.length});
+  closeSheet();toast(`Compra registrada: ${hechos.length} productos.`);
+}
+
+
+const NUM={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,docena:12};
+function parseVoz(txt){
+  return txt.toLowerCase().replace(/\s+(y|e|además|tambien|también|más|mas)\s+/g,',').split(/[,.;]+/).map(t=>t.trim()).filter(Boolean).map(t=>{
+    let cant=1;t=t.replace(/^(añade|añadir|apunta|pon|compra|comprar|necesito|quiero)\s+/,'');
+    const m=t.match(/^(media docena|una docena|\d+|un|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+(?:de\s+)?(.+)$/);
+    if(m){cant=/docena/.test(m[1])?1:(+m[1]||NUM[m[1]]||1);t=m[2]}
+    t=t.replace(/^(kilo|kilos|paquete|paquetes|botella|botellas|bote|botes|lata|latas|bolsa|bolsas|brik|briks|litro|litros)\s+(de\s+)?/,'');
+    return{nombre:t.charAt(0).toUpperCase()+t.slice(1),cant};
+  }).filter(p=>p.nombre.length>=2);
+}
+
+/* ---------- puente con la app Android (voz y archivos) ---------- */
+const NATIVO=!!(window.Android&&window.Android.voz);
+const natCbs={};let natSeq=0;
+window.__nat=(id,res)=>{const cb=natCbs[id];if(cb){delete natCbs[id];cb(res)}};
+function natCall(fn,...args){return new Promise(res=>{const id='n'+(++natSeq);natCbs[id]=res;window.Android[fn](id,...args)})}
+function busy(msg){$('#busy').hidden=!msg;$('#busyMsg').textContent=msg||''}
+
+/* ---------- buscar modelos de un producto ---------- */
+function candidatos(q){
+  const qt=toks(q).split(' ').filter(w=>w.length>=2);
+  if(!qt.length)return[];
+  const full=qt.join(' ');const res=[];
+  for(const e of CAT_IDX){
+    const nombre=toks(e.n);const bolsa=' '+[nombre,...e.kw,e.t||''].join(' ')+' ';
+    if(!qt.every(w=>bolsa.includes(' '+w+' ')||(w.length>=5&&bolsa.includes(' '+w))))continue;
+    let sc=0;
+    if(nombre===full)sc+=100;
+    if(e.kw.includes(full))sc+=40;
+    if(nombre.startsWith(qt[0]))sc+=15;
+    if(!e.m)sc+=10;
+    sc-=nombre.split(' ').length;
+    res.push({e,sc});
+  }
+  return res.sort((a,b)=>b.sc-a.sc).map(x=>x.e);
+}
+function resolver(texto){
+  let c=candidatos(texto);
+  if(!c.length){const corr=toks(texto).split(' ').map(w=>corrige(w,0)).join(' ');if(corr!==toks(texto))c=candidatos(corr)}
+  if(!c.length){const m=matchCat(texto);if(m){const mc=candidatos(m.n.split(' ')[0]);c=[m,...mc.filter(x=>x!==m)]}}
+  const exacto=c.find(e=>toks(e.n)===toks(texto));
+  if(exacto&&(toks(texto).includes(' ')||c.length===1))return{directo:exacto};
+  if(c.length===1)return{directo:c[0]};
+  if(!c.length)return{libre:true};
+  return{opciones:c.slice(0,20)};
+}
+
+/* ---------- añadir a la lista ---------- */
+let deshacer=null;
+async function anadirALista(entradas,origen){
+  const antes={};const nombres=[];
+  for(const p of entradas){
+    const e=p.e||null;const nombre=e?e.n:cap(String(p.nombre||'').trim());if(!nombre)continue;
+    const id=slug(nombre);
+    if(!(id in antes))antes[id]=S.lista[id]?clone(S.lista[id]):null;
+    if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||'Otros',formato:e?.f||'',precios:{},compras:[],creado:hoy()});
+    const cur=S.lista[id];
+    await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now(),por:cur?.por||yo?.uid||null});
+    nombres.push(nombre+((p.cant||1)>1?' ×'+p.cant:''));
+  }
+  if(nombres.length)deshacer=antes;
+  return nombres;
+}
+async function deshacerUltimo(){
+  if(!deshacer)return;
+  for(const [id,v] of Object.entries(deshacer)){if(v)await put('lista',id,v);else await del('lista',id)}
+  deshacer=null;toast('Deshecho.');
+}
+let cola=[],colaTotal=0,colaAnadidos=[],colaOrigen='manual';
+async function procesarEntradas(entradas,origen){
+  const directos=[];cola=[];colaAnadidos=[];colaOrigen=origen;
+  for(const p of entradas){
+    const r=resolver(p.nombre);
+    if(r.directo)directos.push({e:r.directo,cant:p.cant});
+    else if(r.libre)directos.push({nombre:p.nombre,cant:p.cant});
+    else cola.push({texto:p.nombre,cant:p.cant,opciones:r.opciones});
+  }
+  colaAnadidos=await anadirALista(directos,origen);
+  colaTotal=cola.length;
+  if(cola.length)mostrarOpciones();
+  else if(colaAnadidos.length)toast('Añadido: '+colaAnadidos.join(', '),[['Deshacer','deshacer']]);
+}
+function mostrarOpciones(){
+  const it=cola[0];const n=colaTotal-cola.length+1;
+  openSheet(`<p class="note" style="margin:0">${colaTotal>1?`Producto ${n} de ${colaTotal}`:''}</p>
+  <h2>¿Qué «${esc(it.texto.toLowerCase())}» quieres?</h2>
+  <div class="cantSel"><span>Cantidad</span><div class="qty"><button data-act="opDec" aria-label="Menos">−</button><span id="opCant">${it.cant||1}</span><button data-act="opInc" aria-label="Más">+</button></div></div>
+  <div class="opciones">${it.opciones.map((e,i)=>`<button class="opcion" data-act="opElegir" data-i="${i}"><b>${esc(e.n)}</b><small>${esc(e.f||'')}${e.m?' · '+esc(e.m):''}</small></button>`).join('')}</div>
+  <div class="actions"><button class="btn line" data-act="opLibre">Añadir «${esc(it.texto)}» tal cual</button><button class="btn line" data-act="opSaltar">Saltar</button></div>`);
+}
+async function elegirOpcion(i,libre){
+  const it=cola.shift();if(!it)return;
+  const cant=+($('#opCant')?.textContent)||it.cant||1;
+  if(i!=null||libre){const nom=await anadirALista([libre?{nombre:it.texto,cant}:{e:it.opciones[i],cant}],colaOrigen);colaAnadidos.push(...nom)}
+  if(cola.length)mostrarOpciones();
+  else{closeSheet();if(colaAnadidos.length)toast('Añadido: '+colaAnadidos.join(', '),[['Deshacer','deshacer']])}
+}
+function entradasDeTexto(v){
+  return v.split(/[,;\n]+|\s+y\s+/).map(t=>t.trim()).filter(Boolean).map(t=>{const m=t.match(/^(\d+)\s*(?:x\s*)?(.+)$/i);return m?{nombre:m[2],cant:+m[1]}:{nombre:t,cant:1}});
+}
+
+/* ---------- voz ---------- */
+let rec=null;
+async function escuchar(){
+  if(NATIVO){
+    const b=$('#qVoz');b.classList.add('on');
+    try{const r=await natCall('voz');if(r&&r.error){toast('No se puede usar el reconocimiento de voz en este móvil.');return}
+      const ps=parseVoz(r&&r.text||'');if(ps.length)await procesarEntradas(ps,'voz')}
+    finally{b.classList.remove('on')}
+    return;
+  }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('#addTxt').focus();toast('Pulsa el micrófono del teclado y di el producto.');return}
+  if(rec){try{rec.stop()}catch{}return}
+  rec=new SR();rec.lang='es-ES';rec.interimResults=true;rec.maxAlternatives=1;
+  const b=$('#qVoz');b.classList.add('on');$('#vozTxt').hidden=false;$('#vozTxt').textContent='Te escucho…';
+  let final='';
+  rec.onresult=e=>{let t='';for(const r of e.results)t+=r[0].transcript;$('#vozTxt').textContent=t;if(e.results[e.results.length-1].isFinal)final=t};
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){$('#addTxt').focus();toast('No se puede usar el micrófono aquí. Usa el micrófono del teclado.')}else if(e.error!=='no-speech'&&e.error!=='aborted')toast('No te he entendido. Vuelve a probar.')};
+  rec.onend=async()=>{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null;const ps=parseVoz(final||'');if(ps.length)await procesarEntradas(ps,'voz')};
+  try{rec.start()}catch{b.classList.remove('on');$('#vozTxt').hidden=true;rec=null}
+}
+
+/* ---------- presupuesto detallado ---------- */
+function presupuesto(){
+  const items=Object.entries(S.lista);
+  const sups=activeSupers();
+  const per=sups.map(s=>{
+    let t=0,est=0,sin=0;const lineas=[];
+    for(const [id,x] of items){
+      const cant=x.cant||1;const i=priceInfo(id,s.id);let p=i?i.p:null,src=i?i.src:null;
+      if(p==null){const a=avgPrice(id);if(a!=null){p=Math.round(a*100)/100;src='media'}}
+      if(p==null){sin++;lineas.push({id,x,cant,p:null});continue}
+      if(src!=='ticket'&&src!=='web')est++;
+      t+=p*cant;lineas.push({id,x,cant,p,src});
+    }
+    return{s,t:Math.round(t*100)/100,est,sin,lineas};
+  }).sort((a,b)=>a.t-b.t);
+  let pair=null;
+  for(let i=0;i<sups.length;i++)for(let j=i+1;j<sups.length;j++){
+    let t=0;const a=sups[i].id,b=sups[j].id,en={};
+    for(const [id,x] of items){const pa=priceOf(id,a)??avgPrice(id),pb=priceOf(id,b)??avgPrice(id);if(pa==null)continue;t+=Math.min(pa,pb)*(x.cant||1);en[id]=pa<=pb?a:b}
+    if(!pair||t<pair.t)pair={a,b,t:Math.round(t*100)/100,en};
+  }
+  return{items,per,pair};
+}
+function renderPresu(){
+  const el=$('#v-presu');
+  const act=S.ajustes.general?.supers;
+  const chips=`<div class="chips">${SUPERS.map(s=>{const on=!act||act.includes(s.id);return `<button class="chip ${on?'on':'off'}" data-act="supTog" data-s="${s.id}" aria-pressed="${on}">${s.n}</button>`}).join('')}</div>`;
+  const P=presupuesto();
+  if(!P.items.length){el.innerHTML=`<h2>Presupuesto</h2><p class="note">Añade productos a la lista y pulsa «Confirmar lista» para ver cuánto te cuesta en cada supermercado.</p><h3>Súpers que comparo</h3>${chips}`;return}
+  const uds=P.items.reduce((a,[,x])=>a+(x.cant||1),0);const best=P.per[0];const max=Math.max(...P.per.map(p=>p.t),0.01);
+  const ahorro=P.pair?best.t-P.pair.t:0;
+  el.innerHTML=`<h2>Presupuesto de tu lista</h2>
+  <p class="note" style="margin-top:-4px">${P.items.length} producto${P.items.length>1?'s':''} · ${uds} unidad${uds>1?'es':''} · precios del ${PRECIOS_FECHA}</p>
+  <div class="ticket"><div class="hd">Total en cada supermercado</div>
+  ${P.per.map((p,i)=>`<div class="bar ${i===0?'best':''}"><span class="n">${p.s.n}</span><div class="track"><div class="fill" style="width:${(p.t/max*100).toFixed(1)}%"></div></div><span class="v">${eur(p.t)}</span>${i>0?`<span class="flag">+${eur(p.t-best.t)} más que ${best.s.n}</span>`:''}</div>`).join('')}
+  <div class="pick"><small style="color:var(--muted)">Más barato en un solo súper</small><b>${best.s.n} · ${eur(best.t)}</b>
+  ${ahorro>0.5?`<small style="color:var(--muted);margin-top:6px">Repartiendo entre ${SN[P.pair.a]} y ${SN[P.pair.b]}: <b style="font:600 14px var(--f-mono);color:var(--accent)">${eur(P.pair.t)}</b> (ahorras ${eur(ahorro)})</small>`:''}</div></div>
+  <h3>Detalle por supermercado</h3>
+  <div class="detalles">${P.per.map((p,i)=>`<details class="det" ${i===0?'open':''}><summary><span>${i+1}. ${p.s.n}</span><b class="num">${eur(p.t)}</b></summary>
+    <table class="tbl num">${p.lineas.map(l=>`<tr><td style="font-family:var(--f-body)">${esc(l.x.nombre)}${l.p!=null&&l.src!=='ticket'&&l.src!=='web'?' <span class="tag est">'+(l.src==='media'?'media':'ref.')+'</span>':''}<br><small style="color:var(--muted)">${l.cant} × ${l.p!=null?eur(l.p):'sin precio'} · <button class="lk" data-act="precio" data-id="${l.id}" data-s="${p.s.id}">cambiar precio</button></small></td><td>${l.p!=null?eur(l.p*l.cant):'—'}</td></tr>`).join('')}
+    <tr><td style="font-family:var(--f-body);font-weight:700">Total ${p.s.n}</td><td style="font-weight:700">${eur(p.t)}</td></tr></table></details>`).join('')}</div>
+  ${P.pair&&ahorro>0.5?`<h3>Si repartes la compra</h3><div class="card"><table class="tbl">${P.items.map(([id,x])=>`<tr><td>${esc(x.nombre)} ×${x.cant||1}</td><td>${P.pair.en[id]?SN[P.pair.en[id]]:'—'}</td></tr>`).join('')}</table></div>`:''}
+  <h3>Súpers que comparo</h3>${chips}
+  <p class="note"><span class="tag est">ref.</span> precio de referencia ajustado a cada súper · <span class="tag est">media</span> sin dato de ese súper. Los precios que corrijas tú se usan siempre.</p>
+  <p class="note">El índice de Mercadona, Alcampo, Dia y Carrefour sale de la cesta básica de RadarSuper; el de Lidl, Consum y Family Cash es estimado.</p>`;
+}
+
+/* ---------- vistas ---------- */
+let tab='lista',rq=0;
+function scheduleRender(){if(rq)return;rq=requestAnimationFrame(()=>{rq=0;render()})}
+function render(){
+  const n=Object.keys(S.lista).length;
+  $('#est').innerHTML=`<small>En la lista</small><b>${n}</b><br><em>producto${n===1?'':'s'}</em>`;
+  renderLista();renderPresu();renderHabitos();
+}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function renderLista(){
+  const el=$('#v-lista');
+  const all=Object.entries(S.lista);
+  const pend=all.filter(([,x])=>!x.marcado),hechos=all.filter(([,x])=>x.marcado);
+  const sug=sugerencias().slice(0,8);
+  const row=([id,x])=>`<li class="row ${x.marcado?'done':''}"><button class="chk" data-act="tog" data-id="${id}" aria-label="Marcar">✓</button>
+    <div class="nm"><b>${esc(x.nombre)}</b><small>${esc(S.productos[id]?.formato||'')}</small>${FAM&&miembro(x.por)?`<small class="porq">${avatar(x.por,18)} ${esc(miembro(x.por).nombre)}</small>`:''}</div>
+    <div class="qty"><button data-act="dec" data-id="${id}" aria-label="Menos">−</button><span>${x.cant||1}</span><button data-act="inc" data-id="${id}" aria-label="Más">+</button></div>
+    <button class="x" data-act="rm" data-id="${id}" aria-label="Quitar">×</button></li>`;
+  const grupos=CATS.map(c=>[c,pend.filter(([,x])=>(x.cat||'Otros')===c)]).filter(([,v])=>v.length);
+  const famBar=FAM?`<div class="famBar"><button class="listaSel" data-act="listas"><span>${esc(S.listas[LISTA]?.nombre||'Lista')}</span><small>${Object.keys(S.listas).length>1?Object.keys(S.listas).length+' listas':'Listas'} ▾</small></button><button class="famAvs" data-act="famVer" style="border:0;background:none;padding:0" aria-label="Familia">${Object.keys(S.miembros).slice(0,5).map(u=>avatar(u,32,true)).join('')}</button></div>`:'';
+  el.innerHTML=`${famBar}
+  <form class="add" id="addForm"><input id="addTxt" list="catlist" placeholder="Escribe: leche, 2 pan, huevos…" autocomplete="off"><button class="btn">Añadir</button></form>
+  ${sug.length?`<h3>Te suele tocar comprar</h3><div class="chips">${sug.map(s=>`<button class="chip" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">+ ${esc(s.nombre)}</button>`).join('')}</div>`:''}
+  ${!all.length?`<h2>Tu lista está vacía</h2><div class="empty"><p class="note" style="margin:0">Pulsa <b>Dictar</b> y di por ejemplo «dos leches, pan y detergente», o escríbelo arriba. Si un producto tiene varios modelos te dejo elegir. Cuando termines, pulsa <b>Confirmar lista</b> y verás el presupuesto en cada supermercado.</p></div>`:''}
+  ${grupos.map(([c,v])=>`<h3>${c}</h3><ul class="list">${v.map(row).join('')}</ul>`).join('')}
+  ${pend.length?`<div class="actions"><button class="btn grande" data-act="confirmar">Confirmar lista y ver presupuesto</button></div>`:''}
+  ${hechos.length?`<h3>En el carro (${hechos.length})</h3><ul class="list">${hechos.map(row).join('')}</ul>
+  <div class="actions"><button class="btn" data-act="terminar">Terminar compra</button></div>`:''}`;
+  $('#addForm').onsubmit=e=>{e.preventDefault();const v=$('#addTxt').value.trim();if(!v)return;$('#addTxt').value='';procesarEntradas(entradasDeTexto(v),'manual')};
+}
+function renderHabitos(){
+  const el=$('#v-habitos');
+  const tks=Object.values(S.tickets);
+  const t30=tks.filter(t=>dias(t.fecha)<=30);
+  const g30=t30.reduce((a,t)=>a+(t.total||0),0);
+  const media=tks.length?tks.reduce((a,t)=>a+(t.total||0),0)/tks.length:null;
+  const cuenta={};Object.values(S.productos).forEach(p=>(p.compras||[]).forEach(c=>{if(c.super)cuenta[c.super]=(cuenta[c.super]||0)+1}));
+  const fav=Object.entries(cuenta).sort((a,b)=>b[1]-a[1])[0];
+  const top=Object.values(S.productos).map(p=>({n:p.nombre,v:(p.compras||[]).length})).filter(x=>x.v).sort((a,b)=>b.v-a.v).slice(0,8);
+  const sug=sugerencias();
+  el.innerHTML=`<h2>Tus hábitos</h2>
+  <div class="stats">
+    <div class="stat"><small>Gasto últimos 30 días</small><b>${t30.length?eur(g30):'—'}</b></div>
+    <div class="stat"><small>Media por compra</small><b>${media!=null?eur(media):'—'}</b></div>
+    <div class="stat"><small>Compras registradas</small><b>${tks.length}</b></div>
+    <div class="stat"><small>Súper habitual</small><b style="font-family:var(--f-disp);font-size:18px">${fav?SN[fav[0]]||fav[0]:'—'}</b></div>
+  </div>
+  <h3>Te toca comprar</h3>
+  <div class="card">${sug.length?sug.map(s=>`<div class="sug"><div><b>${esc(s.nombre)}</b><small>Lo compras cada ${s.media} días · última vez hace ${s.hace}</small></div><button class="btn ghost" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">Añadir</button></div>`).join(''):'<p class="note" style="margin:0">Cuando registres al menos dos compras de un producto, aquí te avisaré cuando te toque volver a comprarlo.</p>'}</div>
+  <h3>Lo que más compras</h3>
+  <div class="card">${top.length?top.map(x=>`<div class="rank"><span>${esc(x.n)}</span><span class="num">${x.v}×</span></div>`).join(''):'<p class="note" style="margin:0">Marca los productos al comprarlos y pulsa «Terminar compra»: la app irá aprendiendo.</p>'}</div>`;
+}
+
+/* ---------- familia: listas compartidas en tiempo real (Firebase) ---------- */
+const FB_CFG={apiKey:"AIzaSyAytDvBEm1EdRHqBioCNkDvDfGON13jZDg",authDomain:"fotocesta-57b4f.firebaseapp.com",projectId:"fotocesta-57b4f",storageBucket:"fotocesta-57b4f.firebasestorage.app",messagingSenderId:"196413559596",appId:"1:196413559596:web:9eb31fca18adbf474a1289"};
+const FB_VER='10.14.1';
+const FAM_KEY='fotocesta-familia',SOLO_KEY='fotocesta-solo';
+let fs=null,yo=null,FAM=null,LISTA=null,unsubs=[],unsubLista=null;
+const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}};
+const lsSet=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,JSON.stringify(v))}catch{}};
+function cargarJS(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>{s.remove();rej()};document.head.appendChild(s)})}
+async function cargarFirebase(){
+  if(fs)return;
+  if(!window.firebase){
+    for(const f of ['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js']){
+      try{await cargarJS('./'+f)}catch{try{await cargarJS(`https://www.gstatic.com/firebasejs/${FB_VER}/${f}`)}catch{throw{code:'sin_red'}}}
+    }
+  }
+  if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+  fs=firebase.firestore();
+  try{await fs.enablePersistence({synchronizeTabs:true})}catch{}
+  const auth=firebase.auth();
+  let u=await new Promise(r=>{const off=auth.onAuthStateChanged(x=>{off();r(x)})});
+  if(!u){try{u=(await auth.signInAnonymously()).user}catch(e){fs=null;throw{code:e&&e.code==='auth/operation-not-allowed'?'sin_anonimo':'sin_red'}}}
+  yo={uid:u.uid};
+}
+const famRef=()=>fs.collection('familias').doc(FAM);
+function refDoc(col,id){
+  if(col==='lista')return famRef().collection('listas').doc(LISTA).collection('items').doc(id);
+  return famRef().collection(col).doc(id);
+}
+const nuevaId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function genCodigo(){const a='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='';const r=crypto.getRandomValues(new Uint32Array(6));for(const x of r)s+=a[x%a.length];return s}
+const COLORES=['#2C7A4B','#C8651A','#2F6DB5','#9B3FA8','#B3372B','#0F8A8A','#8A6D0F','#5B5FC7'];
+function colorPara(uid){let h=0;for(const c of String(uid))h=(h*31+c.charCodeAt(0))>>>0;return COLORES[h%COLORES.length]}
+function suscribir(){
+  unsubs.forEach(u=>u());unsubs=[];
+  const on=(col,after)=>unsubs.push(famRef().collection(col).onSnapshot({includeMetadataChanges:false},s=>{const o={};s.forEach(d=>o[d.id]=d.data());S[col]=o;if(after)after(s);scheduleRender()},avisoError));
+  for(const c of ['productos','tickets','ajustes','miembros'])on(c);
+  on('listas',s=>{
+    if(LISTA&&S.listas[LISTA])return;
+    const ids=Object.keys(S.listas).sort((a,b)=>(S.listas[a].creada||0)-(S.listas[b].creada||0));
+    if(ids.length)cambiarLista(ids[0]);
+    else if(!s.metadata.fromCache)crearLista('Compra');
+  });
+  if(LISTA)suscribirLista();
+}
+function suscribirLista(){
+  if(unsubLista)unsubLista();unsubLista=null;S.lista={};
+  if(!LISTA)return;
+  unsubLista=famRef().collection('listas').doc(LISTA).collection('items').onSnapshot(s=>{const o={};s.forEach(d=>o[d.id]=d.data());S.lista=o;scheduleRender()},avisoError);
+}
+function cambiarLista(id){LISTA=id;lsSet(FAM_KEY,{code:FAM,lista:id});suscribirLista();scheduleRender()}
+function crearLista(nombre){
+  const id=nuevaId();S.listas[id]={nombre,creada:Date.now(),por:yo.uid};
+  famRef().collection('listas').doc(id).set(S.listas[id]).catch(avisoError);
+  cambiarLista(id);return id;
+}
+async function borrarLista(id){
+  const items=await famRef().collection('listas').doc(id).collection('items').get();
+  const b=fs.batch();items.forEach(d=>b.delete(d.ref));b.delete(famRef().collection('listas').doc(id));
+  await b.commit().catch(avisoError);
+  if(LISTA===id){LISTA=null;delete S.listas[id];const ids=Object.keys(S.listas);if(ids.length)cambiarLista(ids[0]);else crearLista('Compra')}
+}
+async function escribirLote(ops){
+  for(let i=0;i<ops.length;i+=400){const b=fs.batch();for(const [ref,data] of ops.slice(i,i+400))b.set(ref,data);await b.commit()}
+}
+async function crearFamilia(nombre,foto){
+  await cargarFirebase();
+  let code;for(let i=0;i<6;i++){code=genCodigo();const d=await fs.collection('familias').doc(code).get();if(!d.exists)break}
+  await fs.collection('familias').doc(code).set({creada:Date.now(),por:yo.uid});
+  await fs.collection('familias').doc(code).collection('miembros').doc(yo.uid).set({nombre,foto:foto||'',color:colorPara(yo.uid),unido:Date.now(),visto:firebase.firestore.FieldValue.serverTimestamp()});
+  FAM=code;const lid=nuevaId();LISTA=lid;S.miembros={[yo.uid]:{nombre,foto:foto||'',color:colorPara(yo.uid),visto:{toMillis:()=>Date.now()}}};
+  const ops=[[famRef().collection('listas').doc(lid),{nombre:'Compra',creada:Date.now(),por:yo.uid}]];
+  for(const [id,x] of Object.entries(S.lista))ops.push([famRef().collection('listas').doc(lid).collection('items').doc(id),{...x,por:x.por||yo.uid}]);
+  for(const c of ['productos','tickets','ajustes'])for(const [id,x] of Object.entries(S[c]))ops.push([famRef().collection(c).doc(id),x]);
+  await escribirLote(ops);
+  lsSet(FAM_KEY,{code,lista:lid});lsSet(SOLO_KEY,null);
+  suscribir();
+}
+async function unirseFamilia(code,nombre,foto){
+  await cargarFirebase();
+  code=code.toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const d=await fs.collection('familias').doc(code).get();
+  if(!d.exists)throw{code:'no_familia'};
+  await fs.collection('familias').doc(code).collection('miembros').doc(yo.uid).set({nombre,foto:foto||'',color:colorPara(yo.uid),unido:Date.now(),visto:firebase.firestore.FieldValue.serverTimestamp()});
+  FAM=code;LISTA=null;S.lista={};S.miembros={[yo.uid]:{nombre,foto:foto||'',color:colorPara(yo.uid),visto:{toMillis:()=>Date.now()}}};
+  lsSet(FAM_KEY,{code});lsSet(SOLO_KEY,null);
+  suscribir();
+}
+async function salirFamilia(){
+  try{await famRef().collection('miembros').doc(yo.uid).delete()}catch{}
+  unsubs.forEach(u=>u());unsubs=[];if(unsubLista)unsubLista();unsubLista=null;
+  FAM=null;LISTA=null;lsSet(FAM_KEY,null);
+  for(const k in S)S[k]={};loadLocal();render();
+}
+async function arrancarFamilia(){
+  const f=lsGet(FAM_KEY);if(!f||!f.code)return false;
+  FAM=f.code;LISTA=f.lista||null;
+  try{await cargarFirebase();suscribir();latido();return true}
+  catch(e){toast('Sin conexión: no puedo abrir las listas de la familia. Vuelve a intentarlo con internet.');return true}
+}
+function latido(){if(FAM&&yo&&fs&&!document.hidden)famRef().collection('miembros').doc(yo.uid).update({visto:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{})}
+setInterval(latido,60000);document.addEventListener('visibilitychange',latido);
+
+/* avatares */
+function miembro(uid){return S.miembros[uid]}
+function enLinea(m){const v=m&&m.visto&&m.visto.toMillis?m.visto.toMillis():0;return Date.now()-v<150000}
+function avatar(uid,tam=26,conPunto=false){
+  const m=miembro(uid);if(!m)return'';
+  const ini=esc((m.nombre||'?').trim().charAt(0).toUpperCase());
+  const dentro=m.foto?`<img src="${esc(m.foto)}" alt="">`:`<span>${ini}</span>`;
+  return `<span class="av" style="--c:${esc(m.color||'#2C7A4B')};--t:${tam}px" title="${esc(m.nombre||'')}">${dentro}${conPunto&&enLinea(m)?'<i class="enl"></i>':''}</span>`;
+}
+async function fotoAvatar(file){
+  const url=URL.createObjectURL(file);
+  try{const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+    const T=160,c=document.createElement('canvas');c.width=c.height=T;const s=Math.min(im.naturalWidth,im.naturalHeight);
+    c.getContext('2d').drawImage(im,(im.naturalWidth-s)/2,(im.naturalHeight-s)/2,s,s,0,0,T,T);return c.toDataURL('image/jpeg',0.8)}
+  finally{URL.revokeObjectURL(url)}
+}
+
+/* pantallas de familia */
+let perfilFoto='';
+function hojaPerfil(modo){
+  const m=FAM&&yo?miembro(yo.uid):null;
+  perfilFoto=modo==='editar'?(m?.foto||''):'';
+  const tit={crear:'Crear familia',unir:'Unirme a una familia',editar:'Mi perfil'}[modo];
+  openSheet(`<h2>${tit}</h2>
+  ${modo==='unir'?`<label class="lbl" for="pf-code">Código de la familia</label><input class="field big" id="pf-code" autocomplete="off" autocapitalize="characters" maxlength="8" placeholder="Ej. KX7P2M">`:''}
+  <div class="perfil"><button class="pfFoto" data-act="pfElegirFoto" aria-label="Elegir foto"><span id="pf-prev">${perfilFoto?`<img src="${esc(perfilFoto)}" alt="">`:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'}</span><small>Foto</small></button>
+  <div style="flex:1"><label class="lbl" for="pf-nom">Tu nombre</label><input class="field big" id="pf-nom" autocomplete="off" placeholder="Ej. Toni" value="${esc(m?.nombre||'')}"></div></div>
+  <div class="actions"><button class="btn grande" data-act="pfGuardar" data-m="${modo}">${modo==='crear'?'Crear familia':modo==='unir'?'Entrar':'Guardar'}</button></div>
+  <div class="actions"><button class="btn line" data-act="${modo==='editar'?'cerrar':'bienvenida'}">Volver</button></div>`);
+}
+function hojaBienvenida(){
+  openSheet(`<h2>Listas en familia</h2>
+  <p class="note">Crea una familia y comparte el código: todos podréis añadir productos a las mismas listas a la vez, cada uno con su nombre y su foto.</p>
+  <div class="opciones">
+    <button class="opcion" data-act="famCrear"><b>Crear una familia</b><small>Te doy un código para invitar a los demás</small></button>
+    <button class="opcion" data-act="famUnir"><b>Tengo un código</b><small>Entrar en la familia que ha creado otro</small></button>
+    <button class="opcion" data-act="famSolo"><b>Usar solo en este móvil</b><small>Sin compartir. Puedes crear la familia más tarde en Ajustes</small></button>
+  </div>`);
+}
+function errFam(e){return({no_familia:'No existe ninguna familia con ese código. Revísalo.',sin_red:'Necesitas conexión a internet para esto.',sin_anonimo:'Falta activar el acceso «Anónimo» en Firebase (Authentication).','permission-denied':'Firebase ha rechazado el acceso. Revisa que las reglas de seguridad estén publicadas.'})[e?.code]||'No se ha podido completar. Vuelve a intentarlo.'}
+async function guardarPerfil(modo){
+  const nombre=$('#pf-nom').value.trim();if(!nombre){toast('Escribe tu nombre.');return}
+  try{
+    if(modo==='editar'){await famRef().collection('miembros').doc(yo.uid).update({nombre,foto:perfilFoto||''});closeSheet();toast('Perfil guardado.');return}
+    busy(modo==='crear'?'Creando la familia…':'Entrando en la familia…');
+    if(modo==='crear'){await crearFamilia(nombre,perfilFoto);closeSheet();hojaCodigo(true)}
+    else{const code=$('#pf-code').value.trim();if(code.length<4){busy();toast('Escribe el código de la familia.');return}await unirseFamilia(code,nombre,perfilFoto);closeSheet();toast('¡Ya estás en la familia!')}
+    render();
+  }catch(e){toast(errFam(e))}
+  finally{busy()}
+}
+function textoInvitacion(){return `Únete a nuestra lista de la compra en FotoCesta.\n1) Instala la app: https://github.com/tonisanchezdela/fotocesta/releases/latest/download/FotoCesta.apk\n2) Pulsa «Tengo un código» y escribe: ${FAM}`}
+function hojaCodigo(nueva){
+  openSheet(`<h2>${nueva?'¡Familia creada!':'Tu familia'}</h2>
+  <p class="note">Comparte este código con tu familia. Cada uno instala la app, pulsa «Tengo un código» y lo escribe.</p>
+  <div class="codigo num">${esc(FAM)}</div>
+  <div class="actions"><button class="btn" data-act="famCompartir">Enviar invitación</button><button class="btn ghost" data-act="famCopiar">Copiar código</button></div>
+  <h3>Miembros</h3><div class="miembros">${Object.entries(S.miembros).map(([uid,m])=>`<div class="mb">${avatar(uid,40,true)}<span>${esc(m.nombre||'')}${uid===yo?.uid?' (tú)':''}</span></div>`).join('')||'<p class="note">Solo tú, de momento.</p>'}</div>
+  <div class="actions"><button class="btn line" data-act="cerrar">Hecho</button></div>`);
+}
+function hojaListas(){
+  const ids=Object.keys(S.listas).sort((a,b)=>(S.listas[a].creada||0)-(S.listas[b].creada||0));
+  openSheet(`<h2>Listas de la familia</h2>
+  <div class="opciones">${ids.map(id=>`<div class="lrow ${id===LISTA?'on':''}"><button class="opcion" data-act="listaSel" data-l="${id}"><b>${esc(S.listas[id].nombre)}</b><small>${id===LISTA?'Abierta ahora':'Abrir'}</small></button><button class="btn line" data-act="listaRen" data-l="${id}">Renombrar</button><button class="btn line" style="color:var(--danger)" data-act="listaDel" data-l="${id}">Borrar</button></div>`).join('')}</div>
+  <label class="lbl" for="nl-nom" style="margin-top:14px">Nueva lista</label>
+  <div class="add" style="margin-top:6px"><input class="field" id="nl-nom" placeholder="Ej. Cumpleaños de Lucía" autocomplete="off"><button class="btn" data-act="listaNueva">Crear</button></div>
+  <div class="actions"><button class="btn line" data-act="cerrar">Cerrar</button></div>`);
+}
+
+/* ---------- ajustes y copia ---------- */
+function abrirAjustes(){
+  openSheet(`<h2>Ajustes</h2>
+  <h3>Familia</h3>
+  ${FAM?`<div class="mb" style="margin-bottom:8px">${avatar(yo?.uid,40)}<span>${esc(miembro(yo?.uid)?.nombre||'')} · familia <b class="num">${esc(FAM)}</b></span></div><div class="actions"><button class="btn ghost" data-act="famVer">Invitar / ver miembros</button><button class="btn ghost" data-act="perfil">Cambiar nombre o foto</button></div><div class="actions"><button class="btn line" style="color:var(--danger)" data-act="famSalir">Salir de la familia</button></div>`:`<p class="note">Comparte las listas con tu familia: todos añadís a la vez.</p><div class="actions"><button class="btn" data-act="famCrear">Crear familia</button><button class="btn ghost" data-act="famUnir">Tengo un código</button></div>`}
+  <h3>Copia de seguridad</h3>
+  <p class="note">Tus listas, precios y hábitos se guardan en este móvil. Haz una copia para pasarlos a otro móvil o no perderlos si borras el navegador.</p>
+  <div class="actions"><button class="btn ghost" data-act="exportar">Descargar copia</button><button class="btn ghost" data-act="importar">Cargar copia</button></div>
+  <div class="actions"><button class="btn line" style="color:var(--danger)" data-act="borrarTodo">Borrar todos los datos</button></div>
+  <p class="note" style="margin-top:18px"><a href="https://github.com/tonisanchezdela/fotocesta/blob/main/PRIVACIDAD.md" style="color:var(--accent)">Política de privacidad</a></p>`);
+}
+function exportar(){
+  if(NATIVO){window.Android.guardar('fotocesta-copia-'+hoy()+'.json',JSON.stringify({app:'FotoCesta',v:1,fecha:hoy(),datos:S},null,1));return}
+  const blob=new Blob([JSON.stringify({app:'FotoCesta',v:1,fecha:hoy(),datos:S},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='fotocesta-copia-'+hoy()+'.json';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+$('#imp').addEventListener('change',async e=>{
+  const f=e.target.files?.[0];e.target.value='';if(!f)return;
+  try{const d=JSON.parse(await f.text());if(d?.app!=='FotoCesta'||!d.datos)throw 0;
+    for(const k in S)S[k]=d.datos[k]||{};saveLocal();closeSheet();render();toast('Copia cargada.')}
+  catch{toast('Ese archivo no es una copia de FotoCesta.')}
+});
+
+
+window.__atras=()=>{
+  if(!$('#busy').hidden)return true;
+  if(!$('#sheet').hidden){closeSheet();cola=[];return true}
+  if(tab!=='lista'){document.querySelector('[data-tab=lista]').click();return true}
+  return false;
+};
+
+/* ---------- hojas ---------- */
+function openSheet(html){$('#sheetBody').innerHTML=html;$('#sheet').hidden=false}
+function closeSheet(){$('#sheet').hidden=true;$('#sheetBody').innerHTML=''}
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet()});
+let tt=0;function toast(m,acts){const t=$('#toast');t.textContent=m;(acts||[]).filter(Boolean).forEach(([l,a])=>{const b=document.createElement('button');b.textContent=l;b.dataset.act=a;t.appendChild(b)});t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,acts?6000:3500)}
+
+
+
+function irA(v){tab=v;document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===v?'page':'false'));['lista','presu','habitos'].forEach(k=>$('#v-'+k).hidden=k!==v);scrollTo(0,0)}
+document.addEventListener('click',async e=>{
+  const t=e.target.closest('[data-tab],[data-act]');if(!t)return;
+  if(t.dataset.tab){irA(t.dataset.tab);return}
+  const a=t.dataset.act,id=t.dataset.id,x=id&&S.lista[id];
+  switch(a){
+    case'cerrar':closeSheet();break;
+    case'tog':if(x)put('lista',id,{...x,marcado:!x.marcado});break;
+    case'inc':if(x)put('lista',id,{...x,cant:(x.cant||1)+1});break;
+    case'dec':if(x){if((x.cant||1)<=1)del('lista',id);else put('lista',id,{...x,cant:x.cant-1})}break;
+    case'rm':if(x)del('lista',id);break;
+    case'sugAdd':{const p=S.productos[id];if(!p)break;const nom=await anadirALista([{e:matchCat(p.nombre)&&toks(matchCat(p.nombre).n)===toks(p.nombre)?matchCat(p.nombre):null,nombre:p.nombre,cant:+t.dataset.c||1}],'habito');toast('Añadido: '+nom.join(', '),[['Deshacer','deshacer']]);break}
+    case'qVoz':escuchar();break;
+    case'deshacer':$('#toast').hidden=true;deshacerUltimo();break;
+    case'opInc':{const s=$('#opCant');s.textContent=(+s.textContent||1)+1;break}
+    case'opDec':{const s=$('#opCant');s.textContent=Math.max(1,(+s.textContent||1)-1);break}
+    case'opElegir':elegirOpcion(+t.dataset.i);break;
+    case'opLibre':elegirOpcion(null,true);break;
+    case'opSaltar':elegirOpcion(null,false);break;
+    case'confirmar':irA('presu');break;
+    case'ajustes':abrirAjustes();break;
+    case'exportar':exportar();break;
+    case'importar':$('#imp').click();break;
+    case'borrarTodo':if(t.dataset.ok){for(const k in S)S[k]={};saveLocal();closeSheet();render();toast('Datos borrados.')}else{t.dataset.ok='1';t.textContent='Pulsa otra vez para confirmar'}break;
+    case'supTog':{const cur=S.ajustes.general?.supers||SUPERS.map(s=>s.id);const s=t.dataset.s;
+      const nx=cur.includes(s)?cur.filter(v=>v!==s):[...cur,s];if(!nx.length){toast('Deja al menos un súper.');break}
+      put('ajustes','general',{supers:nx});break}
+    case'precio':{const p=S.productos[id];if(!p)break;const sup=t.dataset.s||'mercadona';const cur=priceInfo(id,sup);
+      openSheet(`<h2>Precio de ${esc(p.nombre)}</h2><p class="note">Pon lo que cuesta en un súper. Se guarda y se usa en los próximos presupuestos.</p>
+      <div style="display:grid;grid-template-columns:1fr 110px;gap:8px"><select class="field" id="pm-sup">${SUPERS.map(s=>`<option value="${s.id}" ${sup===s.id?'selected':''}>${s.n}</option>`).join('')}</select>
+      <input class="field" id="pm-p" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00 €" value="${cur&&cur.src!=='est'?String(cur.p).replace('.',','):''}"></div>
+      <div class="actions"><button class="btn" data-act="pmSave" data-id="${id}">Guardar precio</button><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break}
+    case'pmSave':{const v=parseFloat(String($('#pm-p').value).replace(',','.'));if(!(v>0)){toast('Escribe un precio.');break}
+      const p=clone(S.productos[id]);p.precios=p.precios||{};p.precios[$('#pm-sup').value]={p:Math.round(v*100)/100,src:'ticket',f:hoy()};
+      closeSheet();put('productos',id,p);toast('Precio guardado.');break}
+    case'terminar':openSheet(`<h2>¿Dónde has comprado?</h2><p class="note">Apunto la compra en tus hábitos y vacío el carro.</p>
+      <div class="chips">${SUPERS.map(s=>`<button class="chip" data-act="fin" data-s="${s.id}">${s.n}</button>`).join('')}</div>
+      <div class="actions"><button class="btn line" data-act="cerrar">Cancelar</button></div>`);break;
+    case'fin':terminarCompra(t.dataset.s);break;
+    case'bienvenida':hojaBienvenida();break;
+    case'famCrear':hojaPerfil('crear');break;
+    case'famUnir':hojaPerfil('unir');break;
+    case'famSolo':lsSet(SOLO_KEY,1);closeSheet();break;
+    case'perfil':hojaPerfil('editar');break;
+    case'pfElegirFoto':$('#fotoPerfil').click();break;
+    case'pfGuardar':guardarPerfil(t.dataset.m);break;
+    case'famVer':hojaCodigo(false);break;
+    case'famCopiar':try{await navigator.clipboard.writeText(FAM);toast('Código copiado.')}catch{toast('Código: '+FAM)}break;
+    case'famCompartir':if(NATIVO&&window.Android.compartir)window.Android.compartir(textoInvitacion());else if(navigator.share)navigator.share({text:textoInvitacion()}).catch(()=>{});else{try{await navigator.clipboard.writeText(textoInvitacion());toast('Invitación copiada: pégala en WhatsApp.')}catch{toast('Código: '+FAM)}}break;
+    case'famSalir':if(t.dataset.ok){closeSheet();await salirFamilia();toast('Has salido de la familia.')}else{t.dataset.ok='1';t.textContent='Pulsa otra vez para salir'}break;
+    case'listas':hojaListas();break;
+    case'listaSel':cambiarLista(t.dataset.l);closeSheet();break;
+    case'listaNueva':{const n=$('#nl-nom').value.trim();if(!n){toast('Escribe el nombre de la lista.');break}crearLista(n);closeSheet();toast('Lista «'+n+'» creada.');break}
+    case'listaRen':{const l=t.dataset.l;openSheet(`<h2>Renombrar lista</h2><input class="field big" id="rl-nom" value="${esc(S.listas[l]?.nombre||'')}"><div class="actions"><button class="btn" data-act="listaRenOk" data-l="${l}">Guardar</button><button class="btn line" data-act="listas">Volver</button></div>`);break}
+    case'listaRenOk':{const l=t.dataset.l,n=$('#rl-nom').value.trim();if(!n)break;famRef().collection('listas').doc(l).update({nombre:n}).catch(avisoError);S.listas[l]={...S.listas[l],nombre:n};hojaListas();break}
+    case'listaDel':if(t.dataset.ok){await borrarLista(t.dataset.l);hojaListas();toast('Lista borrada.')}else{t.dataset.ok='1';t.textContent='¿Seguro?'}break;
+  }
+});
+
+$('#fotoPerfil').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{perfilFoto=await fotoAvatar(f);const p=$('#pf-prev');if(p)p.innerHTML=`<img src="${perfilFoto}" alt="">`}catch{toast('No he podido abrir esa foto.')}});
+$('#catlist').innerHTML=CATALOGO.map(r=>`<option value="${esc(r[0])}">`).join('');
+if(!NATIVO&&'serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+(async()=>{
+  if(lsGet(FAM_KEY)){render();await arrancarFamilia()}
+  else{loadLocal();render();if(!lsGet(SOLO_KEY))hojaBienvenida()}
+})();
+</script>
+</body></html>
