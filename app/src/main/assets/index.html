@@ -4,6 +4,10 @@
 <meta name="theme-color" content="#2C7A4B">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <title>FotoCesta</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="FotoCesta">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -885,6 +889,7 @@ document.addEventListener('click',async e=>{
 
 $('#fotoPerfil').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;try{perfilFoto=await fotoAvatar(f);const p=$('#pf-prev');if(p)p.innerHTML=`<img src="${perfilFoto}" alt="">`}catch{toast('No he podido abrir esa foto.')}});
 $('#catlist').innerHTML=CATALOGO.map(r=>`<option value="${esc(r[0])}">`).join('');
+if(!NATIVO&&'serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 (async()=>{
   if(lsGet(FAM_KEY)){render();await arrancarFamilia()}
   else{loadLocal();render();if(!lsGet(SOLO_KEY))hojaBienvenida()}
