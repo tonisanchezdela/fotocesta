@@ -187,6 +187,17 @@ nav .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr
 .lrow .btn{padding:8px 10px;font-size:13px}
 .lrow.on .opcion{border-color:var(--accent)}
 
+.famHead{margin-top:14px;display:grid;gap:10px}
+button.famAvs{border:0;background:none;padding:0;flex:none}
+.famTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.famName{border:0;background:none;padding:0;text-align:left;font:800 30px/1.1 var(--f-disp);letter-spacing:-.01em;color:var(--ink);min-width:0;overflow-wrap:anywhere}
+.listaBig{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 14px;text-align:left;display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px}
+.listaBig small{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.listaBig span{font:700 22px/1.2 var(--f-disp);color:var(--accent);overflow-wrap:anywhere}
+.listaBig em{font-style:normal;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.famTit{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:4px 0 6px}
+.famTit .btn,.mbEd{padding:7px 10px;font-size:13px}
+.mb{display:flex;align-items:center;gap:10px;font-weight:600}
 /* hojas y avisos */
 .sheet{position:fixed;inset:0;z-index:10;background:rgba(10,16,12,.45);display:flex;align-items:flex-end;justify-content:center}
 .sheet .body{background:var(--surface);width:100%;max-width:560px;max-height:86%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
@@ -248,7 +259,7 @@ const DAY=864e5;
 const dias=f=>Math.round((Date.now()-new Date(f).getTime())/DAY);
 
 /* ---------- datos ---------- */
-const S={productos:{},lista:{},tickets:{},ajustes:{},miembros:{},listas:{}};
+const S={productos:{},lista:{},tickets:{},ajustes:{},miembros:{},listas:{},familia:{}};
 const LS='fotocesta-v1';
 const LOCALES=['productos','lista','tickets','ajustes'];
 function loadLocal(){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d)for(const k of LOCALES)S[k]=d[k]||{}}catch{}}
@@ -601,7 +612,9 @@ function renderLista(){
     <div class="qty"><button data-act="dec" data-id="${id}" aria-label="Menos">−</button><span>${x.cant||1}</span><button data-act="inc" data-id="${id}" aria-label="Más">+</button></div>
     <button class="x" data-act="rm" data-id="${id}" aria-label="Quitar">×</button></li>`;
   const grupos=CATS.map(c=>[c,pend.filter(([,x])=>(x.cat||'Otros')===c)]).filter(([,v])=>v.length);
-  const famBar=FAM?`<div class="famBar"><button class="listaSel" data-act="listas"><span>${esc(S.listas[LISTA]?.nombre||'Lista')}</span><small>${Object.keys(S.listas).length>1?Object.keys(S.listas).length+' listas':'Listas'} ▾</small></button><button class="famAvs" data-act="famVer" style="border:0;background:none;padding:0" aria-label="Familia">${Object.keys(S.miembros).slice(0,5).map(u=>avatar(u,32,true)).join('')}</button></div>`:'';
+  const nLis=Object.keys(S.listas).length;
+  const famBar=FAM?`<div class="famHead"><div class="famTop"><button class="famName" data-act="famVer">${esc(S.familia?.nombre||'Mi familia')}</button><button class="famAvs" data-act="famVer" aria-label="Miembros de la familia">${Object.keys(S.miembros).slice(0,5).map(u=>avatar(u,34,true)).join('')}</button></div>
+  <button class="listaBig" data-act="listas"><small>Lista</small><span>${esc(S.listas[LISTA]?.nombre||'Lista')}</span><em>${nLis>1?nLis+' listas · cambiar':'crear otra'} ▾</em></button></div>`:'';
   el.innerHTML=`${famBar}
   <form class="add" id="addForm"><input id="addTxt" list="catlist" placeholder="Escribe: leche, 2 pan, huevos…" autocomplete="off"><button class="btn">Añadir</button></form>
   ${sug.length?`<h3>Te suele tocar comprar</h3><div class="chips">${sug.map(s=>`<button class="chip" data-act="sugAdd" data-id="${s.id}" data-c="${s.cant}">+ ${esc(s.nombre)}</button>`).join('')}</div>`:''}
@@ -670,6 +683,7 @@ function colorPara(uid){let h=0;for(const c of String(uid))h=(h*31+c.charCodeAt(
 function suscribir(){
   unsubs.forEach(u=>u());unsubs=[];
   const on=(col,after)=>unsubs.push(famRef().collection(col).onSnapshot({includeMetadataChanges:false},s=>{const o={};s.forEach(d=>o[d.id]=d.data());S[col]=o;if(after)after(s);scheduleRender()},avisoError));
+  unsubs.push(famRef().onSnapshot(d=>{S.familia=d.exists?(d.data()||{}):{};scheduleRender()},avisoError));
   for(const c of ['productos','tickets','ajustes','miembros'])on(c);
   on('listas',s=>{
     if(LISTA&&S.listas[LISTA])return;
@@ -699,10 +713,11 @@ async function borrarLista(id){
 async function escribirLote(ops){
   for(let i=0;i<ops.length;i+=400){const b=fs.batch();for(const [ref,data] of ops.slice(i,i+400))b.set(ref,data);await b.commit()}
 }
-async function crearFamilia(nombre,foto){
+async function crearFamilia(nombre,foto,famNombre){
   await cargarFirebase();
   let code;for(let i=0;i<6;i++){code=genCodigo();const d=await fs.collection('familias').doc(code).get();if(!d.exists)break}
-  await fs.collection('familias').doc(code).set({creada:Date.now(),por:yo.uid});
+  await fs.collection('familias').doc(code).set({creada:Date.now(),por:yo.uid,nombre:famNombre||('Familia de '+nombre)});
+  S.familia={nombre:famNombre||('Familia de '+nombre)};
   await fs.collection('familias').doc(code).collection('miembros').doc(yo.uid).set({nombre,foto:foto||'',color:colorPara(yo.uid),unido:Date.now(),visto:firebase.firestore.FieldValue.serverTimestamp()});
   FAM=code;const lid=nuevaId();LISTA=lid;S.miembros={[yo.uid]:{nombre,foto:foto||'',color:colorPara(yo.uid),visto:{toMillis:()=>Date.now()}}};
   const ops=[[famRef().collection('listas').doc(lid),{nombre:'Compra',creada:Date.now(),por:yo.uid}]];
@@ -756,16 +771,21 @@ async function fotoAvatar(file){
 
 /* pantallas de familia */
 let perfilFoto='';
-function hojaPerfil(modo){
-  const m=FAM&&yo?miembro(yo.uid):null;
-  perfilFoto=modo==='editar'?(m?.foto||''):'';
-  const tit={crear:'Crear familia',unir:'Unirme a una familia',editar:'Mi perfil'}[modo];
+function hojaPerfil(modo,uid){
+  const target=modo==='miembro'?uid:(yo&&yo.uid);
+  const m=FAM&&target?miembro(target):null;
+  perfilFoto=(modo==='editar'||modo==='miembro')?(m?.foto||''):'';
+  const tit={crear:'Crear familia',unir:'Unirme a una familia',editar:'Mi perfil',miembro:'Editar miembro'}[modo];
+  const esOtro=modo==='miembro'&&target!==yo?.uid;
   openSheet(`<h2>${tit}</h2>
+  ${modo==='crear'?`<label class="lbl" for="pf-fam">Nombre de la familia</label><input class="field big" id="pf-fam" autocomplete="off" placeholder="Ej. Familia Sánchez">`:''}
   ${modo==='unir'?`<label class="lbl" for="pf-code">Código de la familia</label><input class="field big" id="pf-code" autocomplete="off" autocapitalize="characters" maxlength="8" placeholder="Ej. KX7P2M">`:''}
-  <div class="perfil"><button class="pfFoto" data-act="pfElegirFoto" aria-label="Elegir foto"><span id="pf-prev">${perfilFoto?`<img src="${esc(perfilFoto)}" alt="">`:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'}</span><small>Foto</small></button>
-  <div style="flex:1"><label class="lbl" for="pf-nom">Tu nombre</label><input class="field big" id="pf-nom" autocomplete="off" placeholder="Ej. Toni" value="${esc(m?.nombre||'')}"></div></div>
-  <div class="actions"><button class="btn grande" data-act="pfGuardar" data-m="${modo}">${modo==='crear'?'Crear familia':modo==='unir'?'Entrar':'Guardar'}</button></div>
-  <div class="actions"><button class="btn line" data-act="${modo==='editar'?'cerrar':'bienvenida'}">Volver</button></div>`);
+  <div class="perfil"><button class="pfFoto" data-act="pfElegirFoto" aria-label="Elegir foto"><span id="pf-prev">${perfilFoto?`<img src="${esc(perfilFoto)}" alt="">`:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'}</span><small>${perfilFoto?'Cambiar':'Foto'}</small></button>
+  <div style="flex:1"><label class="lbl" for="pf-nom">${esOtro?'Nombre':'Tu nombre'}</label><input class="field big" id="pf-nom" autocomplete="off" placeholder="Ej. Toni" value="${esc(m?.nombre||'')}"></div></div>
+  ${perfilFoto&&(modo==='editar'||modo==='miembro')?`<div class="actions" style="margin-top:0"><button class="btn line" data-act="pfQuitarFoto">Quitar foto</button></div>`:''}
+  <div class="actions"><button class="btn grande" data-act="pfGuardar" data-m="${modo}" data-u="${esc(target||'')}">${modo==='crear'?'Crear familia':modo==='unir'?'Entrar':'Guardar'}</button></div>
+  ${esOtro?`<div class="actions"><button class="btn line" style="color:var(--danger)" data-act="famQuitar" data-u="${esc(target)}">Quitar de la familia</button></div>`:''}
+  <div class="actions"><button class="btn line" data-act="${modo==='miembro'?'famVer':modo==='editar'?'cerrar':'bienvenida'}">Volver</button></div>`);
 }
 function hojaBienvenida(){
   openSheet(`<h2>Listas en familia</h2>
@@ -777,24 +797,31 @@ function hojaBienvenida(){
   </div>`);
 }
 function errFam(e){return({no_familia:'No existe ninguna familia con ese código. Revísalo.',sin_red:'Necesitas conexión a internet para esto.',sin_anonimo:'Falta activar el acceso «Anónimo» en Firebase (Authentication).','permission-denied':'Firebase ha rechazado el acceso. Revisa que las reglas de seguridad estén publicadas.'})[e?.code]||'No se ha podido completar. Vuelve a intentarlo.'}
-async function guardarPerfil(modo){
-  const nombre=$('#pf-nom').value.trim();if(!nombre){toast('Escribe tu nombre.');return}
+async function guardarPerfil(modo,uid){
+  const nombre=$('#pf-nom').value.trim();if(!nombre){toast('Escribe el nombre.');return}
   try{
-    if(modo==='editar'){await famRef().collection('miembros').doc(yo.uid).update({nombre,foto:perfilFoto||''});closeSheet();toast('Perfil guardado.');return}
+    if(modo==='editar'||modo==='miembro'){
+      const u=modo==='miembro'?uid:yo.uid;
+      await famRef().collection('miembros').doc(u).update({nombre,foto:perfilFoto||''});
+      S.miembros[u]={...S.miembros[u],nombre,foto:perfilFoto||''};
+      toast('Guardado.');if(modo==='miembro')hojaCodigo(false);else closeSheet();render();return}
     busy(modo==='crear'?'Creando la familia…':'Entrando en la familia…');
-    if(modo==='crear'){await crearFamilia(nombre,perfilFoto);closeSheet();hojaCodigo(true)}
+    if(modo==='crear'){const fn=($('#pf-fam')?.value||'').trim();await crearFamilia(nombre,perfilFoto,fn);closeSheet();hojaCodigo(true)}
     else{const code=$('#pf-code').value.trim();if(code.length<4){busy();toast('Escribe el código de la familia.');return}await unirseFamilia(code,nombre,perfilFoto);closeSheet();toast('¡Ya estás en la familia!')}
     render();
   }catch(e){toast(errFam(e))}
   finally{busy()}
 }
-function textoInvitacion(){return `Únete a nuestra lista de la compra en FotoCesta.\n1) Instala la app: https://github.com/tonisanchezdela/fotocesta/releases/latest/download/FotoCesta.apk\n2) Pulsa «Tengo un código» y escribe: ${FAM}`}
+function textoInvitacion(){return `Únete a ${S.familia?.nombre?'«'+S.familia.nombre+'» en ':'nuestra lista de la compra en '}FotoCesta.\n1) Instala la app: https://github.com/tonisanchezdela/fotocesta/releases/latest/download/FotoCesta.apk\n2) Pulsa «Tengo un código» y escribe: ${FAM}`}
 function hojaCodigo(nueva){
-  openSheet(`<h2>${nueva?'¡Familia creada!':'Tu familia'}</h2>
+  const fam=S.familia?.nombre||'Tu familia';
+  const orden=Object.entries(S.miembros).sort((a,b)=>(a[0]===yo?.uid?-1:b[0]===yo?.uid?1:(a[1].unido||0)-(b[1].unido||0)));
+  openSheet(`<p class="note" style="margin:0">${nueva?'¡Familia creada!':'Familia'}</p>
+  <div class="famTit"><h2 style="margin:0">${esc(fam)}</h2><button class="btn line" data-act="famRen">Cambiar nombre</button></div>
   <p class="note">Comparte este código con tu familia. Cada uno instala la app, pulsa «Tengo un código» y lo escribe.</p>
   <div class="codigo num">${esc(FAM)}</div>
   <div class="actions"><button class="btn" data-act="famCompartir">Enviar invitación</button><button class="btn ghost" data-act="famCopiar">Copiar código</button></div>
-  <h3>Miembros</h3><div class="miembros">${Object.entries(S.miembros).map(([uid,m])=>`<div class="mb">${avatar(uid,40,true)}<span>${esc(m.nombre||'')}${uid===yo?.uid?' (tú)':''}</span></div>`).join('')||'<p class="note">Solo tú, de momento.</p>'}</div>
+  <h3>Miembros (${orden.length})</h3><div class="miembros">${orden.map(([uid,m])=>`<div class="mb">${avatar(uid,44,true)}<span style="flex:1">${esc(m.nombre||'')}${uid===yo?.uid?' <small style="color:var(--muted)">(tú)</small>':''}</span><button class="btn line mbEd" data-act="${uid===yo?.uid?'perfil':'mbEditar'}" data-u="${esc(uid)}">Editar</button></div>`).join('')||'<p class="note">Solo tú, de momento.</p>'}</div>
   <div class="actions"><button class="btn line" data-act="cerrar">Hecho</button></div>`);
 }
 function hojaListas(){
@@ -810,7 +837,7 @@ function hojaListas(){
 function abrirAjustes(){
   openSheet(`<h2>Ajustes</h2>
   <h3>Familia</h3>
-  ${FAM?`<div class="mb" style="margin-bottom:8px">${avatar(yo?.uid,40)}<span>${esc(miembro(yo?.uid)?.nombre||'')} · familia <b class="num">${esc(FAM)}</b></span></div><div class="actions"><button class="btn ghost" data-act="famVer">Invitar / ver miembros</button><button class="btn ghost" data-act="perfil">Cambiar nombre o foto</button></div><div class="actions"><button class="btn line" style="color:var(--danger)" data-act="famSalir">Salir de la familia</button></div>`:`<p class="note">Comparte las listas con tu familia: todos añadís a la vez.</p><div class="actions"><button class="btn" data-act="famCrear">Crear familia</button><button class="btn ghost" data-act="famUnir">Tengo un código</button></div>`}
+  ${FAM?`<div class="mb" style="margin-bottom:8px">${avatar(yo?.uid,40)}<span>${esc(miembro(yo?.uid)?.nombre||'')} · ${esc(S.familia?.nombre||'familia')} <b class="num">${esc(FAM)}</b></span></div><div class="actions"><button class="btn ghost" data-act="famVer">Invitar / ver miembros</button><button class="btn ghost" data-act="perfil">Cambiar nombre o foto</button></div><div class="actions"><button class="btn line" style="color:var(--danger)" data-act="famSalir">Salir de la familia</button></div>`:`<p class="note">Comparte las listas con tu familia: todos añadís a la vez.</p><div class="actions"><button class="btn" data-act="famCrear">Crear familia</button><button class="btn ghost" data-act="famUnir">Tengo un código</button></div>`}
   <h3>Copia de seguridad</h3>
   <p class="note">Tus listas, precios y hábitos se guardan en este móvil. Haz una copia para pasarlos a otro móvil o no perderlos si borras el navegador.</p>
   <div class="actions"><button class="btn ghost" data-act="exportar">Descargar copia</button><button class="btn ghost" data-act="importar">Cargar copia</button></div>
@@ -892,7 +919,12 @@ document.addEventListener('click',async e=>{
     case'famSolo':lsSet(SOLO_KEY,1);closeSheet();break;
     case'perfil':hojaPerfil('editar');break;
     case'pfElegirFoto':$('#fotoPerfil').click();break;
-    case'pfGuardar':guardarPerfil(t.dataset.m);break;
+    case'pfGuardar':guardarPerfil(t.dataset.m,t.dataset.u);break;
+    case'mbEditar':hojaPerfil('miembro',t.dataset.u);break;
+    case'pfQuitarFoto':{perfilFoto='';const p=$('#pf-prev');if(p)p.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';t.remove();break}
+    case'famQuitar':if(t.dataset.ok){const u=t.dataset.u;famRef().collection('miembros').doc(u).delete().catch(avisoError);delete S.miembros[u];hojaCodigo(false);toast('Miembro quitado de la familia.')}else{t.dataset.ok='1';t.textContent='Pulsa otra vez para quitarlo'}break;
+    case'famRen':openSheet(`<h2>Nombre de la familia</h2><input class="field big" id="fn-nom" autocomplete="off" value="${esc(S.familia?.nombre||'')}" placeholder="Ej. Familia Sánchez"><div class="actions"><button class="btn" data-act="famRenOk">Guardar</button><button class="btn line" data-act="famVer">Volver</button></div>`);setTimeout(()=>$('#fn-nom')?.focus(),60);break;
+    case'famRenOk':{const n=$('#fn-nom').value.trim();if(!n){toast('Escribe un nombre.');break}famRef().update({nombre:n}).catch(avisoError);S.familia={...S.familia,nombre:n};hojaCodigo(false);render();break}
     case'famVer':hojaCodigo(false);break;
     case'famCopiar':try{await navigator.clipboard.writeText(FAM);toast('Código copiado.')}catch{toast('Código: '+FAM)}break;
     case'famCompartir':if(NATIVO&&window.Android.compartir)window.Android.compartir(textoInvitacion());else if(navigator.share)navigator.share({text:textoInvitacion()}).catch(()=>{});else{try{await navigator.clipboard.writeText(textoInvitacion());toast('Invitación copiada: pégala en WhatsApp.')}catch{toast('Código: '+FAM)}}break;
