@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         web = WebView(this)
         val raiz = FrameLayout(this)
-        raiz.setBackgroundColor(0xFFF1F5EF.toInt())
+        raiz.setBackgroundColor(0xFFFFF7EC.toInt())
         raiz.addView(web, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         setContentView(raiz)
         WindowCompat.getInsetsController(window, raiz).apply {
