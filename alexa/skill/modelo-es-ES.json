@@ -1,0 +1,163 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "foto cesta",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "slots": [],
+          "samples": []
+        },
+        {
+          "name": "AnadirIntent",
+          "slots": [
+            {
+              "name": "productos",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "añade {productos}",
+            "añadir {productos}",
+            "añada {productos}",
+            "que añada {productos}",
+            "apunta {productos}",
+            "apuntar {productos}",
+            "que apunte {productos}",
+            "pon {productos}",
+            "que ponga {productos}",
+            "mete {productos}",
+            "que meta {productos}",
+            "necesito {productos}",
+            "hay que comprar {productos}",
+            "falta {productos}",
+            "nos falta {productos}",
+            "se ha acabado {productos}",
+            "se han acabado {productos}"
+          ]
+        },
+        {
+          "name": "LeerIntent",
+          "slots": [],
+          "samples": [
+            "qué hay en la lista",
+            "que hay en la lista",
+            "léeme la lista",
+            "leeme la lista",
+            "lee la lista",
+            "dime la lista",
+            "que me lea la lista",
+            "qué tengo que comprar",
+            "qué hay que comprar",
+            "qué falta",
+            "qué nos falta",
+            "la lista de la compra",
+            "lista de la compra"
+          ]
+        },
+        {
+          "name": "QuitarIntent",
+          "slots": [
+            {
+              "name": "producto",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "quita {producto}",
+            "que quite {producto}",
+            "borra {producto}",
+            "que borre {producto}",
+            "elimina {producto}",
+            "que elimine {producto}",
+            "ya tengo {producto}",
+            "ya he comprado {producto}"
+          ]
+        },
+        {
+          "name": "PresupuestoIntent",
+          "slots": [],
+          "samples": [
+            "dónde sale más barato",
+            "dónde sale más barata la compra",
+            "dónde me sale más barata la compra",
+            "dónde es más barato",
+            "cuál es el súper más barato",
+            "qué súper es más barato",
+            "cuánto cuesta la compra",
+            "cuánto me va a costar la compra",
+            "cuánto me cuesta la compra",
+            "dónde compro",
+            "el presupuesto",
+            "dame el presupuesto",
+            "que me diga dónde es más barato"
+          ]
+        },
+        {
+          "name": "VincularIntent",
+          "slots": [
+            {
+              "name": "codigo",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "mi código es {codigo}",
+            "el código es {codigo}",
+            "el código de mi familia es {codigo}",
+            "código de familia {codigo}",
+            "vincula con el código {codigo}",
+            "usa el código {codigo}",
+            "conecta con el código {codigo}",
+            "únete a la familia {codigo}",
+            "código {codigo}"
+          ]
+        },
+        {
+          "name": "DesvincularIntent",
+          "slots": [],
+          "samples": [
+            "desvincula",
+            "desvincúlate",
+            "olvida mi familia",
+            "sal de la familia",
+            "cambia de familia",
+            "desconecta la familia",
+            "desconéctate de la familia"
+          ]
+        }
+      ],
+      "types": []
+    }
+  }
+}

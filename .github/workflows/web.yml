@@ -18,6 +18,7 @@ jobs:
           mkdir -p _site
           cp app/src/main/assets/* _site/
           cp -r web/* _site/
+          node alexa/generar-datos.js app/src/main/assets/index.html _site/alexa.json
           touch _site/.nojekyll
       - name: Publicar en la rama gh-pages
         uses: JamesIves/github-pages-deploy-action@v4

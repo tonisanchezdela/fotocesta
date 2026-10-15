@@ -3,6 +3,7 @@ name: Compilar APK
 on:
   push:
     branches: [main]
+    paths-ignore: ['alexa/**', '.github/workflows/web.yml', '**.md', '.gitignore']
   workflow_dispatch:
 
 permissions:
