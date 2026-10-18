@@ -203,13 +203,22 @@ async function conectar(h) {
   db.guardar(['familias', a.code, 'miembros', c.uid], { visto: new Date() }, { campos: ['visto'] }).catch(() => {});
   return { db, uid: c.uid, code: a.code, a };
 }
+/* Lista en la que apunta Alexa: la que se ha usado más recientemente en los móviles (la del último producto añadido) */
 async function listaActual(f) {
   const listas = await f.db.listar(['familias', f.code, 'listas']);
-  const ids = Object.keys(listas).sort((x, y) => (listas[x].creada || 0) - (listas[y].creada || 0));
-  if (f.a.lista && listas[f.a.lista]) return { id: f.a.lista, nombre: listas[f.a.lista].nombre || 'Compra' };
-  if (ids.length) return { id: ids[0], nombre: listas[ids[0]].nombre || 'Compra' };
-  const id = nuevaId(); await f.db.guardar(['familias', f.code, 'listas', id], { nombre: 'Compra', creada: Date.now(), por: f.uid });
-  return { id, nombre: 'Compra' };
+  const ids = Object.keys(listas);
+  if (!ids.length) {
+    const id = nuevaId(); await f.db.guardar(['familias', f.code, 'listas', id], { nombre: 'Compra', creada: Date.now(), por: f.uid });
+    return { id, nombre: 'Compra', varias: false };
+  }
+  let mejor = null;
+  if (ids.length === 1) mejor = { id: ids[0], t: 0 };
+  else for (const id of ids) {
+    const items = await f.db.listar(['familias', f.code, 'listas', id, 'items']).catch(() => ({}));
+    const t = Math.max(listas[id].creada || 0, ...Object.values(items).map(x => x.ts || 0));
+    if (!mejor || t > mejor.t) mejor = { id, t };
+  }
+  return { id: mejor.id, nombre: listas[mejor.id].nombre || 'Compra', varias: ids.length > 1 };
 }
 const unir = l => l.length <= 1 ? (l[0] || '') : l.slice(0, -1).join(', ') + ' y ' + l[l.length - 1];
 const decir = s => String(s).replace(/&/g, ' y ').replace(/[<>]/g, ' ');
@@ -284,7 +293,7 @@ const Anadir = {
       });
       nombres.push((p.cant > 1 ? p.cant + ' de ' : '') + (prod.nombre || nombre).toLowerCase());
     }
-    return responder(h, `Apuntado: ${decir(unir(nombres))}.`);
+    return responder(h, `Apuntado${L.varias ? ' en la lista ' + decir(L.nombre) : ''}: ${decir(unir(nombres))}.`);
   }
 };
 
