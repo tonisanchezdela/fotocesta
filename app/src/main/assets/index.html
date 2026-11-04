@@ -580,15 +580,30 @@ function candidatos(q){
   }
   return res.sort((a,b)=>b.sc-a.sc).map(x=>x.e);
 }
+/* ¿El nombre del producto del catálogo recoge lo que ha dicho el usuario?
+   Las filas genéricas que agrupan varias cosas (Especias, Frutos secos, Té e infusiones…) no:
+   «orégano» no es «Especias». Las marcas sí, porque sus palabras clave son alias de la marca. */
+function nombrado(e,q){
+  if(e.m)return true;
+  const n=' '+toks(e.n)+' ';
+  return q.split(' ').filter(w=>w.length>=2).every(w=>n.includes(' '+w+' ')||(w.length>=4&&n.includes(' '+w)));
+}
 function resolver(texto){
-  let c=candidatos(texto);
-  if(!c.length){const corr=toks(texto).split(' ').map(w=>corrige(w,0)).join(' ');if(corr!==toks(texto))c=candidatos(corr)}
+  const q=toks(texto);
+  let c=candidatos(texto),corregido=false;
+  if(!c.length){const corr=q.split(' ').map(w=>corrige(w,0)).join(' ');if(corr!==q){c=candidatos(corr);corregido=c.length>0}}
   if(!c.length){const m=matchCat(texto);if(m){const mc=candidatos(m.n.split(' ')[0]);c=[m,...mc.filter(x=>x!==m)]}}
-  const exacto=c.find(e=>toks(e.n)===toks(texto));
-  if(exacto&&(toks(texto).includes(' ')||c.length===1))return{directo:exacto};
-  if(c.length===1)return{directo:c[0]};
   if(!c.length)return{libre:true};
-  return{opciones:c.slice(0,20)};
+  /* Corrección de una palabra mal escrita: se pregunta, nunca se cambia sin avisar */
+  if(corregido)return{opciones:c.slice(0,20)};
+  /* Si ningún producto del catálogo se llama como lo que ha dicho, se añade tal cual con su nombre,
+     tomando de la fila parecida solo la sección y el precio orientativo */
+  const reales=c.filter(e=>nombrado(e,q));const ref=c.find(e=>!nombrado(e,q))||null;
+  if(!reales.length)return{libre:true,ref};
+  const exacto=reales.find(e=>toks(e.n)===q);
+  if(exacto&&(q.includes(' ')||reales.length===1))return{directo:exacto};
+  if(reales.length===1&&c.length===1)return{directo:reales[0]};
+  return{opciones:reales.slice(0,20),ref};
 }
 
 /* ---------- añadir a la lista ---------- */
@@ -596,10 +611,10 @@ let deshacer=null;
 async function anadirALista(entradas,origen){
   const antes={};const nombres=[];
   for(const p of entradas){
-    const e=p.e||null;const nombre=e?e.n:cap(String(p.nombre||'').trim());if(!nombre)continue;
+    const e=p.e||null;const ref=p.ref||null;const nombre=e?e.n:cap(String(p.nombre||'').trim());if(!nombre)continue;
     const id=slug(nombre);
     if(!(id in antes))antes[id]=S.lista[id]?clone(S.lista[id]):null;
-    if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||'Otros',formato:e?.f||'',precios:{},compras:[],creado:hoy()});
+    if(!S.productos[id])await put('productos',id,{nombre,cat:e?.c||ref?.c||'Otros',formato:e?.f||ref?.f||'',precios:{},compras:[],creado:hoy()});
     const cur=S.lista[id];
     await put('lista',id,{nombre:S.productos[id].nombre,cat:S.productos[id].cat,cant:(cur?(cur.cant||1):0)+(p.cant||1),marcado:false,origen,ts:Date.now(),por:cur?.por||yo?.uid||null});
     nombres.push(nombre+((p.cant||1)>1?' ×'+p.cant:''));
@@ -618,8 +633,8 @@ async function procesarEntradas(entradas,origen){
   for(const p of entradas){
     const r=resolver(p.nombre);
     if(r.directo)directos.push({e:r.directo,cant:p.cant});
-    else if(r.libre)directos.push({nombre:p.nombre,cant:p.cant});
-    else cola.push({texto:p.nombre,cant:p.cant,opciones:r.opciones});
+    else if(r.libre)directos.push({nombre:p.nombre,cant:p.cant,ref:r.ref});
+    else cola.push({texto:p.nombre,cant:p.cant,opciones:r.opciones,ref:r.ref});
   }
   colaAnadidos=await anadirALista(directos,origen);
   colaTotal=cola.length;
@@ -637,7 +652,7 @@ function mostrarOpciones(){
 async function elegirOpcion(i,libre){
   const it=cola.shift();if(!it)return;
   const cant=+($('#opCant')?.textContent)||it.cant||1;
-  if(i!=null||libre){const nom=await anadirALista([libre?{nombre:it.texto,cant}:{e:it.opciones[i],cant}],colaOrigen);colaAnadidos.push(...nom)}
+  if(i!=null||libre){const nom=await anadirALista([libre?{nombre:it.texto,cant,ref:it.ref}:{e:it.opciones[i],cant}],colaOrigen);colaAnadidos.push(...nom)}
   if(cola.length)mostrarOpciones();
   else{closeSheet();if(colaAnadidos.length)toast('Añadido: '+colaAnadidos.join(', '),[['Deshacer','deshacer']])}
 }
